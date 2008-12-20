@@ -2,12 +2,24 @@
 
 {% block forejs %}
         <link href="/content/style/jquery.autocomplete.css" rel="stylesheet" type="text/css" />
+        <link href="/content/style/prettify.css" rel="stylesheet" type="text/css" />
         <script type="text/javascript" src="/content/js/wmd/wmd.js"></script>
         <script type="text/javascript" src="/content/js/jquery.textarearesizer.js"></script>
         <script type='text/javascript' src='/content/js/jquery.autocomplete.min.js'></script>
+        <script type='text/javascript' src='/content/js/typewatch-2.0.0.js'></script>
+        <script type='text/javascript' src='/content/js/prettify.js'></script>
+        <script type='text/javascript' src='/content/js/com.cnprog.js'></script>
         <script type="text/javascript">
         $().ready(function(){
+            
+            //set current module button style
+            $("#nav_ask").attr('className',"youarehere");
             $('#editor').TextAreaResizer();
+            
+            //highlight code synctax when editor has new text
+            $("#editor").typeWatch({highlight: false, wait: 3000,
+                             captureLength: 5, callback: lanai.highlightSyntax});
+                             
             //toggle preview of editor
             var display = true;
             var txt = "禁用预览";
@@ -18,8 +30,7 @@
                 $('#previewer').toggle();
                 $('#pre-collapse').text(txt);
             });
-            //set current module button style
-            $("#nav_ask").attr('className',"youarehere");
+            
             //Tags autocomplete action
             var tags = {{ tags|safe }};
         	$("#id_tags").autocomplete(tags, {
@@ -160,7 +171,8 @@
 {% block endjs %}
 
 <script language="javascript">
-
+//highlight code syntax after loading content in editor
+lanai.highlightSyntax();
 
 </script>
 {% endblock %}

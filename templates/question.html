@@ -1,12 +1,19 @@
 {% extends "base.html" %}
 {% load extra_tags %}
 {% block forejs %}
-        <script type="text/javascript" src="/content/js/wmd/wmd.js?d=20081211"></script>
+        <link href="/content/style/prettify.css" rel="stylesheet" type="text/css" />
+        <script type="text/javascript" src="/content/js/wmd/wmd.js"></script>
         <script type="text/javascript" src="/content/js/jquery.textarearesizer.js"></script>
+        <script type='text/javascript' src='/content/js/typewatch-2.0.0.js'></script>
+        <script type='text/javascript' src='/content/js/prettify.js'></script>
+        <script type='text/javascript' src='/content/js/com.cnprog.js'></script>
         <script type="text/javascript">
         $().ready(function(){
             $('#editor').TextAreaResizer();
-            
+            //highlight code synctax when editor has new text
+            $("#editor").typeWatch({highlight: false, wait: 3000,
+                             captureLength: 5, callback: lanai.highlightSyntax});
+                             
             var display = true;
             var txt = "禁用预览";
             $('#pre-collapse').text(txt);
@@ -319,9 +326,9 @@
 {% endblock %}
 
 {% block endjs %}
-
 <script language="javascript">
-
+//highlight code syntax after loading content in editor
+lanai.highlightSyntax();
 
 </script>
 {% endblock %}

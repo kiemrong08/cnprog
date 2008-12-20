@@ -58,7 +58,7 @@ def ask(request):
                 added_at         = added_at,
                 last_activity_at = added_at,
                 last_activity_by = request.user,
-                tagnames         = form.cleaned_data['tags'],
+                tagnames         = form.cleaned_data['tags'].strip(),
                 html             = form.cleaned_data['text'],
                 summary          = strip_tags(form.cleaned_data['text'])[:180]
             )
