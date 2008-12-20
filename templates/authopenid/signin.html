@@ -1,0 +1,88 @@
+﻿{% extends "base.html" %}
+{% block forejs %}
+    <link rel="stylesheet" href="/content/style/openid.css" />
+	<script type="text/javascript" src="/content/js/jquery.openid.js?"></script>
+	<script type="text/javascript">
+	$(document).ready(function() {
+	    openid.init('id_openid_url');
+	});
+	</script>
+
+{% endblock %}
+
+{% block content %}
+
+<div id="main-bar" class="">
+    <h3>
+        用户登录
+    </h3>
+</div>
+<div class="login">
+    <form name="openid_form" action="{% url user_signin %}" method="post">
+    {{ form2.next }}
+    <div class="message">您当前为<strong class="darkred">匿名</strong>用户，可以正常使用系统大多数功能。登录系统后，可以获得积累积分等额外功能。</div>
+    <div id="openid_choice">
+        <h3 style="padding:10px 0 10px 0">请选择您的帐号类型并完成正确的OpenID地址：</h3> 
+        <div id="openid_btns"></div>
+    </div>
+    <br>
+    
+	<div style="margin-top:30px">
+        {% if msg %}
+        	<p class="warning">{{ msg }}</p>
+        {% endif %}
+        {{ form2.openid_url }} <input name="bsignin" type="submit" value="登录" class="openid-login-submit" />
+	</div>
+    
+    <div id="openid-samples" style="margin-bottom:20px">
+        <br>
+        <h3>
+            <span class="darkred">常见的OpenID地址示例：</span>
+        </h3>
+    
+        <ul class="list">
+            <li>http://openid.aol.com/<strong>yourname</strong></li>
+            <li>http://<strong>yourname</strong>.myopenid.com/</li>
+            <li>https://me.yahoo.com/<strong>yourname</strong> (或者 http://yahoo.com/ )</li>
+            <li>http://claimid.com/<strong>yourname</strong></li>
+            <li>http://<strong>yourname</strong>.wordpress.com/</li>
+            <li>http://<strong>yourname</strong>.blogspot.com/</li>
+            <li>http://technorati.com/people/technorati/<strong>yourname</strong></li>
+            <li>http://<strong>yourname</strong>.pip.verisignlabs.com/</li>
+            <li>http://<strong>yourname</strong>.livejournal.com/</li>
+            <li>http://www.flickr.com/photos/<strong>yourname</strong></li>
+        </ul>
+        <h3><span class="darkred">登录前请确认你已经启用了OpenID帐号!</span></h3>
+    </div
+
+</form>
+</div>	
+{% endblock %}
+
+{% block sidebar %}
+<div class="yellow-box">
+    <h3>为什么需要OpenID登录？</h3>
+    <ul class="list-item">
+        <li>
+        构建在OpenID网络认证上的本系统，不需要你注册新的帐号，即可使用我们系统的所有功能
+        </li>
+        <li>
+        用同一个帐号可登录互联网所有激活OpenID的网站
+
+        </li>
+        <li>
+        全世界有1.6亿OpenID帐号，和10,000个支持OpenID的站点
+
+        </li>
+        <li>
+         OpenID是有开放标准，并且有相关的基金组织提供支持
+
+        </li>
+        
+    </ul>
+    <a href="http://openid.net/what/" target="_blank" style="float:right;position:relative">查看更多 »</a><br>
+    <a href="http://openid.net/get/" target="_blank" style="float:right;position:relative">获取OpenID »</a>
+    <br>  
+</div>
+{% endblock%}
+

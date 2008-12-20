@@ -1,0 +1,328 @@
+{% extends "base.html" %}
+{% load extra_tags %}
+{% block forejs %}
+        <script type="text/javascript" src="/content/js/wmd/wmd.js?d=20081211"></script>
+        <script type="text/javascript" src="/content/js/jquery.textarearesizer.js"></script>
+        <script type="text/javascript">
+        $().ready(function(){
+            $('#editor').TextAreaResizer();
+            
+            var display = true;
+            var txt = "禁用预览";
+            $('#pre-collapse').text(txt);
+            $('#pre-collapse').bind('click', function(){
+                txt = display ? "启用预览" : "禁用预览";
+                display = !display;
+                $('#previewer').toggle();
+                $('#pre-collapse').text(txt);
+            });
+            
+            $("#nav_questions").attr('className',"youarehere");
+        });
+         
+        </script>
+{% endblock %}
+        
+{% block content %}
+<div id="question-title" class="">
+    <h3>
+        <a href="{{ question.get_absolute_url }}">{{ question.title }}</a>
+    </h3>
+    
+</div>
+<div id="main-body" class="">
+    <div id="askform">
+        <form action="{% url answer question.id %}" method="post">
+            <table style="width:100%;">
+                <tr>
+                    <td style="width:50px;vertical-align:top">
+                        <div id="item-left">
+                            <img class="img-button" src="/content/images/vote-up.png" title="这篇帖子有价值（再次点击取消操作）" >
+                            <div class="vote-number">{{ question.score }}</div>
+                            <img class="img-button" src="/content/images/vote-down.png" title="这篇帖子没有价值（再次点击取消操作）" >
+                            <img class="img-button" src="/content/images/vote-favorite-off.png" title="我要收藏这个问题（再次点击取消操作）" >
+                            {% ifnotequal question.favourite_count 0 %}
+                                <div class="favorite-number">{{ question.favourite_count }}</div>
+                            {% endifnotequal %}
+                        </div>
+                    </td>
+                    <td>
+                        <div id="item-right">
+                            <div style="min-height:100px">
+                                {{ question.html|safe }}
+                            </div>
+                            <div id="question-tags" class="question-tag" >
+                                {% for tag in question.tagname_list %}
+                                    <a href="{% url forum.views.tag tag %}" class="post-tag" title="查看有关'{{ tag }}'的问题" rel="tag">
+                                        {{ tag }}
+                                    </a>
+                                {% endfor %}
+                            </div>
+                            <div id="question-controls" style="clear:both;">
+                                <table width="585px">
+            	                    <tr>
+                                        <td width="300px" style="vertical-align:top">
+                                            <span class="offensive-flag">
+                                                <a href="#" title="检举该帖为垃圾信息（含人身攻击、谩骂、恶意言论等）">
+                                                垃圾帖？
+                                                </a>
+                                            </span>
+                                        </td>
+            	                    	<td width="100px"></td>
+                                     <td >
+                                        <div  class="question-mark">
+                                            <table width="100%">
+                	                            <tr>
+                    	                            	<td colspan="2"> 
+                                                        &nbsp;提问于<strong>{{ question.added_at|timesince }}</strong>前
+                                                    </td>
+                	                            	
+                	                            </tr>
+                	                            <tr>
+                                                    <td width="40px" style="vertical-align:bottom">
+                                                    {% gravatar question.author 32 %}
+                                                    </td>
+                                                    <td style="vertical-align:top">
+                                                        <div><a href="#">{{ question.author }}</a></div>
+                                                        <div>
+                                                        <span class="reputation-score" title="{{ question.author.reputation }}用户积分">{{ question.author.reputation }}</span>
+                                                        <span title="{{ question.author.gold }}金牌">
+                                                        <span class="badge1">●</span>
+                                                        <span class="badgecount">{{ question.author.gold }}</span>
+                                                        </span>
+                                                        <span title="{{ question.author.silver }}银牌">
+                                                        <span class="badge2">●</span>
+                                                        <span class="badgecount">{{ question.author.silver }}</span>
+                                                        </span>
+                                                        <span title="{{ question.author.bronze }}铜牌">
+                                                        <span class="badge3">●</span>
+                                                        <span class="badgecount">{{ question.author.bronze }}</span>
+                                                        </span>
+                                                        </div>
+                                                    </td>
+                	                            </tr>
+                                            </table>
+                                        </div>
+                                        
+                                        
+                                     </td>
+            	                    </tr>
+            	                    
+                                </table>
+                                
+                            </div>
+                            
+                            <div class="question-comment-add" style="margin-bottom:20px">
+                                <a href="#">添加评论</a>
+                            </div>
+                            
+                        </div>
+                        
+                    </td>
+                </tr>
+            </table>
+            {% ifnotequal question.answer_count 0 %}
+                <div id="main-bar" class="">
+                    <h3>{{ question.answer_count }}个回答：</h3>
+                </div>
+                {% for answer in answers %}
+                    <a name="{{ answer.id }}"></a>
+                    <table style="width:100%;">
+                        <tr>
+                            <td style="width:50px;vertical-align:top">
+                                <div id="item-left">
+                                    <img class="img-button" src="/content/images/vote-up.png" title="这篇帖子有价值（再次点击取消操作）" >
+                                    <div class="vote-number">{{ answer.score }}</div>
+                                    <img class="img-button" src="/content/images/vote-down.png" title="这篇帖子没有价值（再次点击取消操作）" >
+                                    <img class="img-button" src="/content/images/vote-accepted.png" title="最佳答案（再次点击取消操作）" >
+                                    
+                                </div>
+                            </td>
+                            <td>
+                                <div id="item-right">
+                                    <div style="min-height:80px">
+                                        {{ answer.html|safe }}
+                                    </div>
+                                    <div id="question-controls" style="clear:both;">
+                                        <table width="585px">
+                    	                    <tr>
+                                                <td width="300px" style="vertical-align:top">
+                                                    <span class="offensive-flag">
+                                                        <a href="#{{ answer.id }}" title="该回答的链接地址">
+                                                        链接
+                                                        </a>
+                                                    </span>
+                                                    <span class="link-separator">|</span>
+                                                    <span class="offensive-flag">
+                                                        <a href="#" title="检举该帖为垃圾信息（含人身攻击、谩骂、恶意言论等）">
+                                                        垃圾帖？
+                                                        </a>
+                                                    </span>
+                                                </td>
+                    	                    	<td width="100px"></td>
+                                             <td >
+                                                <div  class="answer-mark">
+                                                    <table width="100%">
+                        	                            <tr>
+                            	                            	<td colspan="2"> 
+                                                                &nbsp;回答于<strong>{{ answer.added_at|timesince }}</strong>前
+                                                            </td>
+                        	                            	
+                        	                            </tr>
+                        	                            <tr>
+                                                            <td width="40px" style="vertical-align:bottom">
+                                                            {% gravatar answer.author 32 %}
+                                                            </td>
+                                                            <td style="vertical-align:top">
+                                                                <div><a href="#">{{ answer.author }}</a></div>
+                                                                <div>
+                                                                <span class="reputation-score" title="{{ answer.author.reputation }}用户积分">{{ answer.author.reputation }}</span>
+                                                                <span title="{{ answer.author.gold }}金牌">
+                                                                <span class="badge1">●</span>
+                                                                <span class="badgecount">{{ answer.author.gold }}</span>
+                                                                </span>
+                                                                <span title="{{ answer.author.silver }}银牌">
+                                                                <span class="badge2">●</span>
+                                                                <span class="badgecount">{{ answer.author.silver }}</span>
+                                                                </span>
+                                                                <span title="{{ answer.author.bronze }}铜牌">
+                                                                <span class="badge3">●</span>
+                                                                <span class="badgecount">{{ answer.author.bronze }}</span>
+                                                                </span>
+                                                                </div>
+                                                            </td>
+                        	                            </tr>
+                                                    </table>
+                                                </div>
+                                                
+                                                
+                                             </td>
+                    	                    </tr>
+                    	                    
+                                        </table>
+                                        
+                                    </div>
+                                    
+                                    <div class="question-comment-add" style="margin-bottom:20px">
+                                        <a href="#">添加评论</a>
+                                    </div>
+                                    
+                                </div>
+                                
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="dot-line"></div>
+                {% endfor %}
+                
+            {% else %}
+                <div class="line"></div>
+            {% endifnotequal %}
+            
+            <h3>您的回答：</h3>
+            <div id="description" class="" >
+                {{ answer.text }}
+                <div class="preview-toggle"><span id="pre-collapse" title="打开或者关闭Markdown编辑器的实时预览">预览开关</span></div>
+                <div id="previewer" class="wmd-preview"></div>
+                
+            </div>
+
+            <br>
+            {% if not user.is_authenticated %}
+            <table id="login-box"> 
+                <tr> 
+                    <td style="vertical-align:middle;"> 
+                    <strong>使用 <a href="http://openid.net/" title="了解更多有关OpenID的信息">OpenID</a> 登录：</strong><br>
+                        {{ answer.openid }}
+                        <div class="title-desc">
+                            获取您自己的<a href="https://www.myopenid.com/" target=="_blank">OpenID</a>。
+                        </div>
+                    </td> 
+                    <td style="vertical-align:middle; padding: 0px 40px 0px 40px"> 
+                        <div style="position: absolute; margin-top:40px; background-color:white; margin-left:-10px; padding:5px;">或</div> 
+                        <div style="width:1px; border-left:solid 1px #999; height:8em; margin:auto;"></div> 
+                    </td> 
+                    <td style="vertical-align:middle;"> 
+                        <strong>您的大名:</strong><br>
+                        {{ answer.user }}
+                        <p>
+                        <strong>电子邮件:（不会公开显示）</strong><br>
+                        {{ answer.email }}
+                        </p>
+                    </td> 
+                </tr> 
+            </table>    
+            {% endif %}
+  
+            <input type="submit" value="回答该问题" class="submit">
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block sidebar %}
+<div class="yellow-box">
+    <h3 class="darkred">受欢迎的提问</h3>
+    <div>
+        <ul class="list-item">
+            <li>
+                <b>您的问题与编程相关吗？</b>
+            </li>
+            <li>
+                我们建议您提的问题是可以被答复的，而不仅仅是可以讨论。
+            </li>
+            <li>
+                问题描述详细，但不冗余。
+            </li>
+            <li>
+                我们推荐您使用中文描述问题，这样可以得到更多的答复机会。
+            </li>
+        </ul>
+         <a href="/faq/" target="_blank" style="float:right;position:relative">查看常见问题 »</a>
+         <br>  
+    </div>
+</div>
+
+<div class="gray-box">
+    <h3>Markdown快速参考</h3>
+    <ul class="list-item">
+        <li>
+            *斜体* 或者 _斜体_  
+
+        </li>
+        <li>
+            **加粗** 或者 __加粗__ 
+
+        </li>
+        <li>
+            <b>链接</b>：一个[例子](http://url.com/ "标题")
+
+        </li>
+        
+        <li>
+            <b>图片</b>：![alt 文本](/path/img.jpg "标题")
+
+        </li>
+        <li>
+            列表：
+            1.  Foo
+            2.  Bar
+        </li>
+        <li>
+            基本的HTML标签也是支持的
+        </li>
+    </ul>
+    <a href="http://en.wikipedia.org/wiki/Markdown" target="_blank" style="float:right;position:relative">有关Markdown详细说明 »</a>
+    <br>  
+</div>
+
+{% endblock %}
+
+{% block endjs %}
+
+<script language="javascript">
+
+
+</script>
+{% endblock %}
+

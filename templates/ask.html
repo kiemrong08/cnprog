@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block forejs %}
+        <link href="/content/style/jquery.autocomplete.css" rel="stylesheet" type="text/css" />
+        <script type="text/javascript" src="/content/js/wmd/wmd.js"></script>
+        <script type="text/javascript" src="/content/js/jquery.textarearesizer.js"></script>
+        <script type='text/javascript' src='/content/js/jquery.autocomplete.min.js'></script>
+        <script type="text/javascript">
+        $().ready(function(){
+            $('#editor').TextAreaResizer();
+            //toggle preview of editor
+            var display = true;
+            var txt = "禁用预览";
+            $('#pre-collapse').text(txt);
+            $('#pre-collapse').bind('click', function(){
+                txt = display ? "启用预览" : "禁用预览";
+                display = !display;
+                $('#previewer').toggle();
+                $('#pre-collapse').text(txt);
+            });
+            //set current module button style
+            $("#nav_ask").attr('className',"youarehere");
+            //Tags autocomplete action
+            var tags = {{ tags|safe }};
+        	$("#id_tags").autocomplete(tags, {
+                minChars: 1,
+        		matchContains: true,
+                max: 20,
+                multiple: true,
+                multipleSeparator: " ",
+        		formatItem: function(row, i, max) {
+        			return row.fields.name + " ("+ row.fields.used_count +")";
+        		},
+                formatResult: function(row, i, max){
+                    return row.fields.name;
+                }
+                
+            });
+        });
+         
+        </script>
+{% endblock %}
+        
+{% block content %}
+<div id="main-bar" class="">
+    <h3>
+        我要提问
+    </h3>
+    
+</div>
+<div id="main-body" class="">
+    <div id="askform">
+        <form action="{% url forum.views.ask %}" method="post">
+            <strong>标题:</strong><br> 
+            {{ form.title }}
+            <div class="title-desc">
+                请输入对问题具有描述性质的标题 - “帮忙！紧急求助！”不是建议的提问方式。
+            </div>     
+            <div id="description" class="">
+                {{ form.text }}
+                <div class="preview-toggle"><span id="pre-collapse" title="打开或者关闭Markdown编辑器的实时预览">预览开关</span></div>
+                <div id="previewer" class="wmd-preview"></div>
+                
+            </div>
+            <strong>标签:</strong> <br>
+            {{ form.tags }}
+            <div class="title-desc">
+                多个标签请用空格间隔。（如：aop c# 面向对象）
+            </div>
+            <br>
+            {% if not user.is_authenticated %}
+            <table id="login-box"> 
+                <tr> 
+                    <td style="vertical-align:middle;"> 
+                    <strong>使用 <a href="http://openid.net/" title="了解更多有关OpenID的信息">OpenID</a> 登录：</strong><br>
+                        {{ form.openid }}
+                        <div class="title-desc">
+                            获取您自己的<a href="https://www.myopenid.com/" target=="_blank">OpenID</a>。
+                        </div>
+                    </td> 
+                    <td style="vertical-align:middle; padding: 0px 40px 0px 40px"> 
+                        <div style="position: absolute; margin-top:40px; background-color:white; margin-left:-10px; padding:5px;">或</div> 
+                        <div style="width:1px; border-left:solid 1px #999; height:8em; margin:auto;"></div> 
+                    </td> 
+                    <td style="vertical-align:middle;"> 
+                        <strong>您的大名:</strong><br>
+                        {{ form.user }}
+                        <p>
+                        <strong>电子邮件:（不会公开显示）</strong><br>
+                        {{ form.email }}
+                        </p>
+                    </td> 
+                </tr> 
+            </table>    
+            {% endif %}
+            <input type="submit" value="现在提问" class="submit" />
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block sidebar %}
+<div class="yellow-box">
+    <h3 class="darkred">受欢迎的提问</h3>
+    <div>
+        <ul class="list-item">
+            <li>
+                <b>您的问题与编程相关吗？</b>
+            </li>
+            <li>
+                我们建议您提的问题是可以被答复的，而不仅仅是可以讨论。
+            </li>
+            <li>
+                问题描述详细，但不冗余。
+            </li>
+            <li>
+                我们推荐您使用中文描述问题，这样可以得到更多的答复机会。
+            </li>
+        </ul>
+         <a href="/faq/" target="_blank" style="float:right;position:relative">查看常见问题 »</a>
+         <br>  
+    </div>
+</div>
+
+<div class="gray-box">
+    <h3>Markdown快速参考</h3>
+    <ul class="list-item">
+        <li>
+            *斜体* 或者 _斜体_  
+
+        </li>
+        <li>
+            **加粗** 或者 __加粗__ 
+
+        </li>
+        <li>
+            <b>链接</b>：一个[例子](http://url.com/ "标题")
+
+        </li>
+        
+        <li>
+            <b>图片</b>：![alt 文本](/path/img.jpg "标题")
+
+        </li>
+        <li>
+            列表：
+            1.  Foo
+            2.  Bar
+        </li>
+        <li>
+            基本的HTML标签也是支持的
+        </li>
+    </ul>
+    <a href="http://en.wikipedia.org/wiki/Markdown" target="_blank" style="float:right;position:relative">有关Markdown详细说明 »</a>
+    <br>  
+</div>
+
+{% endblock %}
+
+{% block endjs %}
+
+<script language="javascript">
+
+
+</script>
+{% endblock %}
+

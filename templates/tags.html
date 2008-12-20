@@ -1,0 +1,46 @@
+{% extends "base_content.html" %}
+{% load extra_tags %}
+{% block forejs %}
+       <script type="text/javascript">
+        $().ready(function(){
+            var tab_id = "{{ tab_id }}";
+            $("#"+tab_id).attr('className',"youarehere");
+        });
+         
+        </script>
+{% endblock %}
+{% block content %}
+<div id="main-bar" class="">
+    <h3>
+        标签列表
+    </h3>
+
+</div>
+<div id="main-body" class="">
+    <div style="padding:5px 0px 10px 0">
+        <h3>输入需要查找的标签：<input id="searchTags" size="40"></h3>
+    </div>
+    <table>
+        <tr>    
+            <td class="taglist-td">
+            {% for tag in tags %}
+                <a href="{% url forum.views.tag tag %}" class="post-tag" title="查看有关'{{ tag }}'的问题" rel="tag">
+                    {{ tag }}
+                </a> 
+                <span class="tag-number">× {{ tag.used_count }}</span>
+                <br>
+                
+                {% if forloop.counter|divisibleby:"13" %}
+                    </td>
+                    <td class="taglist-td">
+                {% endif %}
+
+            {% endfor %}
+            </td>
+        </tr>   
+    </table>
+</div>
+{% endblock %}
+
+
+

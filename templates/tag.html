@@ -1,0 +1,60 @@
+<html>
+<head>
+
+<title>jQuery Autocomplete</title>
+<link href="/content/style/jquery.autocomplete.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="/content/js/jquery-1.2.6.min.js"></script>
+<script type='text/javascript' src='/content/js/jquery.autocomplete.min.js'></script>
+<script type="text/javascript">
+function getValue(){
+    alert($("#tag").val())
+}
+
+function validateValue(){
+    if($("#tag").val().split(" ").length > 3){
+        alert("too many tags set")
+    }
+}
+
+$().ready(function() {
+    var tags = {{ tags|safe }};
+	$("#tag").autocomplete(tags, {
+        minChars: 1,
+		matchContains: true,
+        max: 20,
+        multiple: true,
+        multipleSeparator: " ",
+		formatItem: function(row, i, max) {
+			return row.fields.name + " ("+ row.fields.used_count +")";
+		}
+        
+    });
+    
+    $("#btValue").bind("click", getValue);
+    $("#tag").bind("change", validateValue);
+    
+    
+});
+</script>
+	
+</head>
+
+<body>
+
+<div id="content">
+	
+	<form autocomplete="off">
+		<p>
+			<label>Tags:</label>
+			<input id="tag" name="tag" size="40">
+		</p>
+		<input id="btValue" type="button" value="Value" />
+		<input type="submit" value="Submit" />
+	</form>
+	
+	<a href="http://localhost:8000/searchtags/a/">Server-side script creating the JSON data</a>
+
+</div>
+
+</body>
+</html>

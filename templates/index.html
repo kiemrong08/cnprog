@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% load extra_tags %}
+{% block forejs %}
+       <script type="text/javascript">
+        $().ready(function(){
+            var tab_id = "{{ tab_id }}";
+            $("#"+tab_id).attr('className',"youarehere");
+        });
+         
+        </script>
+{% endblock %}
+{% block content %}
+<div id="main-bar" class="">
+    <h3>
+        问题列表
+    </h3>
+    <div id="tab" class="">
+        <a id="latest" href="?sort=latest" title="最新加入系统的问题">最新问题</a>
+        <a id="active" href="?sort=active" title="最新被回复的问题">活跃问题</a>
+        <a id="hottest" href="?sort=hottest" title="被回复最多的问题">最受欢迎问题</a>
+        <a id="mostvoted" href="?sort=mostvoted" title="投票次数最多的问题">最有价值问题</a>
+    </div>
+    
+</div>
+<div id="main-body" class="">
+    {% for question in questions %}
+    <div class="question-item">
+        
+        <div class="boxes">
+            <table height="100%">
+                <tr>
+                    <td width="50px" class="boxes-cell">
+                        <div class="vote" style="padding:5px">
+                            <table style="padding:5px;text-align:center;width:100%">
+                                <tr>
+                                    <td>
+                                        <span class="box-number">{{ question.score }}</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="box-unit">票</div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                    <td width="50px" class="boxes-cell">
+                        <div class="answered" style="padding:5px;">
+                            <table style="padding:5px;text-align:center;width:100%">
+                                <tr>
+                                    <td>
+                                        <span class="box-number">{{ question.answer_count }}</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="box-unit">回答</div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                    <td width="50px" class="boxes-cell">
+                        <div class="view" style="padding:5px">
+                            <table style="padding:5px;text-align:center;width:100%">
+                                <tr>
+                                    <td>
+                                        <span class="box-number">{{ question.view_count }}</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="box-unit">浏览</div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="summary">
+            <div class="qustion-title">
+                <h3>
+                    <a href="{{ question.get_absolute_url }}" title="{{ question.summary }}...">
+                        {{ question.title }}
+                    </a>
+                </h3>
+                
+            </div>
+            
+            <div class="question-tag">
+                {% for tag in question.tagname_list %}
+                    <a href="{% url forum.views.tag tag %}" class="post-tag" title="查看有关'{{ tag }}'的问题" rel="tag">
+                        {{ tag }}
+                    </a>
+                {% endfor %}
+            </div>
+            <div class="question-started">
+                    <span class="updatedtime" title="{{ question.added_at }}"><strong>{{ question.added_at|timesince }}</strong>前</span>
+                    <a href="#">{{ question.author }}</a>
+                    <span class="reputation-score" title="{{ question.author.reputation }}用户积分"> {{ question.author.reputation }}</span>
+                    <span title="{{ question.author.gold }}金牌">
+                    <span class="badge1">●</span>
+                    <span class="badgecount">{{ question.author.gold }}</span>
+                    </span>
+                    <span title="{{ question.author.silver }}银牌">
+                    <span class="badge2">●</span>
+                    <span class="badgecount">{{ question.author.silver }}</span>
+                    </span>
+                    <span title="{{ question.author.bronze }}铜牌">
+                    <span class="badge3">●</span>
+                    <span class="badgecount">{{ question.author.bronze }}</span>
+                    </span>
+            </div>
+            
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block sidebar %}
+<div class="yellow-box">
+    <h3 class="darkred">欢迎 !</h3>
+    <div>
+        <b>CNPROG.COM</b> - 中国程序员互动问答社区<br><br>
+        旨在通过开放的技术交流，分享软件开发经验，提高中国程序员的技术水平。      
+        <br><br>
+        沟通促进成长，分享实现梦想！
+        
+    </div>
+</div>
+<div class="gray-box">
+    <h3>最新标签</h3>
+    <div id="recent-tags">
+        {% for tag in tags %}
+            <a class="post-tag" rel="tag" title="查看有关'{{ tag.name }}'的问题" style="font-size:{% tag_font_size max min tag.used_count %}px;" href="{% url forum.views.tag tag.name %}">{{ tag.name }}</a><span class="gray" style="font-size:90%">({{ tag.used_count }})</span>
+        {% endfor %}
+        <br>
+        <a href="/tags" style="float:right;position:relative">受欢迎的标签 »</a>
+         <br>
+    </div>
+</div>
+<div class="gray-box">
+    <h3>最新徽章</h3>
+    <div>
+        <div class="badge-item">
+            <a class="badge" title="bronze badge: First accepted answer" href="/badges/10/scholar">
+            <span class="badge3">●</span>
+             教师
+            </a>
+            授予
+            <a href="#">陈刚</a>
+        </div>
+        <div class="badge-item">
+            <a class="badge" title="bronze badge: First accepted answer" href="/badges/10/scholar">
+            <span class="badge3">●</span>
+             魔法师
+            </a>
+            授予
+            <a href="#">Mike Chen</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
