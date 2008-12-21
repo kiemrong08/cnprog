@@ -99,7 +99,7 @@
             </div>
             <div class="question-started">
                     <span class="updatedtime" title="{{ question.added_at }}"><strong>{{ question.added_at|timesince }}</strong>前</span>
-                    <a href="#">{{ question.author }}</a>
+                    <a href="/users/{{ question.author.id }}/{{ question.author }}"><strong>{{ question.author }}</strong></a>
                     <span class="reputation-score" title="{{ question.author.reputation }}用户积分"> {{ question.author.reputation }}</span>
                     <span title="{{ question.author.gold }}金牌">
                     <span class="badge1">●</span>

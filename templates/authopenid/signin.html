@@ -1,6 +1,5 @@
 ﻿{% extends "base.html" %}
 {% block forejs %}
-    <link rel="stylesheet" href="/content/style/openid.css" />
 	<script type="text/javascript" src="/content/js/jquery.openid.js?"></script>
 	<script type="text/javascript">
 	$(document).ready(function() {
@@ -20,9 +19,9 @@
 <div class="login">
     <form name="openid_form" action="{% url user_signin %}" method="post">
     {{ form2.next }}
-    <div class="message">您当前为<strong class="darkred">匿名</strong>用户，可以正常使用系统大多数功能。登录系统后，可以获得积累积分等额外功能。</div>
+    <div class="message">您当前为<strong class="darkred">匿名</strong>用户，可以正常使用提问、回答功能。登录系统后，可以获得积累积分等额外功能。</div>
     <div id="openid_choice">
-        <h3 style="padding:10px 0 10px 0">请选择您的帐号类型并完成正确的OpenID地址：</h3> 
+        <div style="padding:10px 0 10px 0"><strong>请选择您的帐号类型并完成正确的OpenID地址：</strong> </div>
         <div id="openid_btns"></div>
     </div>
     <br>
@@ -36,9 +35,7 @@
     
     <div id="openid-samples" style="margin-bottom:20px">
         <br>
-        <h3>
-            <span class="darkred">常见的OpenID地址示例：</span>
-        </h3>
+        <span class="darkred"><strong>常见的OpenID地址示例：</strong></span>
     
         <ul class="list">
             <li>http://openid.aol.com/<strong>yourname</strong></li>
@@ -52,7 +49,7 @@
             <li>http://<strong>yourname</strong>.livejournal.com/</li>
             <li>http://www.flickr.com/photos/<strong>yourname</strong></li>
         </ul>
-        <h3><span class="darkred">登录前请确认你已经启用了OpenID帐号!</span></h3>
+        <span class="darkred"><strong>登录前请确认您的OpenID帐号已经在服务提供商激活。</strong></span>
     </div
 
 </form>

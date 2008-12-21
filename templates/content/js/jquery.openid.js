@@ -1,3 +1,6 @@
+/*
+openid login boxes
+*/
 var providers_large = {
     google: {
         name: 'Google',
@@ -169,5 +172,5 @@ var openid = {
 			if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
 		}
 		return null;
-    }
+    },
 };

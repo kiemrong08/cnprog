@@ -9,6 +9,7 @@ from django.core import serializers
 
 from forum.forms import *
 from forum.models import *
+from utils.html import sanitize_html
 import logging
 
 def index(request):
@@ -59,7 +60,7 @@ def ask(request):
                 last_activity_at = added_at,
                 last_activity_by = request.user,
                 tagnames         = form.cleaned_data['tags'].strip(),
-                html             = form.cleaned_data['text'],
+                html             = sanitize_html(form.cleaned_data['text']),
                 summary          = strip_tags(form.cleaned_data['text'])[:180]
             )
             
@@ -102,7 +103,7 @@ def answer(request, id):
                     question = question,
                     author = request.user,
                     added_at = datetime.datetime.now(),
-                    html = form.cleaned_data['text'],
+                    html = sanitize_html(form.cleaned_data['text']),
                 )
                 answer.save()
                 Question.objects.update_answer_count(question)
