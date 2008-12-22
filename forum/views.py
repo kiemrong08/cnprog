@@ -15,6 +15,8 @@ import logging
 
 # used in tags list
 DEFAULT_PAGE_SIZE = 65
+# used for questions
+QUESTIONS_PAGE_SIZE = 10
 
 def index(request):
     view_id = request.GET.get('sort', None)
@@ -44,11 +46,69 @@ def index(request):
         "min" : 1,
         }, context_instance=RequestContext(request))
     
-def questions(request):
-    questions = Question.objects.all()
-    return render_to_response('index.html', {
+def questions(request, tagname=None):
+    # Set flag to False by default. If it is equal to True, then need to be saved.
+    pagesize_changed = False
+    # get pagesize from session, if failed then get default value
+    user_page_size = request.session.get("pagesize", QUESTIONS_PAGE_SIZE)
+    # set pagesize equal to logon user specified value in database
+    if request.user.is_authenticated() and request.user.questions_per_page > 0:
+        user_page_size = request.user.questions_per_page
+
+    try:
+        page = int(request.GET.get('page', '1'))
+        # get new pagesize from UI selection
+        pagesize = int(request.GET.get('pagesize', user_page_size))
+        if pagesize <> user_page_size:
+            pagesize_changed = True
+        
+    except ValueError:
+        page = 1
+        pagesize  = user_page_size
+    
+    # save this pagesize to user database
+    if pagesize_changed:
+        request.session["pagesize"] = pagesize
+        if request.user.is_authenticated():
+            user = request.user
+            user.questions_per_page = pagesize 
+            user.save()
+
+    view_id = request.GET.get('sort', None)
+    view_dic = {"latest":"-added_at", "active":"-last_activity_at", "hottest":"-answer_count", "mostvoted":"-score" }
+    try:
+        orderby = view_dic[view_id]
+    except KeyError:
+        view_id = "latest"
+        orderby = "-added_at"
+        
+    objects_list = Paginator(Question.objects.all().order_by(orderby), pagesize)
+    questions = objects_list.page(page)
+    
+    # Get related tags from this page objects
+    related_tags = []
+    for question in questions.object_list:
+        tags = list(question.tags.all())
+        for tag in tags:
+            if tag not in related_tags:
+                related_tags.append(tag)
+            
+    return render_to_response('questions.html', {
         "questions" : questions,
-        }, context_instance=RequestContext(request))
+        "tab_id" : view_id,
+        "questions_count" : objects_list.count,
+        "tags" : related_tags,
+        "context" : {
+            'is_paginated' : True,
+            'pages': objects_list.num_pages,
+            'page': page,
+            'has_previous': questions.has_previous(),
+            'has_next': questions.has_next(),
+            'previous': questions.previous_page_number(),
+            'next': questions.next_page_number(),
+            'base_url' : '/questions?sort=%s&' % view_id,
+            'pagesize' : pagesize
+        }}, context_instance=RequestContext(request))
 
 #TODO: allow anynomus user to ask question by providing email and username.
 @login_required 
@@ -65,7 +125,7 @@ def ask(request):
                 last_activity_by = request.user,
                 tagnames         = form.cleaned_data['tags'].strip(),
                 html             = sanitize_html(form.cleaned_data['text']),
-                summary          = strip_tags(form.cleaned_data['text'])[:180]
+                summary          = strip_tags(form.cleaned_data['text'])[:120]
             )
             
             question.save()
@@ -161,6 +221,6 @@ def tags(request):
         
         }, context_instance=RequestContext(request))
 
-def tag(request, name):    
-    return render_to_response('tag.html', context_instance=RequestContext(request))
+def tag(request, tag):    
+    return questions(request, tagname=tag)
     

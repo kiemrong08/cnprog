@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% load extra_tags %}
+{% load humanize %}
+{% block forejs %}
+       <script type="text/javascript">
+        $().ready(function(){
+            var tab_id = "{{ tab_id }}";
+            $("#"+tab_id).attr('className',"youarehere");
+            $("#nav_questions").attr('className',"youarehere");
+        });
+         
+        </script>
+{% endblock %}
+{% block content %}
+<div id="main-bar" class="">
+    <h3>
+        所有问题
+    </h3>
+    <div id="tab" class="">
+        <a id="latest" href="?sort=latest" title="最新加入系统的问题">最新问题</a>
+        <a id="active" href="?sort=active" title="最新被回复的问题">活跃问题</a>
+        <a id="hottest" href="?sort=hottest" title="被回复最多的问题">最受欢迎问题</a>
+        <a id="mostvoted" href="?sort=mostvoted" title="投票次数最多的问题">最有价值问题</a>
+    </div>
+    
+</div>
+<div id="main-body" class="">
+    {% for question in questions.object_list %}
+    <div class="question-item">
+        <table class="questions-boxes-container">
+            <tr>
+                <td>
+                    <div class="questions-boxes">
+                        <div class="vote" style="text-align:center">
+                            <div class="questions-votebox">
+                                 <span class="questions-vote-number">{{ question.score|intcomma }}</span><br>
+                                 <span class="box-unit">票</span>
+                            </div>
+                            <div class="questions-answerbox">
+                                <div class="answered" id="questions-answerbox-cell">
+                                    <span class="questions-answer-number">{{ question.answer_count|intcomma }}</span><br>
+                                    <span class="box-unit">回答</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="questions-viewbox">
+                            <span class="box-unit">{{ question.view_count|intcomma }} 浏览</span>
+                        </div>
+                    </div>
+                </td>
+                <td class="questions-boxicon">
+                <img src="/content/images/box-arrow.gif">
+                </td>
+            </tr>
+	        
+        </table>
+        
+        <div class="summary">
+            <div class="qustion-title">
+                <h3>
+                    <a href="{{ question.get_absolute_url }}" title="{{ question.summary }}...">
+                        {{ question.title }}
+                    </a>
+                </h3>
+                
+            </div>
+            <div class="qustions-summary">
+                {{ question.summary }}...                
+            </div>
+            <div class="question-tag">
+                {% for tag in question.tagname_list %}
+                    <a href="{% url forum.views.tag tag %}" class="post-tag" title="查看有关'{{ tag }}'的问题" rel="tag">
+                        {{ tag }}
+                    </a>
+                {% endfor %}
+            </div>
+            <div  class="questions-mark">
+                <table width="100%">
+                    <tr>
+                        <td colspan="2" class="gray"> 
+                            回答于<strong>{{ question.added_at|timesince }}</strong>前
+                        </td>
+                        
+                    </tr>
+                    <tr>
+                        <td width="40px" style="vertical-align:bottom">
+                        {% gravatar question.author 32 %}
+                        </td>
+                        <td style="vertical-align:top">
+                            <div><a href="#"><strong>{{ question.author }}</strong></a></div>
+                            <div>
+                            <span class="reputation-score" title="{{ question.author.reputation }}用户积分">{{ question.author.reputation }}</span>
+                            <span title="{{ question.author.gold }}金牌">
+                            <span class="badge1">●</span>
+                            <span class="badgecount">{{ question.author.gold }}</span>
+                            </span>
+                            <span title="{{ question.author.silver }}银牌">
+                            <span class="badge2">●</span>
+                            <span class="badgecount">{{ question.author.silver }}</span>
+                            </span>
+                            <span title="{{ question.author.bronze }}铜牌">
+                            <span class="badge3">●</span>
+                            <span class="badgecount">{{ question.author.bronze }}</span>
+                            </span>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block tail %}
+                            {% cnprog_paginator context %}
+                        <div class="paginator-container">
+                            {% cnprog_pagesize context %}
+                        </div>
+{% endblock %}
+
+{% block sidebar %}
+<div class="gray-box">
+    <div>
+        您正在浏览所有<br><div class="questions-count">{{ questions_count|intcomma }}</div>
+        <div class="paragraph">个问题。</div>
+        {% ifequal tab_id "latest" %}
+            <div class="paragraph">问题按 <strong>最新问题</strong> 显示排序。新加入的问题将显示在最前面。</div>
+        {% endifequal %}
+        
+        {% ifequal tab_id "active" %}
+            <div class="paragraph">问题按 <strong>活跃问题</strong> 显示排序。最后被回答或者更新的问题将显示在最前面。</div>
+        {% endifequal %}
+        
+        {% ifequal tab_id "hottest" %}
+            <div class="paragraph">问题按 <strong>最受欢迎问题</strong> 显示排序。回复最多的问题将显示在最前面。</div>
+        {% endifequal %}
+        
+        {% ifequal tab_id "mostvoted" %}
+            <div class="paragraph">问题按 <strong>最有价值问题</strong> 显示排序。投票最多的问题将显示在最前面。</div>
+        {% endifequal %}
+        
+        <div class="paragraph">您也可以通过 <a href="/tags/" title="查看所有标签"><strong>标签</strong></a> 和 <a href="#" title="搜索问题"><strong>搜索</strong></a> 来缩小问题的范围。</div>
+    </div>
+</div>
+<div class="gray-box">
+    <h3>相关标签</h3>
+    <div id="related-tags">
+        {% for tag in tags %}
+            <a class="post-tag" rel="tag" title="查看有关'{{ tag.name }}'的问题"  href="{% url forum.views.tag tag.name %}">{{ tag.name }}</a>
+            <span class="tag-number">× {{ tag.used_count|intcomma }}</span>
+            <br>
+        {% endfor %}
+        <br>
+    </div>
+</div>
+
+{% endblock %}
+

@@ -21,7 +21,7 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
 	background: transparent;
 }
 body{
-    font-family: "Microsoft YaHei","segoe ui",Tahoma,Verdana,Helvetica,Arial,sans-serif;
+    font-family: "segoe ui",Helvetica,"Microsoft YaHei",ËÎÌו,Tahoma,Verdana,MingLiu,PMingLiu,Arial,sans-serif;
     font-size: 80%;
     color:#333;
     margin:0;
@@ -48,7 +48,7 @@ input, select, button
 {
 	border: 1px solid #999;
 	font-size:100%;
-    font-family:"Microsoft YaHei","segoe ui",Tahoma,Verdana,Helvetica,Arial,sans-serif;
+    font-family:"segoe ui",Helvetica,"Microsoft YaHei",ËÎÌו,Tahoma,Verdana,MingLiu,PMingLiu,Arial,sans-serif;
 }
 
 input
@@ -115,13 +115,13 @@ ol
 }
 
 a {color:#07c;text-decoration: none;}
-a:visited{text-decoration: none;}
+a:visited{color:#3E6D8E;text-decoration: none;}
 a:hover{text-decoration: underline;}
 a:active{text-decoration: none;}
 
 h1 {font-weight: 160%;}
 h2 {font-size:140%;}
-h3 {display:block;font-size:120%;font-family:Trebuchet MS,"Microsoft YaHei","segoe ui",Tahoma,Verdana,Helvetica,Arial,sans-serif;font-weight:bold;}
+h3 {display:block;font-size:120%;font-family:Trebuchet MS,"segoe ui",Helvetica,"Microsoft YaHei",ËÎÌו,Tahoma,Verdana,MingLiu,PMingLiu,Arial,sans-serif;font-weight:bold;}
 h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
 
 #top{
@@ -312,6 +312,11 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
     letter-spacing:1px;
 }
 
+.paragraph{
+    line-height:20px;
+    margin-bottom:10px;
+    
+}
 
 .darkred{
     color:darkred;
@@ -319,6 +324,8 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
 
 .header-table{
     width:100%;
+    /*solve template header space problem*/
+    margin-top:-12px;
 }
 
 .header-table a{
@@ -430,13 +437,73 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
     vertical-align:top;
 }
 
+.questions-boxes-container{
+    float:left;
+}
+.questions-boxes{
+    float:left;
+    width: 70px;
+    text-align:center;
+    color:#666;
+    margin-bottom:5px;
+}
+.questions-vote-number{
+    font-size:200%;
+    font-weight:bold;
+    font-family:Arial;
+}
+.questions-answer-number{
+    font-size:140%;
+    font-weight:bold;
+    font-family:Arial;
+}
+.questions-answerbox{
+    padding:5px;
+}
+
+.questions-votebox{
+    padding:5px;
+}
+.questions-viewbox{
+    padding:5px;
+}
+.qustions-summary{
+    line-height:20px;
+    margin-bottom:5px;
+    
+}
+.questions-mark{
+    float:right;
+    text-align:left;
+    font-size:90%;
+    padding:0 5px 5px 0;
+    line-height:20px;
+    width:160px;
+}
+
+.questions-boxicon{
+    width:15px;
+    vertical-align:top;
+}
+.questions-count{
+    font-family:arial;
+    font-size:350%;
+    font-weight:bolder;
+    margin:15px 0 15px 0;
+    color:#777;
+}
+#questions-answerbox-cell{
+    padding:5px;
+   
+}
+
 .summary{
     height:60px;
     display:inline;
 }
 
 .vote{
-    background-color:#e6e6e6;
+    background-color:#eee;
 }
 
 .box-number{
@@ -487,6 +554,7 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
 .question-tag{
     float:left;
     padding-bottom:3px;
+    
 }
 
 .post-tag
@@ -495,7 +563,7 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
 	background-color: #E0EAF1;
 	border-bottom: 1px solid #3E6D8E;
 	border-right: 1px solid #7F9FB6;
-	margin: 2px 2px 2px 0;
+	margin: 2px 6px 2px 0;
 	padding: 3px 4px 3px 4px;
 	text-decoration: none;
 	font-size: 90%;
@@ -597,6 +665,10 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
 	border: none;
 	margin: 0;
 	text-decoration: none;
+}
+
+#related-tags{
+    line-height:30px;
 }
 
 .list-item{
@@ -720,7 +792,7 @@ div.grippie {
 .message{
     padding:5px;
     font-weight:bold;
-    background-color:#ccc;
+    background-color:#eee;
     margin:10px 0 10px 0;
 }
 
@@ -881,6 +953,12 @@ div.grippie {
 	background-color:#777;
 	border:1px solid #777;
     text-decoration:none;
+}
+
+.paginator .text{
+    color:#777;
+	padding:.3em;
+	font:bold 100% arial;
 }
 
 .paginator-container{

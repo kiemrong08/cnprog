@@ -1,0 +1,77 @@
+﻿                <table border="0" class="header-table" >
+                    <tbody>
+                        <tr>
+                            <td style="width:200px;height:90px;vertical-align:bottom">
+                                <a href="/" >
+                                    <img style="" src="/content/images/logo.png" alt="home" border="0" align="bottom" />
+                                </a>
+                            </td>
+                            <td style="vertical-align:top">
+                                <table border="0" style="width:100%;height:100%">
+                                    <tbody>
+                                        <tr style="height:50px">
+                                            <td style="width:500px; vertical-align:top; padding-top:5px;">
+                                                <div id="header-links">
+                                                    {% if user.is_authenticated %}
+                                                        <a href="/account/">{{ user.username }}</a> <span class="link-separator">|</span><a href="/account/signout/">注销</a>
+                                                    {% else %}
+                                                        <a href="/account/">登录</a>
+                                                    {% endif %}
+                                                    <span class="link-separator">|</span>
+                                                    <a href="#">关于本站</a>
+                                                    <span class="link-separator">|</span>
+                                                    <a href="#">常见问题</a>
+                                                </div>
+
+
+                                            </td>
+                                            <td style="text-align:right">
+                                                <form >
+                                                    <input id="search" size="20" />
+                                                    <input type="submit" value="搜索" style="padding:0px;margin:0px;height:25px;margin-bottom:5px;"  />
+                                                </form>
+
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align:left">
+                                                <div class="nav">
+                                                    <UL>
+                                                        <LI class="" id="nav_questions">
+                                                            <A href="/questions/">问题</A>
+                                                        </LI>
+                                                        <LI class="" id="nav_tags">
+                                                            <A href="/tags/">标签</A>
+                                                        </LI>
+                                                        <LI class="" id="nav_users">
+                                                            <A href="/users/">用户</A>
+                                                        </LI>
+                                                        <LI class="" id="nav_badges">
+                                                            <A href="/badges/">奖牌榜</A>
+                                                        </LI>
+                                                        <LI class="" id="nav_unanswered">
+                                                            <A href="/questions/unanswered/">没有回答的问题</A>
+                                                        </LI>
+                                                    </UL>
+                                                </div>
+                                            </td>
+                                            <td style="text-align:right">
+                                                <div class="nav" style="float:right;margin-right:-5px">
+                                                    <UL class="mainnav">
+                                                        <LI class="" id="nav_ask">
+                                                            <A href="/questions/ask">我要提问</A>
+                                                        </LI>
+                                                    </UL>
+                                                </div>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>

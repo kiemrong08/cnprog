@@ -39,7 +39,7 @@ def tag_font_size(max_size, min_size, current_size):
     
 LEADING_PAGE_RANGE_DISPLAYED = TRAILING_PAGE_RANGE_DISPLAYED = 5
 LEADING_PAGE_RANGE = TRAILING_PAGE_RANGE = 4
-NUM_PAGES_OUTSIDE_RANGE = 2 
+NUM_PAGES_OUTSIDE_RANGE = 1 
 ADJACENT_PAGES = 2
 @register.inclusion_tag("paginator.html")
 def cnprog_paginator(context):
@@ -81,4 +81,16 @@ def cnprog_paginator(context):
             "in_trailing_range" : in_trailing_range,
             "pages_outside_leading_range": pages_outside_leading_range,
             "pages_outside_trailing_range": pages_outside_trailing_range
+        }
+
+@register.inclusion_tag("pagesize.html")
+def cnprog_pagesize(context):
+    """
+    display the pagesize selection boxes for paginator
+    """
+    if (context["is_paginated"]):
+        return {
+            "base_url": context["base_url"],
+            "pagesize" : context["pagesize"],
+            "is_paginated": context["is_paginated"]
         }

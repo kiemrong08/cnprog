@@ -18,7 +18,7 @@ urlpatterns = patterns('',
     #place general question item in the end of other operations
     url(r'^questions/(?P<id>\d+)/(?:[^/]+/)?$', app.question, name='question'),
     (r'^tags/$', app.tags),
-    (r'^tags/(?P<name>[^/]+)/$', app.tag),
+    (r'^tags/(?P<tag>[^/]+)/$', app.tag),
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:

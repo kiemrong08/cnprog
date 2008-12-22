@@ -1,5 +1,6 @@
 {% extends "base_content.html" %}
 {% load extra_tags %}
+{% load humanize %}
 {% block forejs %}
        <script type="text/javascript">
         $().ready(function(){
@@ -40,7 +41,7 @@
             匹配查询 '<span class="darkred"><strong>{{ stag }}</strong></span>' 的所有标签： 
         {% endif %}
     </div>
-    {% if not tags %}
+    {% if not tags.object_list %}
         <span >没有找到相关数据。</span>
     {% endif %}
     <table>
@@ -50,7 +51,7 @@
                 <a href="{% url forum.views.tag tag %}" class="post-tag" title="查看有关'{{ tag }}'的问题" rel="tag">
                     {{ tag }}
                 </a> 
-                <span class="tag-number">× {{ tag.used_count }}</span>
+                <span class="tag-number">× {{ tag.used_count|intcomma }}</span>
                 <br>
                 
                 {% if forloop.counter|divisibleby:"13" %}

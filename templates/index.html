@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load extra_tags %}
+{% load humanize %}
 {% block forejs %}
        <script type="text/javascript">
         $().ready(function(){
@@ -34,7 +35,7 @@
                             <table style="padding:5px;text-align:center;width:100%">
                                 <tr>
                                     <td>
-                                        <span class="box-number">{{ question.score }}</span>
+                                        <span class="box-number">{{ question.score|intcomma }}</span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -50,7 +51,7 @@
                             <table style="padding:5px;text-align:center;width:100%">
                                 <tr>
                                     <td>
-                                        <span class="box-number">{{ question.answer_count }}</span>
+                                        <span class="box-number">{{ question.answer_count|intcomma }}</span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -66,7 +67,7 @@
                             <table style="padding:5px;text-align:center;width:100%">
                                 <tr>
                                     <td>
-                                        <span class="box-number">{{ question.view_count }}</span>
+                                        <span class="box-number">{{ question.view_count|intcomma }}</span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -118,6 +119,11 @@
         </div>
     </div>
     {% endfor %}
+    
+    <div>
+
+        <h3>想查看更多问题吗？请查阅<a href="/questions">完整问题列表</a>，或者<a href="/tags">受欢迎的标签</a>。请帮助我们回答<a href="/unanswered">没有回答的问题</a>。</h3>
+    </div>
 </div>
 {% endblock %}
 
@@ -136,7 +142,7 @@
     <h3>最新标签</h3>
     <div id="recent-tags">
         {% for tag in tags %}
-            <a class="post-tag" rel="tag" title="查看有关'{{ tag.name }}'的问题" style="font-size:{% tag_font_size max min tag.used_count %}px;" href="{% url forum.views.tag tag.name %}">{{ tag.name }}</a><span class="gray" style="font-size:90%">({{ tag.used_count }})</span>
+            <a class="post-tag" rel="tag" title="查看有关'{{ tag.name }}'的问题" style="font-size:{% tag_font_size max min tag.used_count %}px;" href="{% url forum.views.tag tag.name %}">{{ tag.name }}</a><span class="gray" style="font-size:90%">({{ tag.used_count|intcomma }})</span>
         {% endfor %}
         <br>
         <a href="/tags" style="float:right;position:relative">受欢迎的标签 »</a>

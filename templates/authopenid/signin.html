@@ -2,15 +2,12 @@
 {% block forejs %}
 	<script type="text/javascript" src="/content/js/jquery.openid.js?"></script>
 	<script type="text/javascript">
-	$(document).ready(function() {
+	$().ready(function(){
 	    openid.init('id_openid_url');
 	});
 	</script>
-
 {% endblock %}
-
 {% block content %}
-
 <div id="main-bar" class="">
     <h3>
         用户登录
