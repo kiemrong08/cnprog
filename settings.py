@@ -1,7 +1,7 @@
 # Django settings for lanai project.
 import os.path
 
-DEBUG = False
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 #David Cramer debug toolbar
@@ -30,8 +30,9 @@ logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,)
 ugettext = lambda s: s
 LOGIN_URL = '/%s%s' % (ugettext('account/'), ugettext('signin/'))
 
+#system will send admins email about error stacktrace if DEBUG=False
 ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
+    ('Mike Chen', 'chagel@gmail.com'),
 )
 
 MANAGERS = ADMINS

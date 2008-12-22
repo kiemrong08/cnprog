@@ -1,0 +1,35 @@
+{% extends "base_content.html" %}
+
+{% block forejs %}
+        <script type="text/javascript">
+        $().ready(function(){
+            $("#linkPrevious").bind("click", back=function(){history.go(-1);})            
+        });
+         
+        </script>
+{% endblock %}
+{% block content %}
+<div id="main-bar" class="">
+    <h3>
+        服务器错误
+    </h3>
+
+</div>
+<div id="main-body" class="">
+    <div style="padding:5px 0px 10px 0;line-height:25px">
+        <span class="darkred"><strong>对不起，系统发生了错误，不能响应您的请求！</strong></span>
+        <br>
+        系统已经记录错误日志，我们会尽快解决此问题。
+        
+        <ul>
+            <li><a href="#" id="linkPrevious">返回前页</li>
+            <li><a href="/questions">查看最新问题</a></li>
+            <li><a href="/tags/">查看标签列表</a></li>
+        </u>
+    </div>
+
+</div>
+{% endblock %}
+
+
+

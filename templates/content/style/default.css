@@ -48,6 +48,7 @@ input, select, button
 {
 	border: 1px solid #999;
 	font-size:100%;
+    font-family:"Microsoft YaHei","segoe ui",Tahoma,Verdana,Helvetica,Arial,sans-serif;
 }
 
 input
@@ -821,4 +822,68 @@ div.grippie {
 .taglist-td{
     width:190px;
     line-height:30px;
+}
+
+.submit{
+    cursor:pointer;
+}
+/** PAGINATOR **/
+.paginator { padding:.5em .75em; float:left; font:normal .8em arial; }
+ 
+.paginator .prev-na,
+.paginator .next-na {
+	padding:.3em;
+	font:bold .875em arial;
+}
+ 
+.paginator .prev-na,
+.paginator .next-na {
+	border:1px solid #ccc;
+	background-color:#f9f9f9;
+	color:#aaa;
+	font-weight:normal;
+}
+ 
+.paginator .prev a, .paginator .prev a:visited,
+.paginator .next a, .paginator .next a:visited {
+	border:1px solid #fff;
+	background-color:#fff;
+	color:#777;
+	padding:.3em;
+	font:bold 100% arial;
+}
+ 
+.paginator .prev, .paginator .prev-na { margin-right:.5em; }
+.paginator .next, .paginator .next-na { margin-left:.5em; }
+ 
+.paginator .page a, .paginator .page a:visited, .paginator .curr {
+	padding:.25em;
+	font:normal .875em verdana;
+	border:1px solid #ccc;
+	background-color:#fff;
+	margin:0em .25em;	
+	color:#777;
+}
+ 
+.paginator .curr { 
+	background-color:#777;
+	color:#fff;
+	border:1px solid #777;
+	font-weight:bold;
+	font-size:1em;
+}
+ 
+.paginator .page a:hover,
+.paginator .curr a:hover,
+.paginator .prev a:hover,
+.paginator .next a:hover {
+	color:#fff;
+	background-color:#777;
+	border:1px solid #777;
+    text-decoration:none;
+}
+
+.paginator-container{
+    float:right;
+    padding:10px 0 10px 0;
 }

@@ -3,6 +3,7 @@ import datetime
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse
+from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from django.template import RequestContext
 from django.utils.html import *
 from django.core import serializers 
@@ -11,6 +12,9 @@ from forum.forms import *
 from forum.models import *
 from utils.html import sanitize_html
 import logging
+
+# used in tags list
+DEFAULT_PAGE_SIZE = 65
 
 def index(request):
     view_id = request.GET.get('sort', None)
@@ -114,18 +118,49 @@ def answer(request, id):
     return HttpResponseRedirect(question.get_absolute_url())
 
 def tags(request):
-    tags = Tag.objects.all()
+    stag = ""
+    is_paginated = True
+    sortby = request.GET.get('sort', 'used')
+    try:
+        page = int(request.GET.get('page', '1'))
+    except ValueError:
+        page = 1
+    
+    if request.method == "GET":
+        if sortby == "name":
+            objects_list = Paginator(Tag.objects.all().order_by("name"), DEFAULT_PAGE_SIZE)
+        else:
+            objects_list = Paginator(Tag.objects.all().order_by("-used_count"), DEFAULT_PAGE_SIZE)
+
+    elif request.method == "POST":
+        stag = request.POST.get("ipSearchTag")
+        #disable paginator for search results
+        is_paginated = False
+        if stag is not None:
+            objects_list = Paginator(Tag.objects.extra(where=['name like %s'], params=['%' + stag + '%'])[:50] , DEFAULT_PAGE_SIZE) 
+
+    try:
+        tags = objects_list.page(page)
+    except (EmptyPage, InvalidPage):
+        tags = objects_list.page(tags.num_pages)
+
     return render_to_response('tags.html', {
         "tags" : tags,
+        "stag" : stag,
+        "tab_id" : sortby,
+        "context" : {
+            'is_paginated' : is_paginated,
+            'pages': objects_list.num_pages,
+            'page': page,
+            'has_previous': tags.has_previous(),
+            'has_next': tags.has_next(),
+            'previous': tags.previous_page_number(),
+            'next': tags.next_page_number(),
+            'base_url' : '/tags?sort=%s&' % sortby
+        }
+        
         }, context_instance=RequestContext(request))
 
-def tag_search(request):
-    q = request.GET.get("q", None)
-    tags = serializers.serialize("json", Tag.objects.extra(where=["name LIKE %s"], params=['%'+ q +'%']))
-    return HttpResponse(tags, mimetype="application/json")
-
-def tag(request, name):
-    tags = serializers.serialize("json", Tag.objects.all())
-    
-    return render_to_response('tag.html', {"tags": tags}, context_instance=RequestContext(request))
+def tag(request, name):    
+    return render_to_response('tag.html', context_instance=RequestContext(request))
     
