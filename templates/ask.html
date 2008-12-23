@@ -2,9 +2,9 @@
 
 {% block forejs %}
         <script type='text/javascript' src='/content/js/com.cnprog.editor.js'></script>
+        <script type='text/javascript' src='/content/js/jquery.validate.pack.js'></script>
         <script type="text/javascript">
         $().ready(function(){
-            
             //set current module button style
             $("#nav_ask").attr('className',"youarehere");
             $('#editor').TextAreaResizer();
@@ -40,8 +40,60 @@
                 }
                 
             });
+
+            //form validation
+            $("#fmask").validate({
+                rules: {
+        			tags: {
+        				required: true,
+        				maxength: 105,
+        			},
+        			text: {
+        				required: true,
+        				minlength: 10,
+        			},
+        			title: {
+        				required: true,
+        				minlength: 10
+        			}
+        		},
+                messages: {
+        			tags: {
+                        required: " 标签不能为空。",
+                        maxlength: " 最多5个标签，每个标签长度小于20个字符。"
+                    },
+        			text: {
+        				required: " 内容不能为空。",
+        				minlength: jQuery.format(" 请输入至少 {0} 字符。")
+        			},
+        			title: {
+        				required: " 请输入标题。<br>",
+        				minlength: jQuery.format(" 请输入至少 {0} 字符。")
+        			},
+                },
+                
+            });
+
         });
-         
+        String.prototype.trim = function() { 
+            return this.replace(/^\s+|\s+$|\r+$|\n+$/g, ''); 
+        }
+        
+        function validateForm(){
+            if($("#fmask").valid()){
+                var taglist = $("#id_tags").val().trim();
+                var arrTags = tags.split(" ");
+                if(arrTags.length > 5){
+                    alert("最多只能有5个标签")
+                    return false;
+                }
+                
+                
+            }
+            return false;
+        }
+
+        
         </script>
 {% endblock %}
         
@@ -54,9 +106,9 @@
 </div>
 <div id="main-body" class="">
     <div id="askform">
-        <form action="{% url forum.views.ask %}" method="post">
-            <strong>标题:</strong><br> 
-            {{ form.title }}
+        <form id="fmask" action="{% url forum.views.ask %}" method="post" onsubmit="return validateForm();">
+            <label for="id_title" ><strong>标题:</strong></label> <br> 
+            {{ form.title }} 
             <div class="title-desc">
                 请输入对问题具有描述性质的标题 - “帮忙！紧急求助！”不是建议的提问方式。
             </div>     
@@ -67,9 +119,9 @@
                 
             </div>
             <strong>标签:</strong> <br>
-            {{ form.tags }}
+            {{ form.tags }} 
             <div class="title-desc">
-                多个标签请用空格间隔。（如：aop c# 面向对象）
+                多个标签请用空格间隔-最多5个标签。（优先使用自动匹配的英文标签。）
             </div>
             <br>
             {% if not user.is_authenticated %}
@@ -97,6 +149,7 @@
                 </tr> 
             </table>    
             {% endif %}
+            <div class="error" ></div>
             <input type="submit" value="现在提问" class="submit" />
         </form>
     </div>

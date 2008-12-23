@@ -193,17 +193,16 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
 }
 
 #question-title{
+    float:left;
     border-bottom: 1px solid #666;
-	height: 34px;
-	width: 100%;
-	clear:both;
+    width: 98%;
+    clear:both;
+    padding:13px 0px 5px 0;
     margin-bottom:5px;
+    
 }
 
 #question-title h3{
-    float: left;
-    margin-top:8px;
-    padding:5px 0 0 3px ;
     font-size: 130%;
     font-weight:bold;
 }
@@ -212,6 +211,9 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
     color:#333;
 }
 
+#main-body{
+    float:left;
+}
 
 #main-bar .golden{
     background:url(/content/images/bg_title_golden.gif) no-repeat;
@@ -435,7 +437,6 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
 
 .boxes{
     float:left;
-    height:60px;
     text-align:center;
     color:#666;
 }
@@ -445,6 +446,11 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
     vertical-align:top;
 }
 
+.questions-summary-container{
+    float:left;
+    width:580px;
+    
+}
 .questions-boxes-container{
     float:left;
 }
@@ -453,7 +459,7 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
     width: 70px;
     text-align:center;
     color:#666;
-    margin-bottom:5px;
+    
 }
 .questions-vote-number{
     font-size:200%;
@@ -484,7 +490,7 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
     float:right;
     text-align:left;
     font-size:90%;
-    padding:0 5px 5px 0;
+    
     line-height:20px;
     width:160px;
 }
@@ -506,8 +512,8 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
 }
 
 .summary{
-    height:60px;
-    display:inline;
+    float:left;
+    width:500px;
 }
 
 .vote{
@@ -919,6 +925,11 @@ div.grippie {
 .submit{
     cursor:pointer;
 }
+
+form .error{
+    color:darkred;
+}
+
 /** PAGINATOR **/
 .paginator { padding:.5em .75em; float:left; font:normal .8em arial; }
  

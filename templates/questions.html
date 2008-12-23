@@ -54,7 +54,7 @@
 	        
         </table>
         
-        <div class="summary">
+        <div class="questions-summary-container">
             <div class="qustion-title">
                 <h3>
                     <a href="{{ question.get_absolute_url }}" title="{{ question.summary }}...">
@@ -130,19 +130,19 @@
             {% endif %}
         问题。</div>
         {% ifequal tab_id "latest" %}
-            <div class="paragraph">问题按 <strong>最新问题</strong> 显示排序。新加入的问题将显示在最前面。</div>
+        <div class="paragraph">问题按 <span class="darkred"><strong>提问时间</strong></span> 显示排序。新加入的问题将显示在最前面。</div>
         {% endifequal %}
         
         {% ifequal tab_id "active" %}
-            <div class="paragraph">问题按 <strong>活跃问题</strong> 显示排序。最后被回答或者更新的问题将显示在最前面。</div>
+            <div class="paragraph">问题按 <span class="darkred"><strong>最后更新时间</strong></span> 显示排序。最后被回答或者更新的问题将显示在最前面。</div>
         {% endifequal %}
         
         {% ifequal tab_id "hottest" %}
-            <div class="paragraph">问题按 <strong>最受欢迎问题</strong> 显示排序。回复最多的问题将显示在最前面。</div>
+            <div class="paragraph">问题按 <span class="darkred"><strong>回复数量</strong></span> 显示排序。回复最多的问题将显示在最前面。</div>
         {% endifequal %}
         
         {% ifequal tab_id "mostvoted" %}
-            <div class="paragraph">问题按 <strong>最有价值问题</strong> 显示排序。投票最多的问题将显示在最前面。</div>
+            <div class="paragraph">问题按 <span class="darkred"><strong>投票数量</strong></span> 显示排序。投票最多的问题将显示在最前面。</div>
         {% endifequal %}
         
         <div class="paragraph">您也可以通过 <a href="/tags/" title="查看所有标签"><strong>标签</strong></a> 和 <a href="#" title="搜索问题"><strong>搜索</strong></a> 来缩小问题的范围。</div>

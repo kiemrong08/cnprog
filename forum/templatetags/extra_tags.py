@@ -1,4 +1,5 @@
 ﻿import math
+import logging
 from django import template
 from django.utils.safestring import mark_safe
 
@@ -33,7 +34,13 @@ def tag_font_size(max_size, min_size, current_size):
     do a logarithmic mapping calcuation for a proper size for tagging cloud
     Algorithm from http://blogs.dekoh.com/dev/2007/10/29/choosing-a-good-font-size-variation-algorithm-for-your-tag-cloud/
     """
-    weight = (math.log10(current_size) - math.log10(min_size)) / (math.log10(max_size) - math.log10(min_size))
+    #avoid invalid calculation
+    if current_size == 0:
+        current_size = 1
+    try:
+        weight = (math.log10(current_size) - math.log10(min_size)) / (math.log10(max_size) - math.log10(min_size))
+    except:
+        weight = 0
     return MIN_FONTSIZE + round((MAX_FONTSIZE - MIN_FONTSIZE) * weight)
 
     

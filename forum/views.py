@@ -1,7 +1,7 @@
 # encoding:utf-8
 import datetime
 import logging
-from urllib import unquote
+from urllib import quote, unquote
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse
@@ -144,7 +144,7 @@ def ask(request):
         if form.is_valid():
             added_at = datetime.datetime.now()
             question = Question(
-                title            = form.cleaned_data['title'],
+                title            = quote(sanitize_html(form.cleaned_data['title'])),
                 author           = request.user,
                 added_at         = added_at,
                 last_activity_at = added_at,

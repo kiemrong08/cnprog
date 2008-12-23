@@ -1,7 +1,9 @@
 # encoding:utf-8
 import datetime
 import hashlib
+from urllib import quote_plus
 from django.db import models
+from django.utils.html import strip_tags
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
@@ -93,7 +95,7 @@ class Question(models.Model):
         return [name for name in self.tagnames.split(u' ')]
        
     def get_absolute_url(self):
-        return '%s%s' % (reverse('question', args=[self.id]), self.title)
+        return '%s%s' % (reverse('question', args=[self.id]), strip_tags(self.title))
         
     def __unicode__(self):
         return self.title
