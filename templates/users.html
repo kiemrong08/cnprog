@@ -8,7 +8,7 @@
             $("#ipSearchUser").focus();
             
             var orderby = "{{ tab_id }}";
-            if(orderby != "reputation" && orderby != "date_joined_desc" && orderby != "date_joined_asc" && orderby != "name")
+            if(orderby != "reputation" && orderby != "date_joined_desc" && orderby != "date_joined_asc" && orderby != "username")
                 orderby = "reputation";
             $("#sort_" + orderby).attr('className',"youarehere");
         });

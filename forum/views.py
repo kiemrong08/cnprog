@@ -287,6 +287,7 @@ def user_stats(request, user_id, username):
     # TODO: Badges
     
     return render_to_response('user.html',{
+        "tab_name" : "stats",
         "user" : user,
         "questions" : questions,
         "answers" : answers,
