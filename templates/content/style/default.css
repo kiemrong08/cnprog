@@ -312,6 +312,10 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
     letter-spacing:1px;
 }
 
+.big{
+    font-size:120%;
+    font-weight:600;
+}
 .paragraph{
     line-height:20px;
     margin-bottom:10px;
@@ -578,6 +582,18 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
 	border-bottom: 1px solid #37607D;
 	border-right: 1px solid #37607D;
 	text-decoration: none;
+}
+
+.highlight-tag{
+    background-color: #3E6D8E;
+    color: #E0EAF1;
+    font-weight:bold;
+    border-bottom: 1px solid #3E6D8E;
+    border-right: 1px solid #7F9FB6;
+    margin: 2px 6px 2px 0;
+    padding: 3px 4px 3px 4px;
+    text-decoration: none;
+    font-size: 90%;
 }
 
 .question-started{

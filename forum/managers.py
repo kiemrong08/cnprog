@@ -43,7 +43,7 @@ class QuestionManager(models.Manager):
         Executes an UPDATE query to update denormalised data with the
         number of answers the given question has.
         """
-        logging.debug('execute update_answer_count')
+        
         # for some reasons, this Answer class failed to be imported,
         # although we have imported all classes from models on top.
         from forum.models import Answer
@@ -88,7 +88,7 @@ class AnswerManager(models.Manager):
         Retrieves visibile answers for the given question. Delete answers
         are only visibile to the person who deleted them.
         """
-        logging.debug('execute AnswerManager')
+       
         if user is None or not user.is_authenticated():
             return self.filter(question=question, deleted=False)
         else:

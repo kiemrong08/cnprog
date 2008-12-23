@@ -137,7 +137,7 @@ var _30=_6.makeElement("span");
 _2b=_30.style;
 _2b.height="100%";
 _2b.width=_2a;
-_2b.filter="progid:DXImageTransform.Microsoft."+"AlphaImageLoader(src='"+_2.basePath+"images/bg.png')";
+_2b.filter="progid:DXImageTransform.Microsoft."+"AlphaImageLoader(src='"+_2.basePath+"images/bg.gif')";
 _2b.position="absolute";
 if(_2e&1){
 _2b.top="0";
@@ -176,7 +176,7 @@ var _34=_6.makeElement("span");
 _2b=_34.style;
 _2b.height="100%";
 _2b.width=_2a;
-_2b.filter="progid:DXImageTransform.Microsoft."+"AlphaImageLoader(src='"+_2.basePath+"images/bg-fill.png',sizingMethod='scale')";
+_2b.filter="progid:DXImageTransform.Microsoft."+"AlphaImageLoader(src='"+_2.basePath+"images/bg-fill.gif',sizingMethod='scale')";
 _2b.position="absolute";
 _33.appendChild(_34);
 if(_32){
@@ -187,7 +187,7 @@ _2b.right="0";
 }
 }
 if(!_2c){
-_2b.backgroundImage="url("+_2.basePath+"images/bg-fill.png)";
+_2b.backgroundImage="url("+_2.basePath+"images/bg-fill.gif)";
 _2b.backgroundRepeat="repeat-y";
 if(_32){
 _2b.backgroundPosition="left top";
@@ -940,7 +940,7 @@ _b4=_de-_df;
 _e0();
 _b0.parentNode.insertBefore(_ba,_b0);
 _e1();
-_6.skin(_b8,_2.basePath+"images/bg.png",_b2,_b3);
+_6.skin(_b8,_2.basePath+"images/bg.gif",_b2,_b3);
 _dd.visibility="visible";
 return true;
 }
@@ -1024,8 +1024,8 @@ _e7.position="absolute";
 _b9.unselectable="on";
 _b8.appendChild(_b9);
 _cd(_8.autoindent);
-var _e8=_6.createImage("images/bg.png");
-var _e9=_6.createImage("images/bg-fill.png");
+var _e8=_6.createImage("images/bg.gif");
+var _e9=_6.createImage("images/bg-fill.gif");
 _e2();
 _d9();
 if(_bd){
@@ -1139,7 +1139,7 @@ _fa.height="25px";
 _fb.href="http://www.wmd-editor.com/";
 _fb.target="_blank";
 _fb.title="WMD: The Wysiwym Markdown Editor";
-var _fc=_6.createImage("images/wmd.png");
+var _fc=_6.createImage("images/wmd.gif");
 var _fd=_6.createImage("images/wmd-on.png");
 _fb.appendChild(_fc);
 _fb.onmouseover=function(){
@@ -1147,7 +1147,7 @@ _6.setImage(_fc,"images/wmd-on.png");
 _fb.style.cursor="pointer";
 };
 _fb.onmouseout=function(){
-_6.setImage(_fc,"images/wmd.png");
+_6.setImage(_fc,"images/wmd.gif");
 };
 _b8.appendChild(_fb);
 };

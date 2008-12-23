@@ -37,7 +37,7 @@
                                  <span class="box-unit">票</span>
                             </div>
                             <div class="questions-answerbox">
-                                <div class="answered" id="questions-answerbox-cell">
+                                <div {% if question.answer_accepted %}class="answered-accepted"{% else %}{% ifequal question.answer_count 0 %}class="unanswered"{% else %}class="answered"{% endifequal %}{% endif %} id="questions-answerbox-cell">
                                     <span class="questions-answer-number">{{ question.answer_count|intcomma }}</span><br>
                                     <span class="box-unit">回答</span>
                                 </div>
@@ -69,9 +69,7 @@
             </div>
             <div class="question-tag">
                 {% for tag in question.tagname_list %}
-                    <a href="{% url forum.views.tag tag %}" class="post-tag" title="查看有关'{{ tag }}'的问题" rel="tag">
-                        {{ tag }}
-                    </a>
+                    <a href="{% url forum.views.tag tag|urlencode %}" class="post-tag" title="查看有关'{{ tag }}'的问题" rel="tag">{{ tag }}</a>
                 {% endfor %}
             </div>
             <div  class="questions-mark">
@@ -80,14 +78,13 @@
                         <td colspan="2" class="gray"> 
                             回答于<strong>{{ question.added_at|timesince }}</strong>前
                         </td>
-                        
                     </tr>
                     <tr>
                         <td width="40px" style="vertical-align:bottom">
                         {% gravatar question.author 32 %}
                         </td>
                         <td style="vertical-align:top">
-                            <div><a href="#"><strong>{{ question.author }}</strong></a></div>
+                            <div><a href="/users/{{ question.author.id }}/{{ question.author }}"><span class="big">{{ question.author }}</span></a></div>
                             <div>
                             <span class="reputation-score" title="{{ question.author.reputation }}用户积分">{{ question.author.reputation }}</span>
                             <span title="{{ question.author.gold }}金牌">
@@ -125,7 +122,14 @@
 <div class="gray-box">
     <div>
         您正在浏览所有<br><div class="questions-count">{{ questions_count|intcomma }}</div>
-        <div class="paragraph">个问题。</div>
+        <div class="paragraph">个
+            {% if searchtag %}
+                标记为
+                <span class="highlight-tag">
+                    {{ searchtag }}
+                </span>的
+            {% endif %}
+        问题。</div>
         {% ifequal tab_id "latest" %}
             <div class="paragraph">问题按 <strong>最新问题</strong> 显示排序。新加入的问题将显示在最前面。</div>
         {% endifequal %}
@@ -149,7 +153,7 @@
     <h3>相关标签</h3>
     <div id="related-tags">
         {% for tag in tags %}
-            <a class="post-tag" rel="tag" title="查看有关'{{ tag.name }}'的问题"  href="{% url forum.views.tag tag.name %}">{{ tag.name }}</a>
+            <a class="post-tag" rel="tag" title="查看有关'{{ tag.name }}'的问题"  href="{% url forum.views.tag tag.name|urlencode %}">{{ tag.name }}</a>
             <span class="tag-number">× {{ tag.used_count|intcomma }}</span>
             <br>
         {% endfor %}

@@ -1,5 +1,7 @@
 # encoding:utf-8
 import datetime
+import logging
+from urllib import unquote
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse
@@ -11,7 +13,7 @@ from django.core import serializers
 from forum.forms import *
 from forum.models import *
 from utils.html import sanitize_html
-import logging
+
 
 # used in tags list
 DEFAULT_PAGE_SIZE = 65
@@ -83,8 +85,14 @@ def questions(request, tagname=None):
     except KeyError:
         view_id = "latest"
         orderby = "-added_at"
-        
-    objects_list = Paginator(Question.objects.all().order_by(orderby), pagesize)
+    
+    if tagname is not None:
+        print unquote(tagname)
+        #print datetime.datetime.now()
+        objects_list = Paginator(Question.objects.filter(tags__name = unquote(tagname)).order_by(orderby), pagesize)
+        #print datetime.datetime.now()
+    else:
+        objects_list = Paginator(Question.objects.all().order_by(orderby), pagesize)
     questions = objects_list.page(page)
     
     # Get related tags from this page objects
@@ -100,6 +108,7 @@ def questions(request, tagname=None):
         "tab_id" : view_id,
         "questions_count" : objects_list.count,
         "tags" : related_tags,
+        "searchtag" : tagname, 
         "context" : {
             'is_paginated' : True,
             'pages': objects_list.num_pages,
@@ -147,7 +156,6 @@ def ask(request):
 
 def question(request, id):
     question = get_object_or_404(Question, id=id)
-    logging.debug(question)
     answer_form = AnswerForm()
     answers = Answer.objects.get_answers_from_question(question, request.user)
     

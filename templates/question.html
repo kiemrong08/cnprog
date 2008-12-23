@@ -55,7 +55,7 @@
                             </div>
                             <div id="question-tags" class="question-tag" >
                                 {% for tag in question.tagname_list %}
-                                    <a href="{% url forum.views.tag tag %}" class="post-tag" title="查看有关'{{ tag }}'的问题" rel="tag">
+                                    <a href="{% url forum.views.tag tag|urlencode %}" class="post-tag" title="查看有关'{{ tag }}'的问题" rel="tag">
                                         {{ tag }}
                                     </a>
                                 {% endfor %}
@@ -85,7 +85,7 @@
                                                     {% gravatar question.author 32 %}
                                                     </td>
                                                     <td style="vertical-align:top">
-                                                        <div><a href="#">{{ question.author }}</a></div>
+                                                        <div><a href="/users/{{ question.author.id }}/{{ question.author }}">{{ question.author }}</a></div>
                                                         <div>
                                                         <span class="reputation-score" title="{{ question.author.reputation }}用户积分">{{ question.author.reputation }}</span>
                                                         <span title="{{ question.author.gold }}金牌">
