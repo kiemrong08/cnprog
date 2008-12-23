@@ -140,7 +140,9 @@ class Vote(models.Model):
     content_object = generic.GenericForeignKey('content_type', 'object_id')
     user           = models.ForeignKey(User, related_name='votes')
     vote           = models.SmallIntegerField(choices=VOTE_CHOICES)
-
+    
+    objects = VoteManager()
+    
     class Meta:
         unique_together = ('content_type', 'object_id', 'user')
         db_table = u'vote'

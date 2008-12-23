@@ -276,5 +276,21 @@ def users(request):
         
         }, context_instance=RequestContext(request))
 
-def user(request, user_id, username):
-    return render_to_response('user.html')
+def user_stats(request, user_id, username):
+    user = get_object_or_404(User, id=user_id)
+    # TODO:order by vote_count desc
+    questions = user.questions.all().order_by('-added_at')
+    answers = user.answers.all().order_by('-added_at')
+    up_votes = Vote.objects.get_up_vote_count_from_user(user)
+    down_votes = Vote.objects.get_down_vote_count_from_user(user)
+    tags = user.created_tags.all().order_by('-used_count')
+    # TODO: Badges
+    
+    return render_to_response('user.html',{
+        "user" : user,
+        "questions" : questions,
+        "answers" : answers,
+        "up_votes" : up_votes,
+        "down_votes" : down_votes,
+        "tags" : tags
+    })
