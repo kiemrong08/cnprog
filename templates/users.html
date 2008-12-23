@@ -4,8 +4,8 @@
 {% block forejs %}
        <script type="text/javascript">
         $().ready(function(){
-            $("#nav_tags").attr('className',"youarehere");
-            $("#ipSearchTag").focus();
+            $("#nav_users").attr('className',"youarehere");
+            $("#ipSearchUser").focus();
             
             var orderby = "{{ tab_id }}";
             if(orderby != "reputation" && orderby != "date_joined_desc" && orderby != "date_joined_asc" && orderby != "name")
@@ -24,7 +24,7 @@
         <a id="sort_reputation" href="?sort=reputation" title="荣誉">荣誉</a>
         <a id="sort_date_joined_desc" href="?sort=date_joined_desc" title="最新加入">最新加入</a>
 				<a id="sort_date_joined_asc" href="?sort=date_joined_asc" title="最先加入">最先加入</a>
-				<a id="sort_name" href="?sort=name" title="用户名">用户名</a>
+				<a id="sort_username" href="?sort=username" title="用户名">用户名</a>
     </div>
 </div>
 <div id="main-body" class="">
@@ -40,7 +40,7 @@
             </table>
         </form>
         {% if stag %}
-            匹配查询 '<span class="darkred"><strong>{{ stag }}</strong></span>' 的所有用户名： 
+            匹配查询 '<span class="darkred"><strong>{{ suser }}</strong></span>' 的所有用户名： 
         {% endif %}
     </div>
     {% if not users.object_list %}
