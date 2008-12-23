@@ -275,3 +275,6 @@ def users(request):
         }
         
         }, context_instance=RequestContext(request))
+
+def user(request, user_id, username):
+    return render_to_response('user.html')

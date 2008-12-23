@@ -20,6 +20,7 @@ urlpatterns = patterns('',
     (r'^tags/$', app.tags),
     (r'^tags/(?P<tag>[^/]+)/$', app.tag),
     (r'^users/$',app.users),
+    (r'^users/(?P<user_id>\d+)/(?P<username>\w+)$', app.user),
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
