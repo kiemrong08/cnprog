@@ -173,11 +173,14 @@ def question(request, id):
     question = get_object_or_404(Question, id=id)
     answer_form = AnswerForm()
     answers = Answer.objects.get_answers_from_question(question, request.user)
-    
+    # update view count
+    Question.objects.update_view_count(question)
     return render_to_response('question.html', {
         "question" : question,
         "answer" : answer_form,
         "answers" : answers,
+        "tags" : question.tags.all(),
+        "similar_questions" : Question.objects.get_similar_questions(question)
         }, context_instance=RequestContext(request))
  
 #TODO: allow anynomus

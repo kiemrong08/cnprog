@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load extra_tags %}
+{% load humanize %}
 {% block forejs %}
         <script type='text/javascript' src='/content/js/com.cnprog.editor.js'></script>
         <script type="text/javascript">
@@ -263,58 +264,35 @@
 {% endblock %}
 
 {% block sidebar %}
-<div class="yellow-box">
-    <h3 class="darkred">受欢迎的提问</h3>
-    <div>
-        <ul class="list-item">
-            <li>
-                <b>您的问题与编程相关吗？</b>
-            </li>
-            <li>
-                我们建议您提的问题是可以被答复的，而不仅仅是可以讨论。
-            </li>
-            <li>
-                问题描述详细，但不冗余。
-            </li>
-            <li>
-                我们推荐您使用中文描述问题，这样可以得到更多的答复机会。
-            </li>
-        </ul>
-         <a href="/faq/" target="_blank" style="float:right;position:relative">查看常见问题 »</a>
-         <br>  
+<div class="gray-box">
+    <div class="paragraph">
+        您正在浏览的问题含有以下标签：
+    </div>
+    <div class="paragraph">
+        {% for tag in tags %}
+        <a href="{% url forum.views.tag tag.name|urlencode %}" class="post-tag" title="查看有关'{{ tag.name }}'的问题" rel="tag">{{ tag.name }}</a> <span class="tag-number">× {{ tag.used_count|intcomma }}</span><br>
+        {% endfor %}
+    </div>
+    <div class="paragraph">
+        提问时间： <div class="big">{{ question.added_at|timesince }}之前</div>
+    </div>
+    <div class="paragraph"> 
+     目前浏览数量：<div class="big">{{ question.view_count|intcomma }} 次</div>
+    </div>
+    <div class="paragraph"> 
+        最后更新时间：<div class="big">{{ question.last_activity_at|timesince }}之前</div>
     </div>
 </div>
 
 <div class="gray-box">
-    <h3>Markdown快速参考</h3>
-    <ul class="list-item">
-        <li>
-            *斜体* 或者 _斜体_  
-
-        </li>
-        <li>
-            **加粗** 或者 __加粗__ 
-
-        </li>
-        <li>
-            <b>链接</b>：一个[例子](http://url.com/ "标题")
-
-        </li>
-        
-        <li>
-            <b>图片</b>：![alt 文本](/path/img.jpg "标题")
-
-        </li>
-        <li>
-            列表：
-            1.  Foo
-            2.  Bar
-        </li>
-        <li>
-            基本的HTML标签也是支持的
-        </li>
-    </ul>
-    <a href="http://en.wikipedia.org/wiki/Markdown" target="_blank" style="float:right;position:relative">有关Markdown详细说明 »</a>
+    <h3>相似标签的问题</h3>
+    <div id="" class="">
+        <ul class="list-item">
+        {% for question in similar_questions %}
+            <li><a href="/questions/{{question.id}}/{{ question.title }}">{{ question.title }}</a><span class="small"> ({{ question.last_activity_at|timesince }}前)</span</li>
+        {% endfor %}
+        </ul>
+    </div>
     <br>  
 </div>
 

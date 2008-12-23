@@ -23,7 +23,7 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
 body{
     font-family: "segoe ui",Helvetica,"Microsoft YaHei",ËÎÌו,Tahoma,Verdana,MingLiu,PMingLiu,Arial,sans-serif;
     font-size: 80%;
-    color:#333;
+    
     margin:0;
     padding:0;
     text-align:center;
@@ -312,6 +312,10 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
     letter-spacing:1px;
 }
 
+.small{
+    font-size:90%;
+    color:#777;
+}
 .big{
     font-size:120%;
     font-weight:600;

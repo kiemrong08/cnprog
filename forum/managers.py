@@ -49,8 +49,34 @@ class QuestionManager(models.Manager):
         from forum.models import Answer
         self.filter(id=question.id).update(
             answer_count=Answer.objects.get_answers_from_question(question).count())
-        
+    
+    def update_view_count(self, question):
+        """
+        update counter+1 when user browse question page
+        """
+        question.view_count = question.view_count + 1
+        question.save()
 
+    def get_similar_questions(self, question):
+        """
+        Get 10 similar questions for given one.
+        This will search the same tag list for give question(by exactly same string) first.
+        Questions with the individual tags will be added to list if above questions are not full.
+        """
+        #print datetime.datetime.now()
+        from forum.models import Question
+        questions = list(Question.objects.filter(tagnames = question.tagnames).all())
+
+        tags_list = question.tags.all()
+        for tag in tags_list:
+            extend_questions = Question.objects.filter(tags__id = tag.id)[:50]
+            for item in extend_questions:
+                if item not in questions and len(questions) < 10:
+                    questions.append(item)
+          
+        #print datetime.datetime.now()
+        return questions    
+    
 class TagManager(models.Manager):
     UPDATE_USED_COUNTS_QUERY = (
         'UPDATE tag '
