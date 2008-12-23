@@ -49,8 +49,17 @@ def index(request):
         "max" : 100,
         "min" : 1,
         }, context_instance=RequestContext(request))
+
+def unanswered(request):
+    return questions(request, unanswered=True)
     
-def questions(request, tagname=None):
+def questions(request, tagname=None, unanswered=False):
+    """
+    List of Questions, Tagged questions, and Unanswered questions.
+    """
+    # template file 
+    # "questions.html" or "unanswered.html"
+    template_file = "questions.html"
     # Set flag to False by default. If it is equal to True, then need to be saved.
     pagesize_changed = False
     # get pagesize from session, if failed then get default value
@@ -86,13 +95,18 @@ def questions(request, tagname=None):
         view_id = "latest"
         orderby = "-added_at"
     
+    # check if request is from tagged questions
     if tagname is not None:
-        print unquote(tagname)
         #print datetime.datetime.now()
         objects_list = Paginator(Question.objects.filter(tags__name = unquote(tagname)).order_by(orderby), pagesize)
         #print datetime.datetime.now()
+    elif unanswered:
+        #check if request is from unanswered questions
+        template_file = "unanswered.html"
+        objects_list = Paginator(Question.objects.filter(answer_count=0).order_by(orderby), pagesize)
     else:
         objects_list = Paginator(Question.objects.all().order_by(orderby), pagesize)
+    
     questions = objects_list.page(page)
     
     # Get related tags from this page objects
@@ -103,12 +117,13 @@ def questions(request, tagname=None):
             if tag not in related_tags:
                 related_tags.append(tag)
             
-    return render_to_response('questions.html', {
+    return render_to_response(template_file, {
         "questions" : questions,
         "tab_id" : view_id,
         "questions_count" : objects_list.count,
         "tags" : related_tags,
         "searchtag" : tagname, 
+        "is_unanswered" : unanswered,
         "context" : {
             'is_paginated' : True,
             'pages': objects_list.num_pages,
@@ -117,7 +132,7 @@ def questions(request, tagname=None):
             'has_next': questions.has_next(),
             'previous': questions.previous_page_number(),
             'next': questions.next_page_number(),
-            'base_url' : '/questions?sort=%s&' % view_id,
+            'base_url' : request.path + '?sort=%s&' % view_id,
             'pagesize' : pagesize
         }}, context_instance=RequestContext(request))
 

@@ -4,22 +4,18 @@
 {% block forejs %}
        <script type="text/javascript">
         $().ready(function(){
-            var tab_id = "{{ tab_id }}";
-            $("#"+tab_id).attr('className',"youarehere");
-            $("#nav_questions").attr('className',"youarehere");
+            $("#nav_unanswered").attr('className',"youarehere");
         });
          
         </script>
 {% endblock %}
 {% block content %}
 <div id="main-bar" class="">
-    <h3>{% if searchtag %}标签问题{% else %}所有问题{% endif %}
+    <h3>
+        没有回答的问题
     </h3>
-    <div id="tab" class="">
-        <a id="latest" href="?sort=latest" title="最新加入系统的问题">最新问题</a>
-        <a id="active" href="?sort=active" title="最新被回复的问题">活跃问题</a>
-        <a id="hottest" href="?sort=hottest" title="被回复最多的问题">最受欢迎问题</a>
-        <a id="mostvoted" href="?sort=mostvoted" title="投票次数最多的问题">最有价值问题</a>
+    <div id="tab" >
+        <a id="latest" class="youarehere" href="?sort=latest" title="最新加入系统的问题">最新问题</a>
     </div>
     
 </div>
@@ -121,31 +117,10 @@
 <div class="gray-box">
     <div>
         您正在浏览所有<br><div class="questions-count">{{ questions_count|intcomma }}</div>
-        <div class="paragraph">个
-            {% if searchtag %}
-                标记为
-                <span class="highlight-tag">
-                    {{ searchtag }}
-                </span>的
-            {% endif %}
-        问题。</div>
-        {% ifequal tab_id "latest" %}
-            <div class="paragraph">问题按 <strong>最新问题</strong> 显示排序。新加入的问题将显示在最前面。</div>
-        {% endifequal %}
+        <div class="paragraph">个<span class="darkred"><strong> 没有回答的 </strong></span>问题。</div>
         
-        {% ifequal tab_id "active" %}
-            <div class="paragraph">问题按 <strong>活跃问题</strong> 显示排序。最后被回答或者更新的问题将显示在最前面。</div>
-        {% endifequal %}
-        
-        {% ifequal tab_id "hottest" %}
-            <div class="paragraph">问题按 <strong>最受欢迎问题</strong> 显示排序。回复最多的问题将显示在最前面。</div>
-        {% endifequal %}
-        
-        {% ifequal tab_id "mostvoted" %}
-            <div class="paragraph">问题按 <strong>最有价值问题</strong> 显示排序。投票最多的问题将显示在最前面。</div>
-        {% endifequal %}
-        
-        <div class="paragraph">您也可以通过 <a href="/tags/" title="查看所有标签"><strong>标签</strong></a> 和 <a href="#" title="搜索问题"><strong>搜索</strong></a> 来缩小问题的范围。</div>
+            <div class="paragraph">问题按 <strong>问题创建时间</strong> 排序。最新加入的问题将显示在最前面。</div>
+
     </div>
 </div>
 <div class="gray-box">

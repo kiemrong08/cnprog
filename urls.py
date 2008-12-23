@@ -14,6 +14,7 @@ urlpatterns = patterns('',
     (r'^account/', include('django_authopenid.urls')),
     (r'^questions/$', app.questions),
     (r'^questions/ask/$', app.ask),
+    (r'^questions/unanswered/$', app.unanswered),
     url(r'^questions/(?P<id>\d+)/answer/$', app.answer, name='answer'),
     #place general question item in the end of other operations
     url(r'^questions/(?P<id>\d+)/(?:[^/]+/)?$', app.question, name='question'),
