@@ -23,7 +23,7 @@ DEBUG_TOOLBAR_CONFIG = {
 
 #for logging
 import logging
-LOG_FILENAME = 'c:/logs/django.lanai.log'
+LOG_FILENAME = '/Users/sailing/Development/cnprog/svn/trunk/log/django.lanai.log'
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,)
 
 #for OpenID auth
@@ -38,9 +38,9 @@ ADMINS = (
 MANAGERS = ADMINS
 
 DATABASE_ENGINE = 'mysql'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-DATABASE_NAME = 'twogeekt_lanai'             # Or path to database file if using sqlite3.
-DATABASE_USER = 'twogeekt_lanai'             # Not used with sqlite3.
-DATABASE_PASSWORD = 'sysadm'         # Not used with sqlite3.
+DATABASE_NAME = 'cnprog'             # Or path to database file if using sqlite3.
+DATABASE_USER = 'root'             # Not used with sqlite3.
+DATABASE_PASSWORD = ''         # Not used with sqlite3.
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
 DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
 

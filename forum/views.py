@@ -17,6 +17,8 @@ import logging
 DEFAULT_PAGE_SIZE = 65
 # used for questions
 QUESTIONS_PAGE_SIZE = 10
+# used for users
+USERS_PAGE_SIZE = 35
 
 def index(request):
     view_id = request.GET.get('sort', None)
@@ -202,7 +204,7 @@ def tags(request):
     try:
         tags = objects_list.page(page)
     except (EmptyPage, InvalidPage):
-        tags = objects_list.page(tags.num_pages)
+        tags = objects_list.page(objects_list.num_pages)
 
     return render_to_response('tags.html', {
         "tags" : tags,
@@ -216,11 +218,54 @@ def tags(request):
             'has_next': tags.has_next(),
             'previous': tags.previous_page_number(),
             'next': tags.next_page_number(),
-            'base_url' : '/tags?sort=%s&' % sortby
+            'base_url' : '/tags/?sort=%s&' % sortby
         }
         
         }, context_instance=RequestContext(request))
 
 def tag(request, tag):    
     return questions(request, tagname=tag)
-    
+
+def users(request):
+    stag = ""
+    is_paginated = True
+    sortby = request.GET.get('sort', 'reputation')
+    try:
+        page = int(request.GET.get('page', '1'))
+    except ValueError:
+        page = 1
+  
+    if request.method == "GET":
+        if sortby == "date_joined_desc":
+            objects_list = Paginator(User.objects.all().order_by('-date_joined'), USERS_PAGE_SIZE)
+        elif sortby == "date_joined_asc":
+            objects_list = Paginator(User.objects.all().order_by('date_joined'), USERS_PAGE_SIZE)
+        elif sortby == "name":
+            objects_list = Paginator(User.objects.all().order_by('username'), USERS_PAGE_SIZE)
+        # default
+        else:
+            objects_list = Paginator(User.objects.all().order_by('-reputation'), USERS_PAGE_SIZE)
+    elif request.method == "POST":
+        stag = request.POST.get("ipSearchTag")
+  
+    try:
+        users = objects_list.page(page)
+    except (EmptyPage, InvalidPage):
+        users = objects_list.page(objects_list.num_pages)
+  
+    return render_to_response('users.html', {
+        "users" : users,
+        "stag" : stag,
+        "tab_id" : sortby,
+        "context" : {
+            'is_paginated' : is_paginated,
+            'pages': objects_list.num_pages,
+            'page': page,
+            'has_previous': users.has_previous(),
+            'has_next': users.has_next(),
+            'previous': users.previous_page_number(),
+            'next': users.next_page_number(),
+            'base_url' : '/users/?sort=%s&' % sortby
+        }
+        
+        }, context_instance=RequestContext(request))

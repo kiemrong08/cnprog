@@ -19,7 +19,7 @@ urlpatterns = patterns('',
     url(r'^questions/(?P<id>\d+)/(?:[^/]+/)?$', app.question, name='question'),
     (r'^tags/$', app.tags),
     (r'^tags/(?P<tag>[^/]+)/$', app.tag),
-
+    (r'^users/$',app.users),
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),

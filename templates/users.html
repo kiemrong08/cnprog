@@ -1,0 +1,87 @@
+{% extends "base_content.html" %}
+{% load extra_tags %}
+{% load humanize %}
+{% block forejs %}
+       <script type="text/javascript">
+        $().ready(function(){
+            $("#nav_tags").attr('className',"youarehere");
+            $("#ipSearchTag").focus();
+            
+            var orderby = "{{ tab_id }}";
+            if(orderby != "reputation" && orderby != "date_joined_desc" && orderby != "date_joined_asc" && orderby != "name")
+                orderby = "reputation";
+            $("#sort_" + orderby).attr('className',"youarehere");
+        });
+         
+        </script>
+{% endblock %}
+{% block content %}
+<div id="main-bar" class="">
+    <h3>
+        用户列表
+    </h3>
+    <div id="tab" class="">
+        <a id="sort_reputation" href="?sort=reputation" title="荣誉">荣誉</a>
+        <a id="sort_date_joined_desc" href="?sort=date_joined_desc" title="最新加入">最新加入</a>
+				<a id="sort_date_joined_asc" href="?sort=date_joined_asc" title="最先加入">最先加入</a>
+				<a id="sort_name" href="?sort=name" title="用户名">用户名</a>
+    </div>
+</div>
+<div id="main-body" class="">
+    <div style="padding:5px 0px 10px 0;line-height:20px">
+        <form action="/users/" method="post">
+            <table>
+    	        <tr>
+    	        	<td><h3>输入需要查找的用户名：</h3></td>
+    	        	<td width="280px"><input id="ipSearchUser" name="ipSearchUser" autocomplete="off" size="40"></td>
+                  <td><input id="btSearchTag" type="submit" class="submit" value="搜 索" /></td>
+    	        </tr>
+    	        
+            </table>
+        </form>
+        {% if stag %}
+            匹配查询 '<span class="darkred"><strong>{{ stag }}</strong></span>' 的所有用户名： 
+        {% endif %}
+    </div>
+    {% if not users.object_list %}
+        <span >没有找到相关数据。</span>
+    {% endif %}
+		<div id="user-list">
+    	<table style="width: 940px; margin-left: 20px; margin-top: -10px;">
+	        <tr>    
+	            <td>
+	            	{% for user in users.object_list %}
+		                <div class="user-info">
+										    <div class="user-action-time"><br /></div>
+										    <div class="user-gravatar32"><a href="/users/{{user.id}}/{{user.username}}">{% gravatar user 32 %}</a></div>
+										    <div class="user-details"><a href="/users/{{user.id}}/{{user.username}}">{{user.username}}</a><br/><span class="reputation-score" title="reputation score">{{user.reputation}}</span>
+											{% if user.gold %}
+												<span title="{{user.gold}} gold badge(s)"><span class="badge1">&#9679;</span><span class="badgecount">{{user.gold}}</span></span>
+											{% endif %}
+											{% if user.silver %}
+												<span title="{{user.silver}} silver badge(s)"><span class="badge2">&#9679;</span><span class="badgecount">{{user.silver}}</span></span>
+											{% endif %}
+											{% if user.bronze %}
+												<span title="{{user.bronze}} bronze badge(s)"><span class="badge3">&#9679;</span><span class="badgecount">{{user.bronze}}</span></span>
+											{% endif %}</div>
+										</div>
+		                {% if forloop.counter|divisibleby:"7" %}
+		                    </td>
+		                    <td>
+		                {% endif %}
+
+		            {% endfor %}
+	            </td>
+	        </tr>   
+	    </table>
+		</div>
+    <div class="paginator-container">
+        {% cnprog_paginator context %}
+    </div>
+    
+    
+</div>
+{% endblock %}
+
+
+
