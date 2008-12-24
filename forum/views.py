@@ -312,7 +312,7 @@ def user_stats(request, user_id, username):
     tags = user.created_tags.all().order_by('-used_count')
     # TODO: Badges
     
-    return render_to_response('user.html',{
+    return render_to_response('user_stats.html',{
         "tab_name" : "stats",
         "user" : user,
         "questions" : questions,

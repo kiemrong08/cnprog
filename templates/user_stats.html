@@ -1,0 +1,298 @@
+{% extends "base_content.html" %}
+{% load extra_tags %}
+{% load humanize %}
+{% block forestyle%}
+    <style type="text/css">
+	    h1 { font-size: 200%; }
+ 		.history-table td { padding: 5px; }
+ 		.user-stats-table { margin-left:50px; }
+	</style>
+{% endblock %}
+{% block forejs %}
+    {% include "user_js.html" %}
+{% endblock %}
+{% block content %}
+    <div id="mainbar-full">
+        {% include "user_info.html" %}
+		{% include "user_tabs.html" %}
+		<div style="margin-top: 10px;"></div>
+        <a name="questions"></a>
+        <table>
+            <tr>
+                <td>
+                    <div style="text-align: right;" class="summarycount">73</div>
+                </td>
+                <td style="vertical-align: middle; padding-left: 10px;">
+                    <h1>个问题</h1>
+                </td>
+            </tr>
+        </table>
+		<div class="user-stats-table">
+            <div class="favorites-count-off">
+                <img width="32" height="31" title="this question has been favorited by 3 users" alt="star" src="/content/images/vote-favorite-off.png"/><br/><b>3</b>
+            </div>
+            <div id="question-summary-170584" class="question-summary narrow">
+                <a style="text-decoration: none;" href="/questions/170584/c-20-to-c-30-worth-it">
+                    <div class="stats">
+                        <div class="votes">
+                            <div class="vote">
+                                <table width="100%">
+                                    <tr>
+                                        <td height="25" style="vertical-align: middle;">
+                                            <span class="vote-count-post"><strong style="font-size: 190%;">15</strong></span> 
+                                        </td>
+                                    </tr>
+                                    <tr><td>votes</td></tr>
+                                </table>               
+                            </div>
+                        </div>
+                        <div title="one of the answers was accepted as the correct answer" class="status answered-accepted">
+                            <table width="100%">
+                                <tr>
+                                    <td height="25" style="vertical-align: middle;">
+                                        <strong style="font-size: 190%;">16</strong>
+                                    </td>
+                                </tr>
+                                <tr><td>answers</td></tr>
+                            </table>               
+                        </div>
+                        <div class="views">
+                            <table width="100%">
+                                <tr>
+                                    <td height="25" style="vertical-align: middle;">
+                                        <strong style="font-size: 190%;">1k</strong>
+                                    </td>
+                                </tr>
+                                <tr><td>views</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </a>
+                <div class="summary">
+                    <h3>
+                        <a title="I have read on StackOverflow some people that have converting to C#2.0 to C#3, but is it really worth it? I have a project that is done at 75% before going in maintenance phase, I … " href="/questions/170584/c-20-to-c-30-worth-it">c# 2.0 to c# 3.0 worth it?</a>
+                    </h3>
+                    <div class="tags">
+                        <a rel="tag" title="show questions tagged 'project-management'" class="post-tag" href="/questions/tagged/project-management">project-management</a> <a rel="tag" title="show questions tagged 'risk-analysis'" class="post-tag" href="/questions/tagged/risk-analysis">risk-analysis</a> <a rel="tag" title="show questions tagged 'code-migration'" class="post-tag" href="/questions/tagged/code-migration">code-migration</a> 
+                    </div>
+                    <div class="started">
+                        <span class="relativetime" title="11/26/2008 3:32:15 PM UTC">Nov 26 at 15:32</span>
+                        <a href="/users/13913/daok">Daok</a> <span title="reputation score" class="reputation-score">15.2k</span><span title="1 gold badge(s)"><span class="badge1">●</span><span class="badgecount">1</span></span><span title="20 silver badge(s)"><span class="badge2">●</span><span class="badgecount">20</span></span><span title="60 bronze badge(s)"><span class="badge3">●</span><span class="badgecount">60</span></span>
+                    </div>
+                </div>
+            </div>
+            <br clear="both"/>
+        </div>
+        <p>&nbsp;</p>
+        <a name="answers"></a>
+        <table>
+            <tr>
+                <td>
+                    <div style="text-align: right;" class="summarycount">477</div>
+                </td>
+                <td style="vertical-align: middle; padding-left: 10px;">
+                    <h1>个回答</h1>
+                </td>
+            </tr>
+        </table>
+        <div class="user-stats-table">
+            <div class="answer-summary">
+                <a title="total number of votes for 2 answers" href="/questions/84556/whats-your-favorite-programmer-cartoon#84724">
+                    <div class="answer-votes">215</div>
+                </a>
+                <div class="answer-link">
+                    <a href="/questions/84556/whats-your-favorite-programmer-cartoon#84724">What’s your favorite “programmer” cartoon?</a> (2)
+                </div>
+            </div>
+            <div class="answer-summary">
+                <a href="/questions/356217/should-i-use-isgood-or-isgood-false#356224">
+                    <div title="total number of votes for this answer, which was accepted as the correct answer by the question owner" class="answer-votes answered-accepted">82</div>
+                </a>
+                <div class="answer-link">
+                    <a href="/questions/356217/should-i-use-isgood-or-isgood-false#356224">Should I use `!IsGood` or `IsGood == false`?</a>
+                </div>
+            </div>
+            <div class="answer-summary">
+                <a title="total number of votes for 4 answers" href="/questions/192793/what-is-your-favorite-programmer-t-shirt#192908">
+                    <div class="answer-votes">76</div>
+                </a>
+                <div class="answer-link">
+                    <a href="/questions/192793/what-is-your-favorite-programmer-t-shirt#192908">What is your favorite “programmer” t-shirt?</a> (4)
+                </div>
+            </div>
+            <div class="answer-summary">
+                <a href="/questions/314505/how-to-mark-a-class-deprecated#314507">
+                    <div title="total number of votes for this answer, which was accepted as the correct answer by the question owner" class="answer-votes answered-accepted">31
+                    </div>
+                </a>
+                <div class="answer-link">
+                    <a href="/questions/314505/how-to-mark-a-class-deprecated#314507">How to mark a class Deprecated?</a>
+                </div>
+            </div>
+        </div>
+        <p>&nbsp;</p>
+        <a name="votes"/>
+        <table>
+            <tr>
+                <td>
+                    <div style="text-align: right;" class="summarycount">589</div>
+                </td>
+                <td style="vertical-align: middle; padding-left: 10px;">
+                    <h1>个投票</h1>                    
+                </td>
+            </tr>
+        </table>
+        <div class="user-stats-table">
+            <table>
+                <tr>
+                    <td width="60">
+                        <div class="vote" style="background:none">
+                            <img width="40" height="25" style="cursor: default;" src="/content/images/vote-arrow-up-on.png"/>
+                            <span title="total number of up votes this user has given" class="vote-count-post">532</span>
+                            <img width="40" height="25" style="cursor: default;" src="/content/images/vote-arrow-down.png"/>
+                        </div>
+                    </td>
+                    <td width="60">
+                        <div class="vote" style="background:none">
+                            <img width="40" height="25" style="cursor: default;" src="/content/images/vote-arrow-up.png"/>
+                            <span title="total number of down votes this user has given" class="vote-count-post">57</span>
+                            <img width="40" height="25" style="cursor: default;" src="/content/images/vote-arrow-down-on.png"/>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <p>&nbsp;</p>
+        <a name="tags"/>
+        <table>
+            <tr>
+                <td>
+                    <div style="text-align: right;" class="summarycount">642</div>
+                </td>
+                <td style="vertical-align: middle; padding-left: 10px;">
+                    <h1>个标签</h1>
+                </td>
+            </tr>
+        </table>
+        <div class="user-stats-table">
+            <table>
+                <tr>
+                    <td width="180">
+                        <a rel="tag" title="show questions tagged 'c#'" class="post-tag" href="/questions/tagged/c%23">c#</a><span class="item-multiplier">× 148</span><br/>
+                        <a rel="tag" title="show questions tagged '.net'" class="post-tag" href="/questions/tagged/.net">.net</a><span class="item-multiplier">× 98</span><br/>
+                        <a rel="tag" title="show questions tagged 'subjective'" class="post-tag" href="/questions/tagged/subjective">subjective</a><span class="item-multiplier">× 65</span><br/>
+                        <a rel="tag" title="show questions tagged '.net2.0'" class="post-tag" href="/questions/tagged/.net2.0">.net2.0</a><span class="item-multiplier">× 32</span><br/>
+                        <a rel="tag" title="show questions tagged 'php'" class="post-tag" href="/questions/tagged/php">php</a><span class="item-multiplier">× 30</span><br/>
+                        <a rel="tag" title="show questions tagged 'best-practices'" class="post-tag" href="/questions/tagged/best-practices">best-practices</a><span class="item-multiplier">× 25</span><br/>
+                        <a rel="tag" title="show questions tagged 'stackoverflow'" class="post-tag" href="/questions/tagged/stackoverflow">stackoverflow</a><span class="item-multiplier">× 23</span><br/>
+                        <a rel="tag" title="show questions tagged 'winforms'" class="post-tag" href="/questions/tagged/winforms">winforms</a><span class="item-multiplier">× 22</span><br/>
+                        <a rel="tag" title="show questions tagged 'unit-testing'" class="post-tag" href="/questions/tagged/unit-testing">unit-testing</a><span class="item-multiplier">× 22</span><br/>
+                        <a rel="tag" title="show questions tagged 'visualstudio'" class="post-tag" href="/questions/tagged/visualstudio">visualstudio</a><span class="item-multiplier">× 15</span><br/>
+                    </td>
+                    <td width="180">
+                        <a rel="tag" title="show questions tagged 'polls'" class="post-tag" href="/questions/tagged/polls">polls</a><span class="item-multiplier">× 13</span><br/>
+                        <a rel="tag" title="show questions tagged 'windows'" class="post-tag" href="/questions/tagged/windows">windows</a><span class="item-multiplier">× 11</span><br/>
+                        <a rel="tag" title="show questions tagged 'sofaq'" class="post-tag" href="/questions/tagged/sofaq">sofaq</a><span class="item-multiplier">× 11</span><br/>
+                        <a rel="tag" title="show questions tagged 'programming'" class="post-tag" href="/questions/tagged/programming">programming</a><span class="item-multiplier">× 11</span><br/>
+                        <a rel="tag" title="show questions tagged 'language-agnostic'" class="post-tag" href="/questions/tagged/language-agnostic">language-agnostic</a><span class="item-multiplier">× 11</span><br/>
+                        <a rel="tag" title="show questions tagged 'asp.net'" class="post-tag" href="/questions/tagged/asp.net">asp.net</a><span class="item-multiplier">× 11</span><br/>
+                        <a rel="tag" title="show questions tagged 'design'" class="post-tag" href="/questions/tagged/design">design</a><span class="item-multiplier">× 10</span><br/>
+                        <a rel="tag" title="show questions tagged 'database'" class="post-tag" href="/questions/tagged/database">database</a><span class="item-multiplier">× 10</span><br/>
+                        <a rel="tag" title="show questions tagged 'web-development'" class="post-tag" href="/questions/tagged/web-development">web-development</a><span class="item-multiplier">× 9</span><br/>
+                        <a rel="tag" title="show questions tagged 'mysql'" class="post-tag" href="/questions/tagged/mysql">mysql</a><span class="item-multiplier">× 9</span><br/>
+                    </td>
+                    <td width="180">
+                        <a rel="tag" title="show questions tagged 'java'" class="post-tag" href="/questions/tagged/java">java</a><span class="item-multiplier">× 9</span><br/>
+                        <a rel="tag" title="show questions tagged 'html'" class="post-tag" href="/questions/tagged/html">html</a><span class="item-multiplier">× 9</span><br/>
+                        <a rel="tag" title="show questions tagged 'offtopic'" class="post-tag" href="/questions/tagged/offtopic">offtopic</a><span class="item-multiplier">× 8</span><br/>
+                        <a rel="tag" title="show questions tagged 'not-programming-related'" class="post-tag" href="/questions/tagged/not-programming-related">not-programming-related</a><span class="item-multiplier">× 8</span><br/>
+                        <a rel="tag" title="show questions tagged 'c#3.0'" class="post-tag" href="/questions/tagged/c%233.0">c#3.0</a><span class="item-multiplier">× 8</span><br/>
+                        <a rel="tag" title="show questions tagged 'c#2.0'" class="post-tag" href="/questions/tagged/c%232.0">c#2.0</a><span class="item-multiplier">× 8</span><br/>
+                        <a rel="tag" title="show questions tagged 'testing'" class="post-tag" href="/questions/tagged/testing">testing</a><span class="item-multiplier">× 7</span><br/>
+                        <a rel="tag" title="show questions tagged 'sql'" class="post-tag" href="/questions/tagged/sql">sql</a><span class="item-multiplier">× 7</span><br/>
+                        <a rel="tag" title="show questions tagged 'postgresql'" class="post-tag" href="/questions/tagged/postgresql">postgresql</a><span class="item-multiplier">× 7</span><br/>
+                        <a rel="tag" title="show questions tagged 'poll'" class="post-tag" href="/questions/tagged/poll">poll</a><span class="item-multiplier">× 7</span><br/>
+                    </td>
+                    <td width="180">
+                        <a rel="tag" title="show questions tagged 'vb.net'" class="post-tag" href="/questions/tagged/vb.net">vb.net</a><span class="item-multiplier">× 6</span><br/>
+                        <a rel="tag" title="show questions tagged 'regex'" class="post-tag" href="/questions/tagged/regex">regex</a><span class="item-multiplier">× 6</span><br/>
+                        <a rel="tag" title="show questions tagged 'project-management'" class="post-tag" href="/questions/tagged/project-management">project-management</a><span class="item-multiplier">× 6</span><br/>
+                        <a rel="tag" title="show questions tagged 'programming-languages'" class="post-tag" href="/questions/tagged/programming-languages">programming-languages</a><span class="item-multiplier">× 6</span><br/>
+                        <a rel="tag" title="show questions tagged 'performance'" class="post-tag" href="/questions/tagged/performance">performance</a><span class="item-multiplier">× 6</span><br/>
+                        <a rel="tag" title="show questions tagged 'mvc'" class="post-tag" href="/questions/tagged/mvc">mvc</a><span class="item-multiplier">× 6</span><br/>
+                        <a rel="tag" title="show questions tagged 'design-patterns'" class="post-tag" href="/questions/tagged/design-patterns">design-patterns</a><span class="item-multiplier">× 6</span><br/>
+                        <a rel="tag" title="show questions tagged 'css'" class="post-tag" href="/questions/tagged/css">css</a><span class="item-multiplier">× 6</span><br/>
+                        <a rel="tag" title="show questions tagged 'visualstudio2008'" class="post-tag" href="/questions/tagged/visualstudio2008">visualstudio2008</a><span class="item-multiplier">× 5</span><br/>
+                        <a rel="tag" title="show questions tagged 'tools'" class="post-tag" href="/questions/tagged/tools">tools</a><span class="item-multiplier">× 5</span><br/>
+                    </td>
+                    <td width="180">
+                        <a rel="tag" title="show questions tagged 'tdd'" class="post-tag" href="/questions/tagged/tdd">tdd</a><span class="item-multiplier">× 5</span><br/>
+                        <a rel="tag" title="show questions tagged 'open-source'" class="post-tag" href="/questions/tagged/open-source">open-source</a><span class="item-multiplier">× 5</span><br/>
+                        <a rel="tag" title="show questions tagged 'meta-discussion'" class="post-tag" href="/questions/tagged/meta-discussion">meta-discussion</a><span class="item-multiplier">× 5</span><br/>
+                        <a rel="tag" title="show questions tagged 'learning'" class="post-tag" href="/questions/tagged/learning">learning</a><span class="item-multiplier">× 5</span><br/>
+                        <a rel="tag" title="show questions tagged 'javascript'" class="post-tag" href="/questions/tagged/javascript">javascript</a><span class="item-multiplier">× 5</span><br/>
+                        <a rel="tag" title="show questions tagged 'fun'" class="post-tag" href="/questions/tagged/fun">fun</a><span class="item-multiplier">× 5</span><br/>
+                        <a rel="tag" title="show questions tagged 'coding-style'" class="post-tag" href="/questions/tagged/coding-style">coding-style</a><span class="item-multiplier">× 5</span><br/>
+                        <a rel="tag" title="show questions tagged 'clickonce'" class="post-tag" href="/questions/tagged/clickonce">clickonce</a><span class="item-multiplier">× 5</span><br/>
+                        <a rel="tag" title="show questions tagged 'beginner'" class="post-tag" href="/questions/tagged/beginner">beginner</a><span class="item-multiplier">× 5</span><br/>
+                        <a rel="tag" title="show questions tagged 'architecture'" class="post-tag" href="/questions/tagged/architecture">architecture</a><span class="item-multiplier">× 5</span><br/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <p>&nbsp;</p>
+        <a name="badges"/>
+        <table>
+            <tr>
+                <td>
+                    <div style="text-align: right;" class="summarycount">81</div>
+                </td>
+                <td style="vertical-align: middle; padding-left: 10px;">
+                    <h1>Badges</h1>                    
+                </td>
+            </tr>
+        </table>
+        <div class="user-stats-table">
+            <table>
+                <tr>
+                    <td width="180">
+                        <a class="badge" title="bronze badge: Question voted up more than 10 times" href="/badges/20/nice-question"><span class="badge3">●</span> Nice Question</a><span class="item-multiplier">× 7</span><br/>
+                        <a class="badge" title="bronze badge: Answer voted up more than 10 times" href="/badges/23/nice-answer"><span class="badge3">●</span> Nice Answer</a><span class="item-multiplier">× 37</span><br/>
+                        <a class="badge" title="silver badge: Edited 100 entries" href="/badges/12/strunk-white"><span class="badge2">●</span> Strunk & White</a><br/>
+                        <a class="badge" title="silver badge: First answer was accepted with at least 10 up votes" href="/badges/19/enlightened"><span class="badge2">●</span> Enlightened</a><span class="item-multiplier">× 8</span><br/>
+                        <a class="badge" title="bronze badge: Deleted own post with 3 or more upvotes" href="/badges/37/disciplined"><span class="badge3">●</span> Disciplined</a><br/>
+                        <a class="badge" title="silver badge: Judged best answer and voted up 40 times" href="/badges/18/guru"><span class="badge2">●</span> Guru</a><br/>
+                    </td>
+                    <td width="180">
+                        <a class="badge" title="silver badge: Answer voted up more than 25 times" href="/badges/24/good-answer"><span class="badge2">●</span> Good Answer</a><span class="item-multiplier">× 7</span><br/>
+                        <a class="badge" title="bronze badge: Asked a question with 1,000 views" href="/badges/26/popular-question"><span class="badge3">●</span> Popular Question</a><span class="item-multiplier">× 2</span><br/>
+                        <a class="badge" title="silver badge: Asked a question with 2,500 views" href="/badges/27/notable-question"><span class="badge2">●</span> Notable Question</a><br/>
+                        <a class="badge" title="silver badge: Created a tag used by 50 questions" href="/badges/11/taxonomist"><span class="badge2">●</span> Taxonomist</a><br/>
+                        <a class="badge" title="bronze badge: Answered your own question with at least 3 up votes" href="/badges/14/self-learner"><span class="badge3">●</span> Self-Learner</a><br/>
+                        <a class="badge" title="silver badge: Voted 300 times" href="/badges/32/civic-duty"><span class="badge2">●</span> Civic Duty</a><br/>
+                    </td>
+                    <td width="180">
+                        <a class="badge" title="bronze badge: Deleted own post with 3 or more downvotes" href="/badges/38/peer-pressure"><span class="badge3">●</span> Peer Pressure</a><br/>
+                        <a class="badge" title="gold badge: Answer voted up more than 100 times" href="/badges/25/great-answer"><span class="badge1">●</span> Great Answer</a><br/>
+                        <a class="badge" title="bronze badge: First rollback" href="/badges/4/cleanup"><span class="badge3">●</span> Cleanup</a><br/>
+                        <a class="badge" title="bronze badge: First retag" href="/badges/5/organizer"><span class="badge3">●</span> Organizer</a><br/>
+                        <a class="badge" title="bronze badge: First flagged post" href="/badges/8/citizen-patrol"><span class="badge3">●</span> Citizen Patrol</a><br/>
+                        <a class="badge" title="bronze badge: First down vote" href="/badges/7/critic"><span class="badge3">●</span> Critic</a><br/>
+                    </td>
+                    <td width="180">
+                        <a class="badge" title="bronze badge: Left 10 comments" href="/badges/31/commentator"><span class="badge3">●</span> Commentator</a><br/>
+                        <a class="badge" title="bronze badge: First edit" href="/badges/3/editor"><span class="badge3">●</span> Editor</a><br/>
+                        <a class="badge" title="bronze badge: Answered first question with at least one up vote" href="/badges/1/teacher"><span class="badge3">●</span> Teacher</a><br/>
+                        <a class="badge" title="bronze badge: Completed all user profile fields" href="/badges/9/autobiographer"><span class="badge3">●</span> Autobiographer</a><br/>
+                        <a class="badge" title="bronze badge: First up vote" href="/badges/6/supporter"><span class="badge3">●</span> Supporter</a><br/>
+                        <a class="badge" title="bronze badge: First accepted answer" href="/badges/10/scholar"><span class="badge3">●</span> Scholar</a><br/>
+                    </td>
+                    <td width="180">
+                        <a class="badge" title="bronze badge: Asked first question with at least one up vote" href="/badges/2/student"><span class="badge3">●</span> Student</a><br/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        {% include "user_footer.html" %}
+	</div>
+{% endblock %}
