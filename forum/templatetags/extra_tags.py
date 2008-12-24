@@ -131,4 +131,7 @@ def format_number(value):
         strValue = first + ',' + second
         m = re.match(pattern, strValue)
     return first + result
-    
+
+@register.simple_tag
+def get_answered_count(question, user_id):
+    return question.get_answer_count_by_user(user_id)

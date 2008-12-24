@@ -312,7 +312,15 @@ def user_stats(request, user_id, username):
         params=[user_id],
         order_by=['-vote_count']
     )
-    answers = user.answers.filter(author__id=user_id).order_by('-vote_up_count')
+    answered_questions = Question.objects.extra(
+        select={
+            'vote_count': 'question.vote_up_count + question.vote_down_count'
+            },
+        tables=['question', 'answer'],
+        where=['answer.author_id=%s AND answer.question_id=question.id'],
+        params=[user_id],
+        order_by=['-vote_count']
+    ).distinct()
     up_votes = Vote.objects.get_up_vote_count_from_user(user)
     down_votes = Vote.objects.get_down_vote_count_from_user(user)
     tags = user.created_tags.all().order_by('-used_count')
@@ -322,8 +330,9 @@ def user_stats(request, user_id, username):
         "tab_name" : "stats",
         "user" : user,
         "questions" : questions,
-        "answers" : answers,
+        "answered_questions" : answered_questions,
         "up_votes" : up_votes,
         "down_votes" : down_votes,
+        "total_votes": up_votes + down_votes,
         "tags" : tags
     })

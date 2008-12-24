@@ -131,7 +131,7 @@ class VoteManager(models.Manager):
             cursor = connection.cursor()
             cursor.execute(self.COUNT_UP_VOTE_BY_USER, [user.id])
             row = cursor.fetchone()
-            return row
+            return row[0]
         else:
             return 0
     
@@ -140,6 +140,6 @@ class VoteManager(models.Manager):
             cursor = connection.cursor()
             cursor.execute(self.COUNT_DOWN_VOTE_BY_USER, [user.id])
             row = cursor.fetchone()
-            return row
+            return row[0]
         else:
             return 0

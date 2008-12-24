@@ -42,7 +42,8 @@
                 {% if user.website %}
                 <tr>
                     <td>个人网站</td>
-                    <td><a rel="me" href="{{user.website}}">{{user.website}}</a></td>
+                    <!--nofollow means prevent search engine follow-->
+                    <td><a rel="nofollow" href="{{user.website}}">{{user.website}}</a></td>
                 </tr>
                 {% endif  %}
                 {% if user.location %}

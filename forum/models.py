@@ -98,7 +98,11 @@ class Question(models.Model):
        
     def get_absolute_url(self):
         return '%s%s' % (reverse('question', args=[self.id]), strip_tags(self.title))
-        
+    
+    def get_answer_count_by_user(self, user_id):
+        query_set = Answer.objects.filter(author__id=user_id)
+        return query_set.filter(question=self).count()
+    
     def __unicode__(self):
         return self.title
         

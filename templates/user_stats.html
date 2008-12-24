@@ -95,7 +95,7 @@
         <table>
             <tr>
                 <td>
-                    <div style="text-align: right;" class="summarycount">477</div>
+                    <div style="text-align: right;" class="summarycount">{{answered_questions|length}}</div>
                 </td>
                 <td style="vertical-align: middle; padding-left: 10px;">
                     <h1>个回答</h1>
@@ -103,46 +103,25 @@
             </tr>
         </table>
         <div class="user-stats-table">
+            {% for answered_question in answered_questions %}
             <div class="answer-summary">
-                <a title="total number of votes for 2 answers" href="/questions/84556/whats-your-favorite-programmer-cartoon#84724">
-                    <div class="answer-votes">215</div>
+                <!--TODO:locate answer in question's answers list-->
+                <a title="{{answered_question.summary}}" href="/questions/{{answered_question.id}}/{{answered_question.title}}">
+                    <div class="answer-votes {% if answered_question.answer_accepted %}answered-accepted{% endif %}">{% get_total_count answered_question.vote_up_count  answered_question.vote_down_count %}</div>
                 </a>
                 <div class="answer-link">
-                    <a href="/questions/84556/whats-your-favorite-programmer-cartoon#84724">What’s your favorite “programmer” cartoon?</a> (2)
+                    <!--TODO:locate answer in question's answers list-->
+                    <a href="/questions/{{answered_question.id}}/{{answered_question.title}}">{{answered_question.title}}</a> ({% get_answered_count  answered_question user.id%})
                 </div>
             </div>
-            <div class="answer-summary">
-                <a href="/questions/356217/should-i-use-isgood-or-isgood-false#356224">
-                    <div title="total number of votes for this answer, which was accepted as the correct answer by the question owner" class="answer-votes answered-accepted">82</div>
-                </a>
-                <div class="answer-link">
-                    <a href="/questions/356217/should-i-use-isgood-or-isgood-false#356224">Should I use `!IsGood` or `IsGood == false`?</a>
-                </div>
-            </div>
-            <div class="answer-summary">
-                <a title="total number of votes for 4 answers" href="/questions/192793/what-is-your-favorite-programmer-t-shirt#192908">
-                    <div class="answer-votes">76</div>
-                </a>
-                <div class="answer-link">
-                    <a href="/questions/192793/what-is-your-favorite-programmer-t-shirt#192908">What is your favorite “programmer” t-shirt?</a> (4)
-                </div>
-            </div>
-            <div class="answer-summary">
-                <a href="/questions/314505/how-to-mark-a-class-deprecated#314507">
-                    <div title="total number of votes for this answer, which was accepted as the correct answer by the question owner" class="answer-votes answered-accepted">31
-                    </div>
-                </a>
-                <div class="answer-link">
-                    <a href="/questions/314505/how-to-mark-a-class-deprecated#314507">How to mark a class Deprecated?</a>
-                </div>
-            </div>
+            {% endfor %}
         </div>
         <p>&nbsp;</p>
         <a name="votes"/>
         <table>
             <tr>
                 <td>
-                    <div style="text-align: right;" class="summarycount">589</div>
+                    <div style="text-align: right;" class="summarycount">{{total_votes}}</div>
                 </td>
                 <td style="vertical-align: middle; padding-left: 10px;">
                     <h1>个投票</h1>                    
@@ -155,14 +134,14 @@
                     <td width="60">
                         <div class="vote" style="background:none">
                             <img width="40" height="25" style="cursor: default;" src="/content/images/vote-arrow-up-on.png"/>
-                            <span title="total number of up votes this user has given" class="vote-count-post">532</span>
+                            <span title="total number of up votes this user has given" class="vote-count-post">{{up_votes}}</span>
                             <img width="40" height="25" style="cursor: default;" src="/content/images/vote-arrow-down.png"/>
                         </div>
                     </td>
                     <td width="60">
                         <div class="vote" style="background:none">
                             <img width="40" height="25" style="cursor: default;" src="/content/images/vote-arrow-up.png"/>
-                            <span title="total number of down votes this user has given" class="vote-count-post">57</span>
+                            <span title="total number of down votes this user has given" class="vote-count-post">{{down_votes}}</span>
                             <img width="40" height="25" style="cursor: default;" src="/content/images/vote-arrow-down-on.png"/>
                         </div>
                     </td>
