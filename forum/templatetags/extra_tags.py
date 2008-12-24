@@ -1,6 +1,7 @@
 ﻿import time
 import datetime
 import math
+import re
 import logging
 from django import template
 from django.utils.safestring import mark_safe
@@ -113,3 +114,21 @@ def get_age(birthday):
 @register.simple_tag
 def get_total_count(up_count, down_count):
     return up_count + down_count
+
+@register.simple_tag
+def format_number(value):
+    strValue = str(value)
+    if len(strValue) <= 3:
+        return strValue
+    result = ''
+    first = ''
+    pattern = re.compile('(-?\d+)(\d{3})')
+    m = re.match(pattern, strValue)
+    while m != None:
+        first = m.group(1)
+        second = m.group(2)
+        result = ',' + second + result
+        strValue = first + ',' + second
+        m = re.match(pattern, strValue)
+    return first + result
+    
