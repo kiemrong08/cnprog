@@ -4,6 +4,7 @@
         <script type='text/javascript' src='/content/js/com.cnprog.editor.js'></script>
         <script type='text/javascript' src='/content/js/jquery.validate.pack.js'></script>
         <script type="text/javascript">
+        
         $().ready(function(){
             //set current module button style
             $("#nav_ask").attr('className',"youarehere");
@@ -47,10 +48,10 @@
         			tags: {
         				required: true,
         				maxength: 105,
-        			},
+        			},  
         			text: {
         				required: true,
-        				minlength: 10,
+        				minlength: 30,
         			},
         			title: {
         				required: true,
@@ -75,25 +76,6 @@
             });
 
         });
-        String.prototype.trim = function() { 
-            return this.replace(/^\s+|\s+$|\r+$|\n+$/g, ''); 
-        }
-        
-        function validateForm(){
-            if($("#fmask").valid()){
-                var taglist = $("#id_tags").val().trim();
-                var arrTags = tags.split(" ");
-                if(arrTags.length > 5){
-                    alert("最多只能有5个标签")
-                    return false;
-                }
-                
-                
-            }
-            return false;
-        }
-
-        
         </script>
 {% endblock %}
         
@@ -106,9 +88,9 @@
 </div>
 <div id="main-body" class="">
     <div id="askform">
-        <form id="fmask" action="{% url forum.views.ask %}" method="post" onsubmit="return validateForm();">
+        <form id="fmask" action="{% url forum.views.ask %}" method="post" >
             <label for="id_title" ><strong>标题:</strong></label> <br> 
-            {{ form.title }} 
+            {{ form.title }} {{ form.title.errors }}
             <div class="title-desc">
                 请输入对问题具有描述性质的标题 - “帮忙！紧急求助！”不是建议的提问方式。
             </div>     
@@ -119,7 +101,7 @@
                 
             </div>
             <strong>标签:</strong> <br>
-            {{ form.tags }} 
+            {{ form.tags }}  {{ form.tags.errors }}
             <div class="title-desc">
                 多个标签请用空格间隔-最多5个标签。（优先使用自动匹配的英文标签。）
             </div>

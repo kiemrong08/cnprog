@@ -3,8 +3,10 @@
 {% load humanize %}
 {% block forejs %}
         <script type='text/javascript' src='/content/js/com.cnprog.editor.js'></script>
+        <script type='text/javascript' src='/content/js/jquery.validate.pack.js'></script>
         <script type="text/javascript">
         $().ready(function(){
+            $("#nav_questions").attr('className',"youarehere");
             $('#editor').TextAreaResizer();
             //highlight code synctax when editor has new text
             $("#editor").typeWatch({highlight: false, wait: 3000,
@@ -20,7 +22,22 @@
                 $('#pre-collapse').text(txt);
             });
             
-            $("#nav_questions").attr('className',"youarehere");
+            //form validation
+            $("#fmanswer").validate({
+                rules: {
+        			text: {
+        				required: true,
+        				minlength: 30,
+        			}
+        		},
+                messages: {
+        			text: {
+        				required: " 内容不能为空。",
+        				minlength: jQuery.format(" 请输入至少 {0} 字符。")
+        			}
+                },
+                
+            });
         });
          
         </script>
@@ -35,7 +52,7 @@
 </div>
 <div id="main-body" class="">
     <div id="askform">
-        <form action="{% url answer question.id %}" method="post">
+        <form id="fmanswer" action="{% url answer question.id %}" method="post">
             <table style="width:100%;">
                 <tr>
                     <td style="width:50px;vertical-align:top">
@@ -256,7 +273,7 @@
                 </tr> 
             </table>    
             {% endif %}
-  
+            {{ answer.text.errors }}
             <input type="submit" value="回答该问题" class="submit">
         </form>
     </div>

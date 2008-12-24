@@ -935,6 +935,10 @@ form .error{
     color:darkred;
 }
 
+form .errorlist li{
+    color: red;
+}
+
 /** PAGINATOR **/
 .paginator { padding:.5em .75em; float:left; font:normal .8em arial; }
  

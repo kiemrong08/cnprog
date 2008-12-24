@@ -144,7 +144,7 @@ def ask(request):
         if form.is_valid():
             added_at = datetime.datetime.now()
             question = Question(
-                title            = quote(sanitize_html(form.cleaned_data['title'])),
+                title            = strip_tags(form.cleaned_data['title']),
                 author           = request.user,
                 added_at         = added_at,
                 last_activity_at = added_at,
@@ -163,7 +163,8 @@ def ask(request):
         
     else:
         form = AskForm()
-        tags = serializers.serialize("json", Tag.objects.all())
+        
+    tags = serializers.serialize("json", Tag.objects.all())
     return render_to_response('ask.html', {
         'form' : form,
         'tags' : tags,

@@ -1,7 +1,7 @@
 # encoding:utf-8
 import datetime
 import hashlib
-from urllib import quote_plus
+from urllib import quote_plus, urlencode
 from django.db import models
 from django.utils.html import strip_tags
 from django.core.urlresolvers import reverse
@@ -97,7 +97,7 @@ class Question(models.Model):
         return [name for name in self.tagnames.split(u' ')]
        
     def get_absolute_url(self):
-        return '%s%s' % (reverse('question', args=[self.id]), strip_tags(self.title))
+        return '%s%s' % (reverse('question', args=[self.id]), self.title)
     
     def get_answer_count_by_user(self, user_id):
         query_set = Answer.objects.filter(author__id=user_id)
