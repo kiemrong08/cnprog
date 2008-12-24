@@ -59,6 +59,8 @@ class Question(models.Model):
     locked_at       = models.DateTimeField(null=True, blank=True)
     # Denormalised data
     score                = models.IntegerField(default=0)
+    vote_up_count        = models.IntegerField(default=0)
+    vote_down_count      = models.IntegerField(default=0)
     answer_count         = models.PositiveIntegerField(default=0)
     comment_count        = models.PositiveIntegerField(default=0)
     view_count           = models.PositiveIntegerField(default=0)
@@ -118,6 +120,8 @@ class Answer(models.Model):
     locked_at   = models.DateTimeField(null=True, blank=True)
     # Denormalised data
     score                = models.IntegerField(default=0)
+    vote_up_count        = models.IntegerField(default=0)
+    vote_down_count      = models.IntegerField(default=0)
     comment_count        = models.PositiveIntegerField(default=0)
     offensive_flag_count = models.SmallIntegerField(default=0)
     last_edited_at       = models.DateTimeField(null=True, blank=True)

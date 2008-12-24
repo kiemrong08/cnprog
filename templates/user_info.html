@@ -1,5 +1,6 @@
+{% load extra_tags %}
 <div id="subheader">
-    <h1>Daok</h1>
+    <h1>{{user.username}}</h1>
     <div id="tabs"></div>
 </div>
 
@@ -10,12 +11,12 @@
             <table>
                 <tr>
                     <td style="padding: 20px 20px 8px;">
-                        <img width="128" height="128" src="http://www.gravatar.com/avatar/a147f48a1c8298c71d4bb425b2801224?s=128&amp;d=identicon&amp;r=PG"/>
+                        {% gravatar user 128 %}
                     </td>
                 </tr>
                 <tr>
                     <td class="summaryinfo">
-                        <div class="summarycount">15,217</div>
+                        <div class="summarycount">{{user.reputation}}</div>
                         <div style="margin-top: 5px; font-weight: bold;">荣誉</div>
                     </td>
                 </tr>
@@ -28,31 +29,43 @@
             <table class="user-details">
                 <tr>
                     <td width="120">用户名</td>
-                    <td width="230"><b>Daok</b></td>
+                    <td width="230"><b>{{user.username}}</b></td>
                 </tr>
                 <tr>
                     <td>已加入</td>
-                    <td>{{user.username}} days</td>
+                    <td>{{ user.date_joined|timesince }}</td>
                 </tr>
                 <tr>
                     <td>上次登录时间</td>
-                    <td><span class="relativetime" title="12/23/2008 1:51:03 AM UTC">4 hours ago</span></td>
+                    <td><span class="relativetime" title="12/23/2008 1:51:03 AM UTC">{{ user.last_login|timesince }}前</span></td>
                 </tr>
+                {% if user.website %}
                 <tr>
                     <td>个人网站</td>
-                    <td><a rel="me" href="http://stackoverflow.com/questions/320746/real-time-reputation-tracker">http://stackoverflow.com/questions/320746/real-time-reputation-tracker</a></td>
+                    <td><a rel="me" href="{{user.website}}">{{user.website}}</a></td>
                 </tr>
+                {% endif  %}
+                {% if user.location %}
                 <tr>
                     <td>位置</td>
-                    <td>Canada</td>
+                    <td>{{user.location}}</td>
                 </tr>
+                {% endif %}
+                {% if user.date_of_birth%}
                 <tr>
                     <td>年龄</td>
-                    <td>34</td>
+                    <td>{% get_age user.date_of_birth %} 岁</td>
                 </tr>
+                {% endif %}
             </table>
         </td>
         <!--cell-->
-        <td width="380"><div id="user-about-me">Computer engineer</div></td>
+        <td width="380">
+            <div id="user-about-me">
+            {% if user.about %}
+                {{user.about|escape|linebreaks}}
+            {% endif %}
+            </div>
+        </td>
     </tr>
 </table>

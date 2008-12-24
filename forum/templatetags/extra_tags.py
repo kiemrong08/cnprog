@@ -1,4 +1,6 @@
-﻿import math
+﻿import time
+import datetime
+import math
 import logging
 from django import template
 from django.utils.safestring import mark_safe
@@ -101,3 +103,13 @@ def cnprog_pagesize(context):
             "pagesize" : context["pagesize"],
             "is_paginated": context["is_paginated"]
         }
+        
+@register.simple_tag
+def get_age(birthday):
+    current_time = datetime.datetime(*time.localtime()[0:6])
+    diff = current_time - birthday
+    return diff.days / 365
+
+@register.simple_tag
+def get_total_count(up_count, down_count):
+    return up_count + down_count

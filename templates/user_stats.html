@@ -21,7 +21,7 @@
         <table>
             <tr>
                 <td>
-                    <div style="text-align: right;" class="summarycount">73</div>
+                    <div style="text-align: right;" class="summarycount">{{questions|length}}</div>
                 </td>
                 <td style="vertical-align: middle; padding-left: 10px;">
                     <h1>个问题</h1>
@@ -29,60 +29,64 @@
             </tr>
         </table>
 		<div class="user-stats-table">
+		    {% for question in questions%}
             <div class="favorites-count-off">
-                <img width="32" height="31" title="this question has been favorited by 3 users" alt="star" src="/content/images/vote-favorite-off.png"/><br/><b>3</b>
+                <img width="32" height="31" title="this question has been favorited by 3 users" alt="star" src="/content/images/vote-favorite-off.png"/><br/><b>{{question.favourite_count}}</b>
             </div>
-            <div id="question-summary-170584" class="question-summary narrow">
-                <a style="text-decoration: none;" href="/questions/170584/c-20-to-c-30-worth-it">
+            <div id="question-summary-{{question.id}}" class="question-summary narrow">
+                <a style="text-decoration: none;" href="/questions/{{question.id}}/{{question.title}}">
                     <div class="stats">
                         <div class="votes">
                             <div class="vote">
                                 <table width="100%">
                                     <tr>
                                         <td height="25" style="vertical-align: middle;">
-                                            <span class="vote-count-post"><strong style="font-size: 190%;">15</strong></span> 
+                                            <span class="vote-count-post"><strong style="font-size: 190%;">{% get_total_count question.vote_up_count  question.vote_down_count %}</strong></span> 
                                         </td>
                                     </tr>
-                                    <tr><td>votes</td></tr>
+                                    <tr><td>票</td></tr>
                                 </table>               
                             </div>
                         </div>
-                        <div title="one of the answers was accepted as the correct answer" class="status answered-accepted">
+                        <div title="{% if question.answer_accepted %}有答案已被接受为正确答案{% endif %}" class="status {% if question.answer_accepted %}answered-accepted{% endif %} {% ifequal question.answer_count 0 %}unanswered{% endifequal %}{% ifnotequal question.answer_count 0 %}answered{% endifnotequal %}">
                             <table width="100%">
                                 <tr>
                                     <td height="25" style="vertical-align: middle;">
-                                        <strong style="font-size: 190%;">16</strong>
+                                        <strong style="font-size: 190%;">{{question.answer_count}}</strong>
                                     </td>
                                 </tr>
-                                <tr><td>answers</td></tr>
+                                <tr><td>回答</td></tr>
                             </table>               
                         </div>
                         <div class="views">
                             <table width="100%">
                                 <tr>
                                     <td height="25" style="vertical-align: middle;">
-                                        <strong style="font-size: 190%;">1k</strong>
+                                        <strong style="font-size: 190%;">{{question.view_count}}</strong>
                                     </td>
                                 </tr>
-                                <tr><td>views</td></tr>
+                                <tr><td>浏览</td></tr>
                             </table>
                         </div>
                     </div>
                 </a>
                 <div class="summary">
                     <h3>
-                        <a title="I have read on StackOverflow some people that have converting to C#2.0 to C#3, but is it really worth it? I have a project that is done at 75% before going in maintenance phase, I … " href="/questions/170584/c-20-to-c-30-worth-it">c# 2.0 to c# 3.0 worth it?</a>
+                        <a title="{{question.summary}}" href="/questions/{{question.id}}/{{question.title}}">{{question.title}}</a>
                     </h3>
                     <div class="tags">
-                        <a rel="tag" title="show questions tagged 'project-management'" class="post-tag" href="/questions/tagged/project-management">project-management</a> <a rel="tag" title="show questions tagged 'risk-analysis'" class="post-tag" href="/questions/tagged/risk-analysis">risk-analysis</a> <a rel="tag" title="show questions tagged 'code-migration'" class="post-tag" href="/questions/tagged/code-migration">code-migration</a> 
+                        {% for tag in question.tagname_list %}
+                            <a href="{% url forum.views.tag tag|urlencode %}" class="post-tag" title="查看有关'{{ tag }}'的问题" rel="tag">{{ tag }}</a>
+                        {% endfor %}
                     </div>
                     <div class="started">
-                        <span class="relativetime" title="11/26/2008 3:32:15 PM UTC">Nov 26 at 15:32</span>
-                        <a href="/users/13913/daok">Daok</a> <span title="reputation score" class="reputation-score">15.2k</span><span title="1 gold badge(s)"><span class="badge1">●</span><span class="badgecount">1</span></span><span title="20 silver badge(s)"><span class="badge2">●</span><span class="badgecount">20</span></span><span title="60 bronze badge(s)"><span class="badge3">●</span><span class="badgecount">60</span></span>
+                        <span class="relativetime" title="{{question.last_activity_at}}">{{question.last_activity_at}}</span>
+                        <a href="/users/{{user.id}}/{{user.username}}">{{user.username}}</a> <span title="reputation score" class="reputation-score">{{user.reputation}}</span>{% if user.gold %}<span title="{{user.gold}} 枚金牌"><span class="badge1">●</span><span class="badgecount">{{user.gold}}</span></span>{% endif %}{% if user.silver %}<span title="{{user.silver}} 枚银牌"><span class="badge2">●</span><span class="badgecount">{{user.silver}}</span></span>{% endif %}{% if user.bronze %}<span title="{{user.bronze}}枚铜牌"><span class="badge3">●</span><span class="badgecount">{{user.bronze}}</span></span>{% endif %}
                     </div>
                 </div>
             </div>
             <br clear="both"/>
+            {% endfor %}
         </div>
         <p>&nbsp;</p>
         <a name="answers"></a>
