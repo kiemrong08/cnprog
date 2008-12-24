@@ -304,9 +304,8 @@ def users(request):
 
 def user_stats(request, user_id, username):
     user = get_object_or_404(User, id=user_id)
-    # TODO:order by vote_count desc
-    questions = user.questions.all().order_by('-added_at')
-    answers = user.answers.all().order_by('-added_at')
+    questions = user.questions.filter(author__id=user_id).order_by('-vote_up_count')
+    answers = user.answers.filter(author__id=user_id).order_by('-vote_up_count')
     up_votes = Vote.objects.get_up_vote_count_from_user(user)
     down_votes = Vote.objects.get_down_vote_count_from_user(user)
     tags = user.created_tags.all().order_by('-used_count')
