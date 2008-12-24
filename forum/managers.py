@@ -124,7 +124,7 @@ class AnswerManager(models.Manager):
 class VoteManager(models.Manager):
     # TODO: Check vote value: 0 down, 1 up
     COUNT_UP_VOTE_BY_USER = "SELECT count(*) FROM vote WHERE user_id = %s AND vote = 1"
-    COUNT_DOWN_VOTE_BY_USER = "SELECT count(*) FROM vote WHERE user_id = %s AND vote = 0"
+    COUNT_DOWN_VOTE_BY_USER = "SELECT count(*) FROM vote WHERE user_id = %s AND vote = -1"
     
     def get_up_vote_count_from_user(self, user):
         if user is not None:

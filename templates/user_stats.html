@@ -81,7 +81,9 @@
                     </div>
                     <div class="started">
                         <span class="relativetime" title="{{question.last_activity_at}}">{{question.last_activity_at}}</span>
-                        <a href="/users/{{user.id}}/{{user.username}}">{{question.author.username}}</a> <span title="reputation score" class="reputation-score">{% format_number question.author.reputation %}</span>{% if question.author.gold %}<span title="{{question.author.gold}} 枚金牌"><span class="badge1">●</span><span class="badgecount">{{user.gold}}</span></span>{% endif %}{% if question.author.silver %}<span title="{{question.author.silver}} 枚银牌"><span class="badge2">●</span><span class="badgecount">{{user.silver}}</span></span>{% endif %}{% if question.author.bronze %}<span title="{{question.author.bronze}}枚铜牌"><span class="badge3">●</span><span class="badgecount">{{user.bronze}}</span></span>{% endif %}
+                        {% if question.last_edited_by %}
+                        <a href="/users/{{user.id}}/{{user.username}}">{{question.last_edited_by.username}}</a> <span title="reputation score" class="reputation-score">{% format_number question.author.reputation %}</span>{% if question.last_edited_by.gold %}<span title="{{question.last_edited_by.gold}} 枚金牌"><span class="badge1">●</span><span class="badgecount">{{question.last_edited_by.gold}}</span></span>{% endif %}{% if question.last_edited_by.silver %}<span title="{{question.last_edited_by.silver}} 枚银牌"><span class="badge2">●</span><span class="badgecount">{{question.last_edited_by.silver}}</span></span>{% endif %}{% if question.last_edited_by.bronze %}<span title="{{question.last_edited_by.bronze}}枚铜牌"><span class="badge3">●</span><span class="badgecount">{{question.last_edited_by.bronze}}</span></span>{% endif %}
+                        {% endif %}
                     </div>
                 </div>
             </div>
