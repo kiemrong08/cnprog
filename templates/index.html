@@ -93,9 +93,7 @@
             
             <div class="question-tag">
                 {% for tag in question.tagname_list %}
-                    <a href="{% url forum.views.tag tag|urlencode %}" class="post-tag" title="查看有关'{{ tag }}'的问题" rel="tag">
-                        {{ tag }}
-                    </a>
+                    <a href="{% url forum.views.tag tag|urlencode %}" class="post-tag" title="查看有关'{{ tag }}'的问题" rel="tag">{{ tag }}</a>
                 {% endfor %}
             </div>
             <div class="question-started">

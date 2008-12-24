@@ -17,10 +17,12 @@ from utils.html import sanitize_html
 
 # used in tags list
 DEFAULT_PAGE_SIZE = 65
-# used for questions
+# used in questions
 QUESTIONS_PAGE_SIZE = 10
-# used for users
+# used in users
 USERS_PAGE_SIZE = 35
+# used in answers
+ANSWERS_PAGE_SIZE = 5 
 
 def index(request):
     view_id = request.GET.get('sort', None)
@@ -171,17 +173,45 @@ def ask(request):
         }, context_instance=RequestContext(request))
 
 def question(request, id):
+    try:
+        page = int(request.GET.get('page', '1'))        
+    except ValueError:
+        page = 1
+    view_id = request.GET.get('sort', 'latest')
+    view_dic = {"latest":"-added_at", "oldest":"added_at", "votes":"-score" }
+    try:
+        orderby = view_dic[view_id]
+    except KeyError:
+        view_id = "latest"
+        orderby = "-added_at"
+        
     question = get_object_or_404(Question, id=id)
     answer_form = AnswerForm()
     answers = Answer.objects.get_answers_from_question(question, request.user)
+    if answers is not None:
+        answers = answers.order_by(orderby)
+    objects_list = Paginator(answers, ANSWERS_PAGE_SIZE)
+    page_objects = objects_list.page(page)
     # update view count
     Question.objects.update_view_count(question)
     return render_to_response('question.html', {
         "question" : question,
         "answer" : answer_form,
-        "answers" : answers,
+        "answers" : page_objects.object_list,
         "tags" : question.tags.all(),
-        "similar_questions" : Question.objects.get_similar_questions(question)
+        "tab_id" : view_id,
+        "similar_questions" : Question.objects.get_similar_questions(question), 
+        "context" : {
+            'is_paginated' : True,
+            'pages': objects_list.num_pages,
+            'page': page,
+            'has_previous': page_objects.has_previous(),
+            'has_next': page_objects.has_next(),
+            'previous': page_objects.previous_page_number(),
+            'next': page_objects.next_page_number(),
+            'base_url' : request.path + '?sort=%s&' % view_id,
+            'extend_url' : "#sort-top"
+        }
         }, context_instance=RequestContext(request))
  
 #TODO: allow anynomus

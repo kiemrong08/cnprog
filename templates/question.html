@@ -7,6 +7,9 @@
         <script type="text/javascript">
         $().ready(function(){
             $("#nav_questions").attr('className',"youarehere");
+            var answer_sort_tab = "{{ tab_id }}";
+            $("#" + answer_sort_tab).attr('className',"youarehere");
+            
             $('#editor').TextAreaResizer();
             //highlight code synctax when editor has new text
             $("#editor").typeWatch({highlight: false, wait: 3000,
@@ -27,7 +30,7 @@
                 rules: {
         			text: {
         				required: true,
-        				minlength: 30,
+        				minlength: 30
         			}
         		},
                 messages: {
@@ -35,8 +38,7 @@
         				required: " 内容不能为空。",
         				minlength: jQuery.format(" 请输入至少 {0} 字符。")
         			}
-                },
-                
+                }
             });
         });
          
@@ -71,11 +73,9 @@
                             <div style="min-height:100px">
                                 {{ question.html|safe }}
                             </div>
-                            <div id="question-tags" class="question-tag" >
+                            <div id="question-tags" class="question-tag-extra" >
                                 {% for tag in question.tagname_list %}
-                                    <a href="{% url forum.views.tag tag|urlencode %}" class="post-tag" title="查看有关'{{ tag }}'的问题" rel="tag">
-                                        {{ tag }}
-                                    </a>
+                                    <a href="{% url forum.views.tag tag|urlencode %}" class="post-tag" title="查看有关'{{ tag }}'的问题" rel="tag">{{ tag }}</a>
                                 {% endfor %}
                             </div>
                             <div id="question-controls" style="clear:both;">
@@ -143,8 +143,18 @@
             </table>
             {% ifnotequal question.answer_count 0 %}
                 <div id="main-bar" class="">
+                    <a name="sort-top"></a>
                     <h3>{{ question.answer_count }}个回答：</h3>
+                    <div id="tab" class="">
+                        <a id="oldest" href="?sort=oldest#sort-top" title="最先回答显示在最前面">最早回答</a>
+                        <a id="latest" href="?sort=latest#sort-top" title="最晚回答显示在最前面">最近回答</a>
+                        <a id="votes" href="?sort=votes#sort-top" title="投票次数最多的显示在最前面">投票最多</a>
+                    </div>
                 </div>
+                <div class="paginator-container-left">
+                    {% cnprog_paginator context %}
+                </div>
+  
                 {% for answer in answers %}
                     <a name="{{ answer.id }}"></a>
                     <table style="width:100%;">
@@ -234,11 +244,13 @@
                     </table>
                     <div class="dot-line"></div>
                 {% endfor %}
-                
+                <div class="paginator-container-left">
+                    {% cnprog_paginator context %}
+                </div>
             {% else %}
                 <div class="line"></div>
             {% endifnotequal %}
-            
+            <div style="clear:both"></div>
             <h3>您的回答：</h3>
             <div id="description" class="" >
                 {{ answer.text }}
@@ -285,7 +297,7 @@
     <div class="paragraph">
         您正在浏览的问题含有以下标签：
     </div>
-    <div class="paragraph">
+    <div class="paragraph-extra">
         {% for tag in tags %}
         <a href="{% url forum.views.tag tag.name|urlencode %}" class="post-tag" title="查看有关'{{ tag.name }}'的问题" rel="tag">{{ tag.name }}</a> <span class="tag-number">× {{ tag.used_count|intcomma }}</span><br>
         {% endfor %}

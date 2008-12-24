@@ -210,6 +210,7 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
 #question-title h3{
     font-size: 130%;
     font-weight:bold;
+    line-height:25px;
 }
 
 #question-title a{
@@ -329,8 +330,12 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
 }
 .paragraph{
     line-height:20px;
-    margin-bottom:10px;
-    
+    margin-bottom:10px;   
+}
+
+.paragraph-extra{
+    line-height:30px;
+    margin-bottom:10px;   
 }
 
 .darkred{
@@ -573,7 +578,7 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
 .question-tag{
     float:left;
     padding-bottom:3px;
-    
+    width:250px;
 }
 
 .post-tag
@@ -582,11 +587,11 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
 	background-color: #E0EAF1;
 	border-bottom: 1px solid #3E6D8E;
 	border-right: 1px solid #7F9FB6;
-	margin: 2px 6px 2px 0;
+	margin: 2px 3px 2px 0;
 	padding: 3px 4px 3px 4px;
 	text-decoration: none;
 	font-size: 90%;
-	line-height: 2.2;
+	line-height: 25px;
 	white-space:nowrap;
 }
 
@@ -871,6 +876,12 @@ div.grippie {
     margin:5px 0 5px 0;
 }
 
+.question-tag-extra{
+    float:left;
+    padding-bottom:3px;  
+    width:100%;
+}
+
 .question-mark{
     background-color:#E0EAF1;
     text-align:left;
@@ -912,19 +923,25 @@ div.grippie {
 
 .dot-line{
     border-bottom:1px dotted #D8D2A9; 
-    width:100%;
-    margin-bottom:20px
+    width:670px; /*IE*/
+    /*
+    width:100% !important; 
+    */
+    margin-bottom:20px;
 }
 
 .line{
     border-bottom:1px solid #777; 
-    width:100%;
+    width:670px; /*IE*/
+    /*
+    width:100% !important; 
+    */
     margin-bottom:20px
 }
 
 .taglist-td{
     width:190px;
-    line-height:30px;
+    line-height:26px;
 }
 
 .submit{
@@ -1004,6 +1021,11 @@ form .errorlist li{
 .paginator-container{
     float:right;
     padding:10px 0 10px 0;
+}
+
+.paginator-container-left{
+    float:left;
+    padding:0 0 20px 0;
 }
 
 .user-info {

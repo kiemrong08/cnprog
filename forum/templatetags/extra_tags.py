@@ -30,7 +30,7 @@ def gravatar(user, size):
     })
 
 MAX_FONTSIZE = 18
-MIN_FONTSIZE = 11
+MIN_FONTSIZE = 12
 @register.simple_tag
 def tag_font_size(max_size, min_size, current_size):
     """
@@ -77,6 +77,8 @@ def cnprog_paginator(context):
             page_numbers = [n for n in range(context["page"] - ADJACENT_PAGES, context["page"] + ADJACENT_PAGES + 1) if n > 0 and n <= context["pages"]]
             pages_outside_leading_range = [n + context["pages"] for n in range(0, -NUM_PAGES_OUTSIDE_RANGE, -1)]
             pages_outside_trailing_range = [n + 1 for n in range(0, NUM_PAGES_OUTSIDE_RANGE)]
+            
+        extend_url = context.get('extend_url', '')
         return {
             "base_url": context["base_url"],
             "is_paginated": context["is_paginated"],
@@ -90,7 +92,8 @@ def cnprog_paginator(context):
             "in_leading_range" : in_leading_range,
             "in_trailing_range" : in_trailing_range,
             "pages_outside_leading_range": pages_outside_leading_range,
-            "pages_outside_trailing_range": pages_outside_trailing_range
+            "pages_outside_trailing_range": pages_outside_trailing_range,
+            "extend_url" : extend_url
         }
 
 @register.inclusion_tag("pagesize.html")
