@@ -28,68 +28,7 @@
                 </td>
             </tr>
         </table>
-		<div class="user-stats-table">
-		    {% for question in questions%}
-            <div class="favorites-count-off">
-                <img width="32" height="31" title="this question has been favorited by 3 users" alt="star" src="/content/images/vote-favorite-off.png"/><br/><b>{{question.favourite_count}}</b>
-            </div>
-            <div id="question-summary-{{question.id}}" class="question-summary narrow">
-                <a style="text-decoration: none;" href="/questions/{{question.id}}/{{question.title}}">
-                    <div class="stats">
-                        <div class="votes">
-                            <div class="votebox">
-                                <table width="100%">
-                                    <tr>
-                                        <td height="25" style="vertical-align: middle;">
-                                            <span class="vote-count-post"><strong style="font-size: 190%;">{% get_total_count question.vote_up_count  question.vote_down_count %}</strong></span> 
-                                        </td>
-                                    </tr>
-                                    <tr><td class="box-unit">票</td></tr>
-                                </table>               
-                            </div>
-                        </div>
-                        <div title="{% if question.answer_accepted %}有答案已被接受为正确答案{% endif %}" class="status {% if question.answer_accepted %}answered-accepted{% endif %} {% ifequal question.answer_count 0 %}unanswered{% endifequal %}{% ifnotequal question.answer_count 0 %}answered{% endifnotequal %}">
-                            <table width="100%">
-                                <tr>
-                                    <td height="25" style="vertical-align: middle;">
-                                        <strong style="font-size: 190%;">{{question.answer_count}}</strong>
-                                    </td>
-                                </tr>
-                                <tr><td class="box-unit">回答</td></tr>
-                            </table>               
-                        </div>
-                        <div class="views">
-                            <table width="100%">
-                                <tr>
-                                    <td height="25" style="vertical-align: middle;">
-                                        <strong style="font-size: 190%;">{{question.view_count}}</strong>
-                                    </td>
-                                </tr>
-                                <tr><td class="box-unit">浏览</td></tr>
-                            </table>
-                        </div>
-                    </div>
-                </a>
-                <div class="summary">
-                    <h3>
-                        <a title="{{question.summary}}" href="/questions/{{question.id}}/{{question.title}}">{{question.title}}</a>
-                    </h3>
-                    <div class="tags">
-                        {% for tag in question.tagname_list %}
-                            <a href="{% url forum.views.tag tag|urlencode %}" class="post-tag" title="查看有关'{{ tag }}'的问题" rel="tag">{{ tag }}</a>
-                        {% endfor %}
-                    </div>
-                    <div class="started">
-                        <span class="relativetime" title="{{question.last_activity_at}}">{{question.last_activity_at}}</span>
-                        {% if question.last_edited_by %}
-                        <a href="/users/{{user.id}}/{{user.username}}">{{question.last_edited_by.username}}</a> <span title="reputation score" class="reputation-score">{{question.author.reputation|intcomma}}</span>{% if question.last_edited_by.gold %}<span title="{{question.last_edited_by.gold}} 枚金牌"><span class="badge1">●</span><span class="badgecount">{{question.last_edited_by.gold}}</span></span>{% endif %}{% if question.last_edited_by.silver %}<span title="{{question.last_edited_by.silver}} 枚银牌"><span class="badge2">●</span><span class="badgecount">{{question.last_edited_by.silver}}</span></span>{% endif %}{% if question.last_edited_by.bronze %}<span title="{{question.last_edited_by.bronze}}枚铜牌"><span class="badge3">●</span><span class="badgecount">{{question.last_edited_by.bronze}}</span></span>{% endif %}
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            <br clear="both"/>
-            {% endfor %}
-        </div>
+		{% include "users_questions.html" %}
         <p>&nbsp;</p>
         <a name="answers"></a>
         <table>

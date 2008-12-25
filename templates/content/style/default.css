@@ -1105,6 +1105,13 @@ table.user-details td {
     text-align:center;
 }
 
+.favorites-count {
+    color:#D4A849;
+    float:left;
+    margin-top:13px;
+    text-align:center;
+}
+
 .question-summary {
     border-bottom:1px dotted #999999;
     float:left;

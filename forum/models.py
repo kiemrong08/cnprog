@@ -193,7 +193,7 @@ class FlaggedItem(models.Model):
 class FavoriteQuestion(models.Model):
     """A favorite Question of a User."""
     question      = models.ForeignKey(Question)
-    user          = models.ForeignKey(User)
+    user          = models.ForeignKey(User, related_name='user_favorite_questions')
     added_at = models.DateTimeField(default=datetime.datetime.now)
     class Meta:
         db_table = u'favorite_question'

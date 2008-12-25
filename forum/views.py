@@ -337,12 +337,43 @@ def user_stats(request, user_id, username):
     user = get_object_or_404(User, id=user_id)
     questions = Question.objects.extra(
         select={
-            'vote_count': 'vote_up_count + vote_down_count'
+            'vote_count' : 'question.vote_up_count + question.vote_down_count',
+            'favorited_myself' : 'SELECT count(*) FROM favorite_question f WHERE f.user_id = %s AND f.question_id = question.id',
+            'la_user_id' : 'auth_user.id',
+            'la_username' : 'auth_user.username',
+            'la_user_gold' : 'auth_user.gold',
+            'la_user_silver' : 'auth_user.silver',
+            'la_user_bronze' : 'auth_user.bronze',
+            'la_user_reputation' : 'auth_user.reputation'
             },
-        where=['author_id=%s'],
+        select_params=[user_id],
+        tables=['question', 'auth_user'],
+        where=['question.author_id=%s AND question.last_activity_by_id = auth_user.id'],
         params=[user_id],
         order_by=['-vote_count']
-    )
+    ).values('vote_count',
+             'favorited_myself',
+             'id',
+             'title',
+             'author_id',
+             'added_at',
+             'answer_accepted',
+             'answer_count',
+             'comment_count',
+             'view_count',
+             'favourite_count',
+             'summary',
+             'tagnames',
+             'vote_up_count',
+             'vote_down_count',
+             'last_activity_at',
+             'la_user_id',
+             'la_username',
+             'la_user_gold',
+             'la_user_silver',
+             'la_user_bronze',
+             'la_user_reputation')
+    
     answered_questions = Question.objects.extra(
         select={
             'vote_count' : 'question.vote_up_count + question.vote_down_count',
@@ -400,9 +431,46 @@ def user_reputation_history(request, user_id, username):
 
 def users_favorites(request, user_id, username):
     user = get_object_or_404(User, id=user_id)
+    questions = Question.objects.extra(
+        select={
+            'vote_count' : 'question.vote_up_count + question.vote_down_count',
+            'favorited_myself' : 'SELECT count(*) FROM favorite_question f WHERE f.user_id = %s AND f.question_id = question.id',
+            'la_user_id' : 'auth_user.id',
+            'la_username' : 'auth_user.username',
+            'la_user_gold' : 'auth_user.gold',
+            'la_user_silver' : 'auth_user.silver',
+            'la_user_bronze' : 'auth_user.bronze',
+            'la_user_reputation' : 'auth_user.reputation'
+            },
+        select_params=[user_id],
+        tables=['question', 'auth_user', 'favorite_question'],
+        where=['question.last_activity_by_id = auth_user.id AND favorite_question.question_id = question.id AND favorite_question.user_id = %s'],
+        params=[user_id],
+        order_by=['-vote_count']
+    ).values('vote_count',
+             'favorited_myself',
+             'id',
+             'title',
+             'author_id',
+             'added_at',
+             'answer_accepted',
+             'answer_count',
+             'comment_count',
+             'view_count',
+             'favourite_count',
+             'summary',
+             'tagnames',
+             'vote_up_count',
+             'vote_down_count',
+             'last_activity_at',
+             'la_user_id',
+             'la_username',
+             'la_user_gold',
+             'la_user_silver',
+             'la_user_bronze',
+             'la_user_reputation')
     return render_to_response('users_favorites.html',{
         "tab_name" : "favorites",
+        "questions" : questions,
         "user" : user
     })
-    """docstring for users_favorites"""
-    pass

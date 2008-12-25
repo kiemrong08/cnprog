@@ -134,3 +134,7 @@ def format_number(value):
         strValue = first + ',' + second
         m = re.match(pattern, strValue)
     return first + result
+
+@register.simple_tag   
+def convert2tagname_list(question):
+    question['tagnames'] = [name for name in question['tagnames'].split(u' ')]
