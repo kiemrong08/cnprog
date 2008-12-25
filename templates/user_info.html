@@ -1,4 +1,5 @@
 {% load extra_tags %}
+{% load humanize %}
 <div id="subheader">
     <h1>{{user.username}}</h1>
     <div id="tabs"></div>
@@ -16,7 +17,7 @@
                 </tr>
                 <tr>
                     <td class="summaryinfo">
-                        <div class="summarycount">{% format_number user.reputation %}</div>
+                        <div class="summarycount">{{user.reputation|intcomma}}</div>
                         <div style="margin-top: 5px; font-weight: bold;">积分</div>
                     </td>
                 </tr>

@@ -345,13 +345,22 @@ def user_stats(request, user_id, username):
     )
     answered_questions = Question.objects.extra(
         select={
-            'vote_count': 'question.vote_up_count + question.vote_down_count'
+            'vote_count' : 'question.vote_up_count + question.vote_down_count',
+            'user_answered_count' : 'SELECT count(*) FROM answer a2 WHERE a2.author_id = %s AND a2.question_id=question.id' 
             },
         tables=['question', 'answer'],
         where=['answer.author_id=%s AND answer.question_id=question.id'],
         params=[user_id],
-        order_by=['-vote_count']
-    ).distinct()
+        order_by=['-vote_count'],
+        select_params=[user_id]
+    ).distinct().values('user_answered_count', 
+                        'id', 
+                        'title', 
+                        'author_id', 
+                        'answer_accepted',
+                        'answer_count',
+                        'vote_up_count',
+                        'vote_down_count')
     up_votes = Vote.objects.get_up_vote_count_from_user(user)
     down_votes = Vote.objects.get_down_vote_count_from_user(user)
     tags = user.created_tags.all().order_by('-used_count')
