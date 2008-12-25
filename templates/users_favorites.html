@@ -1,0 +1,22 @@
+{% extends "base_content.html" %}
+{% load extra_tags %}
+{% load humanize %}
+{% block forestyle%}
+    <style type="text/css">
+	    h1 { font-size: 200%; }
+ 		.history-table td { padding: 5px; }
+ 		.user-stats-table { margin-left:50px; }
+	</style>
+{% endblock %}
+{% block forejs %}
+    {% include "user_js.html" %}
+{% endblock %}
+{% block content %}
+    <div id="mainbar-full">
+        <div style="margin-top: 20px;"></div>
+        {% include "user_info.html" %}
+		{% include "user_tabs.html" %}
+		content
+        {% include "user_footer.html" %}
+	</div>
+{% endblock %}

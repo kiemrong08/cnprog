@@ -3,7 +3,7 @@
         $("#nav_users").attr('className',"youarehere");
         
         var tabName = "{{ tab_name }}";
-        if(tabName != "stats" && tabName != "recent" && tabName != "response" && tabName != "reputation" && tabName != "favorites")
+        if(tabName != "stats" && tabName != "recent" && tabName != "responses" && tabName != "reputation_history" && tabName != "favorites")
             tabName = "stats";
         $("#" + tabName).attr('className',"youarehere");
     });     

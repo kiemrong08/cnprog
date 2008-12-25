@@ -383,3 +383,26 @@ def user_recent(request, user_id, username):
         "tab_name" : "recent",
         "user" : user
     })
+    
+def user_responses(request, user_id, username):
+    user = get_object_or_404(User, id=user_id)
+    return render_to_response('user_responses.html',{
+        "tab_name" : "responses",
+        "user" : user
+    })
+
+def user_reputation_history(request, user_id, username):
+    user = get_object_or_404(User, id=user_id)
+    return render_to_response('user_reputation_history.html',{
+        "tab_name" : "reputation_history",
+        "user" : user
+    })
+
+def users_favorites(request, user_id, username):
+    user = get_object_or_404(User, id=user_id)
+    return render_to_response('users_favorites.html',{
+        "tab_name" : "favorites",
+        "user" : user
+    })
+    """docstring for users_favorites"""
+    pass

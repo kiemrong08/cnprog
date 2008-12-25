@@ -1,0 +1,285 @@
+{% extends "base_content.html" %}
+{% load extra_tags %}
+{% load humanize %}
+{% block forestyle%}
+    <style type="text/css">
+	    h1 { font-size: 200%; }
+ 		.history-table td { padding: 5px; }
+ 		.user-stats-table { margin-left:50px; }
+	</style>
+{% endblock %}
+{% block forejs %}
+    {% include "user_js.html" %}
+{% endblock %}
+{% block content %}
+    <div id="mainbar-full">
+        <div style="margin-top: 20px;"></div>
+        {% include "user_info.html" %}
+		{% include "user_tabs.html" %}
+		<table class="history-table"><tr>
+        <td width="100">an hour ago</td>
+        <td><a href="/users/115/unkwntech">Unkwntech</a></td>
+        <td><b>commented on</b> <a href="/questions/390649/why-such-a-disparity-in-pricing-between-windows-and-linux-hosting-services#390674">Why such a disparity in pricing between Windows and Linux hosting services</a><br\><p>Unfortunately your edits came to late and I cannot remove my -1.</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">21 hours ago</td>
+        <td><a href="/users/36902/mson">mson</a></td>
+        <td><b>commented on</b> <a href="/questions/390516/what-do-you-do-when-question-is-not-satisfactorily-answered-on-so#390685">What do you do when question is not satisfactorily answered on SO?</a><br\><p>lol + 1 for if all else fails...</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">22 hours ago</td>
+        <td><a href="/users/25191/glenn">Glenn</a></td>
+        <td><b>commented on</b> <a href="/questions/390649/why-such-a-disparity-in-pricing-between-windows-and-linux-hosting-services#390674">Why such a disparity in pricing between Windows and Linux hosting services</a><br\><p>How is Windows a fixed cost? Microsoft end-of-lifes all of their server products. You either upgrade (i.e. buy a new license) or lose support.</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">23 hours ago</td>
+        <td><a href="/users/1862/kibbee">Kibbee</a></td>
+        <td><b>commented on</b> <a href="/questions/390649/why-such-a-disparity-in-pricing-between-windows-and-linux-hosting-services#390674">Why such a disparity in pricing between Windows and Linux hosting services</a><br\><p>That doesn't really make any sense. If they were just charging as much as they wanted, then somebody else would just come around and undercut their prices.  It's not as if all the Windows hosts are colluding to keep hosting costs artificially high.</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">yesterday</td>
+        <td><a href="/users/48429/dos">dos</a></td>
+        <td><b>commented on</b> <a href="/questions/386908/dos-scripting-for-command-to-rename-all-files-with-a-certain-extension#386925">DOS scripting FOR command to rename all files with a certain extension</a><br\><p>I tried using 
+
+        for /R %1 in (*.bat) do rename %1 %~d1%~p1%~n1.cmd
+
+        and the following error appeared:
+
+        M:\>rename M:\Desktop\map.bat M:\Desktop\map.cmd
+        The syntax of the command is incorrect.
+
+        dos VER. = Microsoft Windows XP [Version 5.1.2600]
+
+        </p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">2 days ago</td>
+        <td><a href="/users/26682/rob-williams">Rob Williams</a></td>
+        <td><b>commented on</b> <a href="/questions/386493/tdd-which-methods-do-you-expose-for-unit-testing#386516">TDD: Which methods do you expose for unit testing?</a><br\><p>I recommend this clarification: if you start to feel the need to expose something private for testing, DON'T, but view that as a sign that your implementation is too complex and that you need to rethink the granularity of your implementation and its testing.</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">2 days ago</td>
+        <td><a href="/users/24995/dave-markle">Dave Markle</a></td>
+        <td><b>commented on</b> <a href="/questions/220405/how-to-deal-with-time-storage-in-sql#220706">How to deal with time storage in SQL</a><br\><p>This function will fail when the timzeone offset changes because of daylight saving time.</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">2 days ago</td>
+        <td><a href="/users/48429/dos">dos</a></td>
+        <td><b>commented on</b> <a href="/questions/386908/dos-scripting-for-command-to-rename-all-files-with-a-certain-extension#386925">DOS scripting FOR command to rename all files with a certain extension</a><br\><p>Thx for your reply.  However, The problem is, these batch files are in different subdirectories. </p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">2 days ago</td>
+        <td><a href="/users/5062/darcy-casselman">Darcy Casselman</a></td>
+        <td><b>commented on</b> <a href="/questions/306339/svn-vss-why-is-one-better-than-the-other#306451">SVN?  VSS?  Why is one better than the other?</a><br\><p>Vault is a great upgrade for shops using VSS, know they need to get off it, but don't want (too much) change.  Eric Sink's built SourceGear business entirely on how much VSS sucks.</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">2 days ago</td>
+        <td><a href="/users/10248/benno">benno</a></td>
+        <td><b>commented on</b> <a href="/questions/385213/what-measurements-to-you-use-to-improve-your-processes#385393">What measurements to you use to improve your processes?</a><br\><p>I agree with the statement that "knowing the number does not help you improve". My question may have been unclear, but knowing how to improve is completely orthogonal to what I'm asking, which is what specific measures allow you to know that you have improved in fact improved.</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">2 days ago</td>
+        <td><a href="/users/10248/benno">benno</a></td>
+        <td><b>commented on</b> <a href="/questions/385213/what-measurements-to-you-use-to-improve-your-processes#385393">What measurements to you use to improve your processes?</a><br\><p>I was definitely after KPIs as used to evaluate performance after the fact, for the purpose of overall process improvement. Of course, I definitely care about metrics that can be used for "driving" as you put it, but to me, the "driving" metrics are part of the process I am trying to improve.</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 21 at 21:02</td>
+        <td><a href="/users/40650/balabaster">balabaster</a></td>
+        <td><b>commented on</b> <a href="/questions/382880/how-can-i-convince-skeptical-colleagues-about-proper-namespaces-in-net#382951">How can I convince skeptical colleagues about proper namespaces in .Net?</a><br\><p>Yeah, I guess it would...</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 21 at 19:47</td>
+        <td><a href="/users/12950/tvanfosson">tvanfosson</a></td>
+        <td><b>commented on</b> <a href="/questions/384821/stackoverflow-reputation-and-knowledge#384836">StackOverflow reputation and knowledge?</a><br\><p>Yes.  And I'd appreciate it if he would update the logic on dealing with teenagers.  This area is significantly lacking!</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 21 at 19:32</td>
+        <td><a href="/users/3333/paul-tomblin">Paul Tomblin</a></td>
+        <td><b>commented on</b> <a href="/questions/384821/stackoverflow-reputation-and-knowledge#384836">StackOverflow reputation and knowledge?</a><br\><p>Sssssshhhhh!</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 21 at 19:30</td>
+        <td><a href="/users/267/lassevk">lassevk</a></td>
+        <td><b>commented on</b> <a href="/questions/384821/stackoverflow-reputation-and-knowledge#384836">StackOverflow reputation and knowledge?</a><br\><p>Damnit, out of votes! :)</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 21 at 18:46</td>
+        <td><a href="/users/811/shog9">Shog9</a></td>
+        <td><b>commented on</b> <a href="/questions/384764/dealing-with-anti-microsoft-trolls-on-the-internet#384767">Dealing with Anti-Microsoft Trolls on The Internet</a><br\><p>Heh... The "scales falling off your eyes" reference in "What was your biggest CS eye-opener?" caused a bit of confusion on the last SO podcast.</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 21 at 18:40</td>
+        <td><a href="/users/1965/jonathan-holland">Jonathan Holland</a></td>
+        <td><b>commented on</b> <a href="/questions/384764/dealing-with-anti-microsoft-trolls-on-the-internet#384767">Dealing with Anti-Microsoft Trolls on The Internet</a><br\><p>First bible quote on SO?</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 21 at 18:12</td>
+        <td><a href="/users/26160/josh">Josh</a></td>
+        <td><b>commented on</b> <a href="/questions/381224/sql-server-query-short-circuiting#381239">SQL Server - Query Short-Circuiting?</a><br\><p>But either way I think prefixing with a wild card character would result in a table scan maybee that's why I got them confused.</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 21 at 18:11</td>
+        <td><a href="/users/26160/josh">Josh</a></td>
+        <td><b>commented on</b> <a href="/questions/381224/sql-server-query-short-circuiting#381239">SQL Server - Query Short-Circuiting?</a><br\><p>@Steven yep I see no idea why but when I read it first time I could have sworn it said table...I'm getting old I think;-)</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 20 at 22:48</td>
+        <td><a href="/users/11780/jeremiah-peschka">Jeremiah Peschka</a></td>
+        <td><b>commented on</b> <a href="/questions/379062/best-way-to-understand-complex-sql-statements#379122">Best way to understand complex SQL statements?</a><br\><p>These are all parts of the SQL standard and not proprietary extensions.</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 20 at 17:59</td>
+        <td><a href="/users/40650/balabaster">balabaster</a></td>
+        <td><b>commented on</b> <a href="/questions/382880/how-can-i-convince-skeptical-colleagues-about-proper-namespaces-in-net#382951">How can I convince skeptical colleagues about proper namespaces in .Net?</a><br\><p>+1 Great analogy - but wouldn't it be deeper than finding the book on Genetic Algorithms?  Wouldn't it be more like tearing the covers off all the books and telling them to try and find a chapter specifically on how to make use genetic algorithms in your application?</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 20 at 4:06</td>
+        <td><a href="/users/10174/jeffrey-l-whitledge">Jeffrey L Whitledge</a></td>
+        <td><b>commented on</b> <a href="/questions/380885/can-you-simplify-this-algorithm#382005">Can you simplify this algorithm?</a><br\><p>I really can't believe so many people are missing this. I guess those crazy IEEE floats have confused people about how numbers work!</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 20 at 4:03</td>
+        <td><a href="/users/10174/jeffrey-l-whitledge">Jeffrey L Whitledge</a></td>
+        <td><b>commented on</b> <a href="/questions/380885/can-you-simplify-this-algorithm#382005">Can you simplify this algorithm?</a><br\><p>Stephen A. Lowe is correct. The original question stated that the integers were positive. Therefore, zero is not a permissible value. Thus, (a==0 || a>1) => (a > 1). It's elementary!</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 20 at 3:35</td>
+        <td><a href="/users/34910/"/></td>
+        <td><b>commented on</b> <a href="/questions/380885/can-you-simplify-this-algorithm#382005">Can you simplify this algorithm?</a><br\><p>You say both "(a == 0 || a > 1) reduces to (a > 1)" and "N == 0 || N > 1 implies N >= 0 for positive integers", but neither is correct. Assuming a >=0 (as we're told), (a==0 || a > 1) reduces to a != 1, as many other posters have noted.</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 20 at 3:08</td>
+        <td><a href="/users/1185/rob">Rob</a></td>
+        <td><b>commented on</b> <a href="/questions/380885/can-you-simplify-this-algorithm#382005">Can you simplify this algorithm?</a><br\><p>@wasker - If we are assuming that 0 is neither negative or positive then (a > 1) and (a != 1) have the same truth table.</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 20 at 1:13</td>
+        <td><a href="/users/21952/"/></td>
+        <td><b>commented on</b> <a href="/questions/380885/can-you-simplify-this-algorithm#382005">Can you simplify this algorithm?</a><br\><p>@Steven: (a == 0 || a > 1) cannot be reduced to (a > 1). It's (a != 1).</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 19 at 21:19</td>
+        <td><a href="/users/23276/joshrivers">JoshRivers</a></td>
+        <td><span class="accept-answer-link">answered</span> <a href="/questions/176338/customer-configurable-aspnet-web-site-security-for-fine-grained-control-of-page#382235">customer-configurable asp.net web site security for fine-grained control of page and button access</a><br\><p>I think what you need to do here is implement a set of permissions query methods in either your business objects or your controller. Examples: CanRead(), CanEdit(), CanDelete()
+
+        When the page renders, it needs to query the business object and determine the users authorized capabilities and</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 19 at 15:56</td>
+        <td><a href="/users/26160/josh">Josh</a></td>
+        <td><b>commented on</b> <a href="/questions/381224/sql-server-query-short-circuiting#381239">SQL Server - Query Short-Circuiting?</a><br\><p>like does not guarentee table scan like '%1234' is a table scan. like '1234%' is not a table scan, assuming the column is indexed it will use the index to find 1234...</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 19 at 14:59</td>
+        <td><a href="/users/15906/josephferris">Joseph.Ferris</a></td>
+        <td><b>commented on</b> <a href="/questions/378105/how-do-i-get-intellisense-in-appconfig-for-a-custom-section#378162">How do I get intellisense in app.config for a custom section?</a><br\><p>+1.  Schemas are often overlooked when it comes to custom configuration sections.  They are incredibly useful for when you admin or co-lo has to make changes to either your app.config or web.config.</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 19 at 8:27</td>
+        <td><a href="/users/267/lassevk">lassevk</a></td>
+        <td><b>commented on</b> <a href="/questions/378105/how-do-i-get-intellisense-in-appconfig-for-a-custom-section#378162">How do I get intellisense in app.config for a custom section?</a><br\><p>Thanks, that'll work for me.</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 19 at 7:41</td>
+        <td><a href="/users/6408/stewart-johnson">Stewart Johnson</a></td>
+        <td><b>commented on</b> <a href="/questions/374567/nunit-teardown-fails-what-process-is-accessing-my-files#374595">NUnit [TearDown] fails — what process is accessing my files?</a><br\><p>I found a solution! Adding GC.Collect() immediately before the File.Delete line in my [TearDown] method gets rid of the exceptions. When I'm debugging there are no longer any references to the connection so I'm not sure how the GC.Collect works, but it does.</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 19 at 7:24</td>
+        <td><a href="/users/6408/stewart-johnson">Stewart Johnson</a></td>
+        <td><b>commented on</b> <a href="/questions/374567/nunit-teardown-fails-what-process-is-accessing-my-files#374595">NUnit [TearDown] fails — what process is accessing my files?</a><br\><p>Thanks for your help anyway!</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 19 at 5:22</td>
+        <td><a href="/users/6408/stewart-johnson">Stewart Johnson</a></td>
+        <td><b>commented on</b> <a href="/questions/374567/nunit-teardown-fails-what-process-is-accessing-my-files#374595">NUnit [TearDown] fails — what process is accessing my files?</a><br\><p>So I wrapped all my DbCommands in using() blocks as well, so they're being Dispose()d immediately before the connection is Dispose()d. It made no difference -- same problem. :-(</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 19 at 1:58</td>
+        <td><a href="/users/38124/melaos">melaos</a></td>
+        <td><b>commented on</b> <a href="/questions/378724/coping-with-rapidly-changing-technology-in-particular-microsoft#378744">Coping with rapidly changing technology (in particular Microsoft)</a><br\><p>agreed, stop being so cat like and follow the latest trend which glitters, it'll kill you faster than ms vista. hehe</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 19 at 1:02</td>
+        <td><a href="/users/36590/bruno-tyndall">Bruno Tyndall</a></td>
+        <td><b>commented on</b> <a href="/questions/379649/t-sql-puzzler-crawling-object-dependencies#379821">T-SQL Puzzler - Crawling Object Dependencies</a><br\><p>Sweet! This is what I had before the cursor collision stuff (well, minus the local keyword). didn't know there was a local keyword. I will incorporate this into my code tomorrow and try it out.</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 19 at 0:49</td>
+        <td><a href="/users/21239/mausch">mausch</a></td>
+        <td><b>commented on</b> <a href="/questions/363222/is-everyone-here-jumping-on-the-orm-band-wagon#363315">Is everyone here jumping on the ORM band wagon?</a><br\><p>@steven: ORMs are *not* new in .net. I've been using NHibernate for three years, it's a very stable product by now.</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 18 at 22:00</td>
+        <td><a href="/users/37020/orip">orip</a></td>
+        <td><b>commented on</b> <a href="/questions/379091/automated-testing-net-gallio#379113">Automated testing .NET (Gallio?)</a><br\><p>+1, NUnit is great. @Tim, there are many alternatives, some of them good, but the differences are minimal. Just take it and go.</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 18 at 21:16</td>
+        <td><a href="/users/17413/stumproot">Stumproot</a></td>
+        <td><b>commented on</b> <a href="/questions/378724/coping-with-rapidly-changing-technology-in-particular-microsoft#378744">Coping with rapidly changing technology (in particular Microsoft)</a><br\><p>-1 a rant is no answer</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 18 at 21:08</td>
+        <td><a href="/users/12234/abyss-knight">Abyss Knight</a></td>
+        <td><b>commented on</b> <a href="/questions/379145/where-can-i-findlearn-industry-standard-sql-conventions#379170">Where can I find/learn industry standard SQL Conventions?</a><br\><p>Funny, but true. I can honestly say there are no "enterprisey" ways to name tables, columns, stored procedures or functions. As far as syntax, the same applies. I'm guilty of old style joins (i.e. a.id = b.id or b.id is null), but that really comes down to readability.</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 18 at 20:55</td>
+        <td><a href="/users/31641/le-dorfier">le dorfier</a></td>
+        <td><b>commented on</b> <a href="/questions/379062/best-way-to-understand-complex-sql-statements#379122">Best way to understand complex SQL statements?</a><br\><p>Nothing like those proprietary language extensions to obfuscate things. And programmers who use them to prove they can.</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 18 at 20:47</td>
+        <td><a href="/users/31641/le-dorfier">le dorfier</a></td>
+        <td><b>commented on</b> <a href="/questions/379145/where-can-i-findlearn-industry-standard-sql-conventions#379170">Where can I find/learn industry standard SQL Conventions?</a><br\><p>See, starts right off with a zinger. Needs an "argumentative" tag (kidding).</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 18 at 20:43</td>
+        <td><a href="/users/16391/stingyjack">StingyJack</a></td>
+        <td><b>commented on</b> <a href="/questions/379145/where-can-i-findlearn-industry-standard-sql-conventions#379170">Where can I find/learn industry standard SQL Conventions?</a><br\><p>#2 - like SQL-92 joins? =)</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 18 at 20:33</td>
+        <td><a href="/users/4435/jimmy">Jimmy</a></td>
+        <td><b>commented on</b> <a href="/questions/379062/best-way-to-understand-complex-sql-statements#379122">Best way to understand complex SQL statements?</a><br\><p>yeah, I do the same with CTEs and PIVOTs. one of these days I'll figure them out.</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 18 at 20:33</td>
+        <td><a href="/users/3354/seanb">seanb</a></td>
+        <td><b>commented on</b> <a href="/questions/378835/a-standard-set-of-questions-to-ask-an-interviewer#379139">A standard set of questions to ask an interviewer?</a><br\><p>Wish I'd asked this a few times, suspect you'd never get a straight answer when it mattered though</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 18 at 20:29</td>
+        <td><a href="/users/3333/paul-tomblin">Paul Tomblin</a></td>
+        <td><b>commented on</b> <a href="/questions/379062/best-way-to-understand-complex-sql-statements#379122">Best way to understand complex SQL statements?</a><br\><p>I just cargo-culted a new view based on an old one, and I'm using a "OVER (PARTITION BY" that I wrote, and which works, but I have no idea how or why it works.</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 18 at 20:24</td>
+        <td><a href="/users/16587/gortok">Gortok</a></td>
+        <td><b>commented on</b> <a href="/questions/379091/automated-testing-net-gallio#379113">Automated testing .NET (Gallio?)</a><br\><p>Steven, you didn't close this as a duplicate, even when you answer it after it was edited as a duplicate...</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 18 at 20:22</td>
+        <td><a href="/users/35767/tim">Tim</a></td>
+        <td><b>commented on</b> <a href="/questions/379091/automated-testing-net-gallio#379113">Automated testing .NET (Gallio?)</a><br\><p>On the contrary, I want to use unit testing very badly.  However, this is something that would need to be rolled out to 100 or so people, and I want to make sure that we invest our time and energy into the proper tools.</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 18 at 19:10</td>
+        <td><a href="/users/42439/jim-anderson">Jim Anderson</a></td>
+        <td><b>commented on</b> <a href="/questions/378724/coping-with-rapidly-changing-technology-in-particular-microsoft#378744">Coping with rapidly changing technology (in particular Microsoft)</a><br\><p>The bottom line is always financial. New products can be sold and generate revenue. Bug fixes/patches generally generate no revenue.</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 18 at 19:05</td>
+        <td><a href="/users/35306/stephan-eggermont">Stephan Eggermont</a></td>
+        <td><b>commented on</b> <a href="/questions/378724/coping-with-rapidly-changing-technology-in-particular-microsoft#378744">Coping with rapidly changing technology (in particular Microsoft)</a><br\><p>Oh, but they are improving. Most blocking bugs from Word 95 were fixed in Word 2003 :)</p></br\></td>
+        </tr>
+        <tr>
+        <td width="100">Dec 18 at 18:58</td>
+        <td><a href="/users/15906/josephferris">Joseph.Ferris</a></td>
+        <td><b>commented on</b> <a href="/questions/378724/coping-with-rapidly-changing-technology-in-particular-microsoft#378744">Coping with rapidly changing technology (in particular Microsoft)</a><br\><p>And, on top of what joshperry said, Microsoft needs to stay relevant with industry trends.  If they don't introduce features to support these trends, developers will move to a platform that does.  Then, we would not have to worry about the bugs that do exist, because the product would not exist.</p></br\></td>
+        </tr>
+        </table>
+        {% include "user_footer.html" %}
+	</div>
+{% endblock %}
