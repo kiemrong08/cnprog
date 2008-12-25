@@ -363,7 +363,7 @@ def user_stats(request, user_id, username):
                         'vote_down_count')
     up_votes = Vote.objects.get_up_vote_count_from_user(user)
     down_votes = Vote.objects.get_down_vote_count_from_user(user)
-    tags = user.created_tags.all().order_by('-used_count')
+    tags = user.created_tags.all().order_by('-used_count')[:50]
     # TODO: Badges
     
     return render_to_response('user_stats.html',{
@@ -375,4 +375,11 @@ def user_stats(request, user_id, username):
         "down_votes" : down_votes,
         "total_votes": up_votes + down_votes,
         "tags" : tags
+    })
+
+def user_recent(request, user_id, username):
+    user = get_object_or_404(User, id=user_id)
+    return render_to_response('user_recent.html',{
+        "tab_name" : "recent",
+        "user" : user
     })

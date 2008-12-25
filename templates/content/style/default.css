@@ -1283,3 +1283,21 @@ div.started .reputation-score {
 #feed-link-text {
     float:left;
 }
+
+.revision-comment {
+    background-color:#FFFE9B;
+    color:#333333;
+    line-height:1.4;
+    padding:3px;
+}
+
+.accept-answer-link {
+    color:#508850 !important;
+    font-weight:bold;
+}
+
+.accept-answer-link:hover {
+    background-color:#508850 !important;
+    color:#E1E818 !important;
+    text-decoration:none;
+}
