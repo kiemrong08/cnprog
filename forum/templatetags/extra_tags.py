@@ -138,3 +138,16 @@ def format_number(value):
 @register.simple_tag   
 def convert2tagname_list(question):
     question['tagnames'] = [name for name in question['tagnames'].split(u' ')]
+    return ''
+
+@register.simple_tag    
+def diff_date(date, limen=2):
+    current_time = datetime.datetime(*time.localtime()[0:6])
+    diff = current_time - date
+    diff_days = diff.days
+    if diff_days > limen:
+        return date
+    elif diff_days == 0:
+        return '今天'
+    else:
+        return str(diff_days) + '天前'

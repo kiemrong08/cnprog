@@ -63,7 +63,7 @@
                 {% endfor %}
             </div>
             <div class="started">
-                <span class="relativetime" title="{{question.last_activity_at}}">{{question.last_activity_at}}</span>
+                <span class="relativetime" title="{{question.last_activity_at}}">{% diff_date question.last_activity_at %}</span>
                 {% if question.la_username %}
                     <a href="/users/{{question.la_user_id}}/{{question.la_username}}">{{question.la_username}}</a> <span title="reputation score" class="reputation-score">{{question.la_user_reputation|intcomma}}</span>
                     {% if question.la_user_gold %}<span title="{{question.la_user_gold}} 枚金牌"><span class="badge1">●</span><span class="badgecount">{{question.la_user_gold}}</span></span>

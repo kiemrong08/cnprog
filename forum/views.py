@@ -348,9 +348,9 @@ def user_stats(request, user_id):
             },
         select_params=[user_id],
         tables=['question', 'auth_user'],
-        where=['question.author_id=%s AND question.last_activity_by_id = auth_user.id'],
+        where=['question.deleted = 0 AND question.author_id=%s AND question.last_activity_by_id = auth_user.id'],
         params=[user_id],
-        order_by=['-vote_count']
+        order_by=['-vote_count', '-question.id']
     ).values('vote_count',
              'favorited_myself',
              'id',
@@ -380,9 +380,9 @@ def user_stats(request, user_id):
             'user_answered_count' : 'SELECT count(*) FROM answer a2 WHERE a2.author_id = %s AND a2.question_id=question.id' 
             },
         tables=['question', 'answer'],
-        where=['answer.author_id=%s AND answer.question_id=question.id'],
+        where=['answer.deleted=0 AND answer.author_id=%s AND answer.question_id=question.id'],
         params=[user_id],
-        order_by=['-vote_count'],
+        order_by=['-vote_count', '-answer.id'],
         select_params=[user_id]
     ).distinct().values('user_answered_count', 
                         'id', 
@@ -444,9 +444,9 @@ def users_favorites(request, user_id):
             },
         select_params=[user_id],
         tables=['question', 'auth_user', 'favorite_question'],
-        where=['question.last_activity_by_id = auth_user.id AND favorite_question.question_id = question.id AND favorite_question.user_id = %s'],
+        where=['question.deleted = 0 AND question.last_activity_by_id = auth_user.id AND favorite_question.question_id = question.id AND favorite_question.user_id = %s'],
         params=[user_id],
-        order_by=['-vote_count']
+        order_by=['-vote_count', '-question.id']
     ).values('vote_count',
              'favorited_myself',
              'id',
