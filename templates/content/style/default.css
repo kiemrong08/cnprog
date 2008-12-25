@@ -541,6 +541,17 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
     font-size:90%;
 }
 
+.answer{
+    border-bottom:1px dotted #666666;
+    padding-bottom:20px;
+    padding-top:20px;
+}
+
+.accepted-answer{
+    background-color:#E2FCE2;
+    border-bottom-color:#9BD59B;
+}
+
 .answered
 {
 	background: #75845C;
@@ -836,19 +847,19 @@ div.grippie {
     color:red;
 }
 
-#item-left{
+.vote-buttons{
     float:left;
     text-align:center;
     border:solid 0px #ccc;
 }
 
-#item-right{
-    float:left;
-    
+.vote-buttons img{
+    cursor:pointer;
 }
 
-.img-button{
-    cursor:pointer;
+.item-right{
+    float:left;
+    
 }
 
 .vote-number{
@@ -890,7 +901,6 @@ div.grippie {
 }
 
 .answer-mark{
-    background-color:#f5f5f5;
     text-align:left;
     font-size:90%;
     padding:5px;
@@ -908,14 +918,18 @@ div.grippie {
     color:#fff;
 }
 
-.question-comment-add a{
+.comment-link a{
     background-color:#eee;
     font-size:90%;
     color:#333;
     padding:3px;
 }
 
-.question-comment-add a:hover{
+.comment-link-accepted a{
+    background-color:#D9F5D9;
+}
+
+.comment-link a:hover{
     background-color:#777;
     text-decoration:none;
     color:#fff;
@@ -954,6 +968,17 @@ form .error{
 
 form .errorlist li{
     color: red;
+}
+
+.vote-notification
+{
+	z-index: 1;
+	cursor: pointer;
+	display: none;
+	position: absolute;
+	padding: 15px;
+    color: White;
+	background-color: #AE0000;
 }
 
 /** PAGINATOR **/
@@ -1024,8 +1049,7 @@ form .errorlist li{
 }
 
 .paginator-container-left{
-    float:left;
-    padding:0 0 20px 0;
+    padding:0 0 30px 0;
 }
 
 .user-info {

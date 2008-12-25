@@ -16,6 +16,7 @@ urlpatterns = patterns('',
     (r'^questions/ask/$', app.ask),
     (r'^questions/unanswered/$', app.unanswered),
     url(r'^questions/(?P<id>\d+)/answer/$', app.answer, name='answer'),
+    url(r'^questions/(?P<id>\d+)/vote/$', app.vote, name='vote'),
     #place general question item in the end of other operations
     url(r'^questions/(?P<id>\d+)//*', app.question, name='question'),
     (r'^tags/$', app.tags),

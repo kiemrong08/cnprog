@@ -3,12 +3,15 @@
 {% load humanize %}
 {% block forejs %}
         <script type='text/javascript' src='/content/js/com.cnprog.editor.js'></script>
+        <script type='text/javascript' src='/content/js/com.cnprog.post.js'></script>
         <script type='text/javascript' src='/content/js/jquery.validate.pack.js'></script>
         <script type="text/javascript">
         $().ready(function(){
             $("#nav_questions").attr('className',"youarehere");
             var answer_sort_tab = "{{ tab_id }}";
             $("#" + answer_sort_tab).attr('className',"youarehere");
+            
+            Vote.init({{ question.id }}, '{{ question.author.id }}','{{ user.id }}');
             
             $('#editor').TextAreaResizer();
             //highlight code synctax when editor has new text
@@ -58,11 +61,11 @@
             <table style="width:100%;">
                 <tr>
                     <td style="width:50px;vertical-align:top">
-                        <div id="item-left">
-                            <img class="img-button" src="/content/images/vote-arrow-up.png" title="这篇帖子有价值（再次点击取消操作）" >
+                        <div class="vote-buttons">
+                            <img class="question-img-upvote" src="/content/images/vote-arrow-up.png" title="这篇帖子有价值（再次点击取消操作）" >
                             <div class="vote-number">{{ question.score }}</div>
-                            <img class="img-button" src="/content/images/vote-arrow-down.png" title="这篇帖子没有价值（再次点击取消操作）" >
-                            <img class="img-button" src="/content/images/vote-favorite-off.png" title="我要收藏这个问题（再次点击取消操作）" >
+                            <img class="question-img-downvote" src="/content/images/vote-arrow-down.png" title="这篇帖子没有价值（再次点击取消操作）" >
+                            <img class="question-img-favorite" src="/content/images/vote-favorite-off.png" title="我要收藏这个问题（再次点击取消操作）" >
                             {% ifnotequal question.favourite_count 0 %}
                                 <div class="favorite-number">{{ question.favourite_count }}</div>
                             {% endifnotequal %}
@@ -132,7 +135,7 @@
                                 
                             </div>
                             
-                            <div class="question-comment-add" style="margin-bottom:20px">
+                            <div class="comment-link" style="margin-bottom:20px">
                                 <a href="#">添加评论</a>
                             </div>
                             
@@ -157,92 +160,98 @@
   
                 {% for answer in answers %}
                     <a name="{{ answer.id }}"></a>
-                    <table style="width:100%;">
-                        <tr>
-                            <td style="width:50px;vertical-align:top">
-                                <div id="item-left">
-                                    <img class="img-button" src="/content/images/vote-arrow-up.png" title="这篇帖子有价值（再次点击取消操作）" >
-                                    <div class="vote-number">{{ answer.score }}</div>
-                                    <img class="img-button" src="/content/images/vote-arrow-down.png" title="这篇帖子没有价值（再次点击取消操作）" >
-                                    <img class="img-button" src="/content/images/vote-accepted.png" title="最佳答案（再次点击取消操作）" >
-                                    
-                                </div>
-                            </td>
-                            <td>
-                                <div id="item-right">
-                                    <div style="min-height:80px">
-                                        {{ answer.html|safe }}
+                    <div id="answer-container-{{ answer.id }}" class="answer {% if answer.accepted %}accepted-answer{% endif %}">
+                        <table style="width:100%;">
+                            <tr>
+                                <td style="width:50px;vertical-align:top">
+                                    <div class="vote-buttons">
+                                        <img id="answer-img-upvote-{{ answer.id }}" class="answer-img-upvote" src="/content/images/vote-arrow-up.png" title="这篇帖子有价值（再次点击取消操作）" >
+                                        <div class="vote-number">{{ answer.score }}</div>
+                                        <img id="answer-img-downvote-{{ answer.id }}" class="answer-img-downvote" src="/content/images/vote-arrow-down.png" title="这篇帖子没有价值（再次点击取消操作）" >
+                                        {% ifequal user question.author  %}
+                                        <img id="answer-img-accept-{{ answer.id }}" class="answer-img-accept" src="/content/images/vote-accepted{% if answer.accepted %}-on{% endif %}.png" title="最佳答案（再次点击取消操作）" >
+                                        {% else %}
+                                            {% if answer.accepted %}
+                                            <img id="answer-img-accept-{{ answer.id }}" class="answer-img-accept" src="/content/images/vote-accepted{% if answer.accepted %}-on{% endif %}.png" title="这个答案已经被提问作者标记为最佳答案" >
+                                            {% endif %}
+                                        {% endifequal %}
                                     </div>
-                                    <div id="question-controls" style="clear:both;">
-                                        <table width="585px">
-                    	                    <tr>
-                                                <td width="300px" style="vertical-align:top">
-                                                    <span class="offensive-flag">
-                                                        <a href="#{{ answer.id }}" title="该回答的链接地址">
-                                                        链接
-                                                        </a>
-                                                    </span>
-                                                    <span class="link-separator">|</span>
-                                                    <span class="offensive-flag">
-                                                        <a href="#" title="检举该帖为垃圾信息（含人身攻击、谩骂、恶意言论等）">
-                                                        垃圾帖？
-                                                        </a>
-                                                    </span>
-                                                </td>
-                    	                    	<td width="100px"></td>
-                                             <td >
-                                                <div  class="answer-mark">
-                                                    <table width="100%">
-                        	                            <tr>
-                            	                            	<td colspan="2"> 
-                                                                &nbsp;回答于<strong>{{ answer.added_at|timesince }}</strong>前
-                                                            </td>
-                        	                            	
-                        	                            </tr>
-                        	                            <tr>
-                                                            <td width="40px" style="vertical-align:bottom">
-                                                            {% gravatar answer.author 32 %}
-                                                            </td>
-                                                            <td style="vertical-align:top">
-                                                                <div><a href="#">{{ answer.author }}</a></div>
-                                                                <div>
-                                                                <span class="reputation-score" title="{{ answer.author.reputation }}用户积分">{{ answer.author.reputation }}</span>
-                                                                <span title="{{ answer.author.gold }}金牌">
-                                                                <span class="badge1">●</span>
-                                                                <span class="badgecount">{{ answer.author.gold }}</span>
-                                                                </span>
-                                                                <span title="{{ answer.author.silver }}银牌">
-                                                                <span class="badge2">●</span>
-                                                                <span class="badgecount">{{ answer.author.silver }}</span>
-                                                                </span>
-                                                                <span title="{{ answer.author.bronze }}铜牌">
-                                                                <span class="badge3">●</span>
-                                                                <span class="badgecount">{{ answer.author.bronze }}</span>
-                                                                </span>
-                                                                </div>
-                                                            </td>
-                        	                            </tr>
-                                                    </table>
-                                                </div>
-                                                
-                                                
-                                             </td>
-                    	                    </tr>
-                    	                    
-                                        </table>
+                                </td>
+                                <td>
+                                    <div class="item-right">
+                                        <div style="min-height:80px">
+                                            {{ answer.html|safe }}
+                                        </div>
+                                        <div id="question-controls" style="clear:both;">
+                                            <table width="585px">
+                        	                    <tr>
+                                                    <td width="300px" style="vertical-align:top">
+                                                        <span class="offensive-flag">
+                                                            <a href="#{{ answer.id }}" title="该回答的链接地址">
+                                                            链接
+                                                            </a>
+                                                        </span>
+                                                        <span class="link-separator">|</span>
+                                                        <span class="offensive-flag">
+                                                            <a href="#" title="检举该帖为垃圾信息（含人身攻击、谩骂、恶意言论等）">
+                                                            垃圾帖？
+                                                            </a>
+                                                        </span>
+                                                    </td>
+                        	                    	<td width="100px"></td>
+                                                 <td >
+                                                    <div  class="answer-mark">
+                                                        <table width="100%">
+                            	                            <tr>
+                                	                            	<td colspan="2"> 
+                                                                    &nbsp;回答于<strong>{{ answer.added_at|timesince }}</strong>前
+                                                                </td>
+                            	                            	
+                            	                            </tr>
+                            	                            <tr>
+                                                                <td width="40px" style="vertical-align:bottom">
+                                                                {% gravatar answer.author 32 %}
+                                                                </td>
+                                                                <td style="vertical-align:top">
+                                                                    <div><a href="#">{{ answer.author }}</a></div>
+                                                                    <div>
+                                                                    <span class="reputation-score" title="{{ answer.author.reputation }}用户积分">{{ answer.author.reputation }}</span>
+                                                                    <span title="{{ answer.author.gold }}金牌">
+                                                                    <span class="badge1">●</span>
+                                                                    <span class="badgecount">{{ answer.author.gold }}</span>
+                                                                    </span>
+                                                                    <span title="{{ answer.author.silver }}银牌">
+                                                                    <span class="badge2">●</span>
+                                                                    <span class="badgecount">{{ answer.author.silver }}</span>
+                                                                    </span>
+                                                                    <span title="{{ answer.author.bronze }}铜牌">
+                                                                    <span class="badge3">●</span>
+                                                                    <span class="badgecount">{{ answer.author.bronze }}</span>
+                                                                    </span>
+                                                                    </div>
+                                                                </td>
+                            	                            </tr>
+                                                        </table>
+                                                    </div>
+                                                    
+                                                    
+                                                 </td>
+                        	                    </tr>
+                        	                    
+                                            </table>
+                                            
+                                        </div>
+                                        
+                                        <div id="comment-{{ answer.id }}" class="comment-link {% if answer.accepted %}comment-link-accepted{% endif %}" >
+                                            <a href="#">添加评论</a>
+                                        </div>
                                         
                                     </div>
                                     
-                                    <div class="question-comment-add" style="margin-bottom:20px">
-                                        <a href="#">添加评论</a>
-                                    </div>
-                                    
-                                </div>
-                                
-                            </td>
-                        </tr>
-                    </table>
-                    <div class="dot-line"></div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
                 {% endfor %}
                 <div class="paginator-container-left">
                     {% cnprog_paginator context %}

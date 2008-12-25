@@ -8,10 +8,12 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from django.template import RequestContext
 from django.utils.html import *
+from django.utils import simplejson
 from django.core import serializers 
-
+from django.db import transaction
 from forum.forms import *
 from forum.models import *
+from forum.auth import *
 from utils.html import sanitize_html
 
 
@@ -22,7 +24,7 @@ QUESTIONS_PAGE_SIZE = 10
 # used in users
 USERS_PAGE_SIZE = 35
 # used in answers
-ANSWERS_PAGE_SIZE = 5 
+ANSWERS_PAGE_SIZE = 10 
 
 def index(request):
     view_id = request.GET.get('sort', None)
@@ -189,7 +191,7 @@ def question(request, id):
     answer_form = AnswerForm()
     answers = Answer.objects.get_answers_from_question(question, request.user)
     if answers is not None:
-        answers = answers.order_by(orderby)
+        answers = answers.order_by("-accepted", orderby)
     objects_list = Paginator(answers, ANSWERS_PAGE_SIZE)
     page_objects = objects_list.page(page)
     # update view count
@@ -283,6 +285,73 @@ def tags(request):
 def tag(request, tag):    
     return questions(request, tagname=tag)
 
+
+
+
+
+@transaction.autocommit
+def vote(request, id):
+    """
+    accept answer code:
+        response_data_allowed = -1, Accept his own answer   0, no allowed - Anonymous    1, Allowed - by default
+        response_data_success =  0, failed                                               1, Success - by default
+        response_data_status  =  0, By default                                           1, Answer has been accepted already 
+
+    """
+    response_data_allowed = 1
+    response_data_success = 1
+    response_data_status  = 0
+    response_data_message = ''
+    
+    if not request.user.is_authenticated():
+        response_data_allowed = 0
+        response_data_success = 0
+        
+    elif request.is_ajax():
+        question = get_object_or_404(Question, id=id)
+        vote_type = request.POST.get('type')
+        answer_id = request.POST.get('postId')
+        answer = get_object_or_404(Answer, id=answer_id)
+        #accept answer
+        if vote_type == '0':
+            # make sure question author is current user
+            if question.author == request.user:
+                # answer user who is also question author is not allow to accept answer
+                print answer.author 
+                print question.author 
+                if answer.author == question.author:
+                    response_data_success = 0
+                    response_data_allowed = -1
+                # check if answer has been accepted already
+                elif answer.accepted:
+                    response_data_status = 1
+                    answer.accepted = False
+                    answer.question.answer_accepted = False
+                    answer.save()
+                    answer.question.save()
+                else:
+                    # set other answers in this question not accepted first
+                    for answer_of_question in Answer.objects.get_answers_from_question(question, request.user):
+                        if answer_of_question != answer and answer_of_question.accepted:
+                            answer_of_question.accepted = False
+                            answer_of_question.save()
+                            
+                    answer.accepted = True
+                    answer.question.answer_accepted = True
+                    answer.save()
+                    answer.question.save()
+                    
+            else:
+                response_data_allowed = 0
+                response_data_success = 0
+
+    else:
+        response_data_success = 0
+        response_data_message = u'Request mode is not supported'
+        
+    data = u'{success: %s, allowed: %s, message: "%s", status: %s}' % (response_data_success, response_data_allowed, response_data_message, response_data_status)
+    return HttpResponse(data, mimetype="application/javascript")
+    
 def users(request):
     is_paginated = True
     sortby = request.GET.get('sort', 'reputation')

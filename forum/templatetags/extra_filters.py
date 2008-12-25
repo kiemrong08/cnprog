@@ -42,3 +42,7 @@ def can_close_question(user, question):
 @register.filter
 def can_lock_posts(user):
     return auth.can_lock_posts(user)
+    
+@register.filter
+def can_accept_answer(user, question, answer):
+    return auth.can_accept_answer(user, question, answer)

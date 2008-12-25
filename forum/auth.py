@@ -85,7 +85,10 @@ def can_lock_posts(user):
 
 def can_follow_url(user):
     """Determines if the URL link can be followed by Google search engine."""
-    return user.is_authenticated() and (
-        user.reputation >= DISABLE_URL_NOFOLLOW or
-        user.is_superuser
-    )
+    return user.reputation >= DISABLE_URL_NOFOLLOW 
+
+def can_accept_answer(user, question, answer):
+    return (user.is_authenticated() and 
+        question.author != answer.author and
+        question.author == user) or user.is_superuser
+    
