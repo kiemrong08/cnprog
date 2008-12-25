@@ -17,8 +17,8 @@
     </h3>
     <div id="tab" class="">
         <a id="latest" href="?sort=latest" title="最新加入系统的问题">最新问题</a>
-        <a id="active" href="?sort=active" title="最新被回复的问题">活跃问题</a>
-        <a id="hottest" href="?sort=hottest" title="被回复最多的问题">最受欢迎问题</a>
+        <a id="active" href="?sort=active" title="最新被更新的问题">活跃问题</a>
+        <a id="hottest" href="?sort=hottest" title="被回复最多的问题">热门问题</a>
         <a id="mostvoted" href="?sort=mostvoted" title="投票次数最多的问题">最有价值问题</a>
     </div>
     
@@ -140,7 +140,7 @@
     <h3>最新标签</h3>
     <div id="recent-tags">
         {% for tag in tags %}
-            <a class="post-tag" rel="tag" title="查看有关'{{ tag.name }}'的问题" style="font-size:{% tag_font_size max min tag.used_count %}px;" href="{% url forum.views.tag tag.name|urlencode %}">{{ tag.name }}</a><span class="gray" style="font-size:90%">({{ tag.used_count|intcomma }})</span>
+            <a class="post-tag" rel="tag" title="查看有关'{{ tag.name }}'的问题" style="font-size:{% tag_font_size max min tag.used_count %}px;" href="{% url forum.views.tag tag.name|urlencode %}">{{ tag.name }}</a><span class="gray small" >({{ tag.used_count|intcomma }})</span>
         {% endfor %}
         <br>
         <a href="/tags" style="float:right;position:relative">受欢迎的标签 »</a>
