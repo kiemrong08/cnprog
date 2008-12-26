@@ -161,9 +161,7 @@
                         <a id="votes" href="?sort=votes#sort-top" title="投票次数最多的显示在最前面">投票最多</a>
                     </div>
                 </div>
-                <div class="paginator-container-left">
-                    {% cnprog_paginator context %}
-                </div>
+                {% cnprog_paginator context %}
   
                 {% for answer in answers %}
                     <a name="{{ answer.id }}"></a>
@@ -268,8 +266,14 @@
             {% else %}
                 <div class="line"></div>
             {% endifnotequal %}
-            <div style="clear:both"></div>
-            <h3>您的回答：</h3>
+            <div style="clear:both">
+            </div>
+            
+            <div style="padding:10px 0 0 0;">
+                <h3>您的回答：</h3>
+            </div>
+            
+            
             <div id="description" class="" >
                 {{ answer.text }}
                 <div class="preview-toggle"><span id="pre-collapse" title="打开或者关闭Markdown编辑器的实时预览">预览开关</span></div>

@@ -545,6 +545,7 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
     border-bottom:1px dotted #666666;
     padding-bottom:20px;
     padding-top:20px;
+    width: 100%;
 }
 
 .accepted-answer{
@@ -929,7 +930,7 @@ div.grippie {
 
 .line{
     border-bottom:1px solid #777; 
-    width:670px; /*IE*/
+    width:650px; /*IE*/
     /*
     width:100% !important; 
     */
@@ -965,7 +966,10 @@ form .errorlist li{
 }
 
 /** PAGINATOR **/
-.paginator { padding:.5em .75em; float:left; font:normal .8em arial; }
+.paginator { 
+    padding:5px 0 10px 0; 
+    font:normal .8em arial; 
+}
  
 .paginator .prev-na,
 .paginator .next-na {
@@ -1032,7 +1036,7 @@ form .errorlist li{
 }
 
 .paginator-container-left{
-    padding:0 0 30px 0;
+    padding:5px 0 10px 0;
 }
 
 .user-info {

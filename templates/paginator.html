@@ -12,7 +12,10 @@
  
 {% for num in page_numbers %}
   {% ifequal num page %}
+    {% ifequal pages 1 %}
+    {% else %}
     <span class="curr" title="当前页">{{ num }}</span>
+    {% endifequal %}
   {% else %}
   	<span class="page"><a href="{{base_url}}page={{ num }}{{ extend_url }}" title="第{{ num }}页">{{ num }}</a></span>
   {% endifequal %}
