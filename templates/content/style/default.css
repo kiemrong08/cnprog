@@ -918,23 +918,6 @@ div.grippie {
     color:#fff;
 }
 
-.comment-link a{
-    background-color:#eee;
-    font-size:90%;
-    color:#333;
-    padding:3px;
-}
-
-.comment-link-accepted a{
-    background-color:#D9F5D9;
-}
-
-.comment-link a:hover{
-    background-color:#777;
-    text-decoration:none;
-    color:#fff;
-}
-
 .dot-line{
     border-bottom:1px dotted #D8D2A9; 
     width:670px; /*IE*/
@@ -1363,7 +1346,7 @@ span.form-error {
 
 div.comments-container, div.comments-container-accepted, div.comments-container-owner, div.comments-container-deleted {
     display:none;
-    margin-top:3px;
+    margin-top:0px;
     padding:0 5px 5px;
 }
 
@@ -1374,10 +1357,13 @@ div.comments-container, a.comments-link {
 .post-comments a {
     color:#888888;
     padding:0 3px 2px;
+    font-size:90%;
 }
 
 a.comments-link, a.comments-link-accepted, a.comments-link-owner, a.comments-link-deleted {
     color:black;
+    padding:2px;
+    cursor:pointer;
 }
 
 .post-comments a:hover {
@@ -1385,3 +1371,8 @@ a.comments-link, a.comments-link-accepted, a.comments-link-owner, a.comments-lin
     color:white;
     text-decoration:none;
 }
+
+.comment-link-accepted a{
+    background-color:#D9F5D9;
+}
+

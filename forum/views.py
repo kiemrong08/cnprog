@@ -350,36 +350,33 @@ def vote(request, id):
         response_data_message = u'Request mode is not supported'
         
     data = u'{success: %s, allowed: %s, message: "%s", status: %s}' % (response_data_success, response_data_allowed, response_data_message, response_data_status)
-    return HttpResponse(data, mimetype="application/javascript")
+    return HttpResponse(data, mimetype="application/json")
     
 def users(request):
     is_paginated = True
     sortby = request.GET.get('sort', 'reputation')
-    suser = request.REQUEST.get('ipSearchUser',  "")
+    suser = request.REQUEST.get('name',  "")
     try:
         page = int(request.GET.get('page', '1'))
     except ValueError:
         page = 1
   
     if suser == "":
-        if sortby == "date_joined_desc":
+        if sortby == "newest":
             objects_list = Paginator(User.objects.all().order_by('-date_joined'), USERS_PAGE_SIZE)
-        elif sortby == "date_joined_asc":
+        elif sortby == "last":
             objects_list = Paginator(User.objects.all().order_by('date_joined'), USERS_PAGE_SIZE)
-        elif sortby == "username":
+        elif sortby == "user":
             objects_list = Paginator(User.objects.all().order_by('username'), USERS_PAGE_SIZE)
         # default
         else:
             objects_list = Paginator(User.objects.all().order_by('-reputation'), USERS_PAGE_SIZE)
-    else:
-        sortby = "username"
-        objects_list = Paginator(User.objects.extra(where=['username like %s'], params=['%' + suser + '%']).order_by(sortby), USERS_PAGE_SIZE)
-    
-    if suser == "":
         base_url = '/users/?sort=%s&' % sortby
     else:
-        base_url = '/users/?ipSearchUser=%s&sort=%s&' % (suser, sortby)
-    
+        sortby = "reputation"
+        objects_list = Paginator(User.objects.extra(where=['username like %s'], params=['%' + suser + '%']).order_by('-reputation'), USERS_PAGE_SIZE)
+        base_url = '/users/?name=%s&sort=%s&' % (suser, sortby)
+
     try:
         users = objects_list.page(page)
     except (EmptyPage, InvalidPage):
