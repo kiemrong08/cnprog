@@ -5,6 +5,7 @@ import re
 import logging
 from django import template
 from django.utils.safestring import mark_safe
+from django.utils.timesince import timesince
 
 register = template.Library()
 
@@ -147,7 +148,5 @@ def diff_date(date, limen=2):
     diff_days = diff.days
     if diff_days > limen:
         return date
-    elif diff_days == 0:
-        return '今天'
     else:
-        return str(diff_days) + '天前'
+        return timesince(date)

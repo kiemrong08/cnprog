@@ -26,7 +26,20 @@ class Tag(models.Model):
 
     def __unicode__(self):
         return self.name
-        
+
+class Comment(models.Model):
+    content_type   = models.ForeignKey(ContentType)
+    object_id      = models.PositiveIntegerField()
+    content_object = generic.GenericForeignKey('content_type', 'object_id')
+    user           = models.ForeignKey(User, related_name='comments')
+    comment        = models.CharField(max_length=300)
+    added_at       = models.DateTimeField(default=datetime.datetime.now)
+
+    class Meta:
+        unique_together = ('content_type', 'object_id', 'user')
+        ordering = ('-added_at',)
+        db_table = u'comment'
+
 class Question(models.Model):
     CLOSE_REASONS = (
         (1, u'Exact duplicate'),
@@ -73,7 +86,8 @@ class Question(models.Model):
     tagnames             = models.CharField(max_length=125)
     summary              = models.CharField(max_length=180)
     html                 = models.TextField()
-
+    comments             = generic.GenericRelation(Comment)
+    
     objects = QuestionManager()
 
     def save(self, **kwargs):
@@ -131,7 +145,8 @@ class Answer(models.Model):
     last_edited_at       = models.DateTimeField(null=True, blank=True)
     last_edited_by       = models.ForeignKey(User, null=True, blank=True, related_name='last_edited_answers')
     html                 = models.TextField()
-
+    comments             = generic.GenericRelation(Comment)
+    
     objects = AnswerManager()
     
     class Meta:
@@ -162,19 +177,6 @@ class Vote(models.Model):
 
     def is_downvote(self):
         return self.vote == self.VOTE_DOWN
-        
-class Comment(models.Model):
-    content_type   = models.ForeignKey(ContentType)
-    object_id      = models.PositiveIntegerField()
-    content_object = generic.GenericForeignKey('content_type', 'object_id')
-    user           = models.ForeignKey(User, related_name='comments')
-    comment        = models.CharField(max_length=300)
-    added_at       = models.DateTimeField(default=datetime.datetime.now)
-
-    class Meta:
-        unique_together = ('content_type', 'object_id', 'user')
-        ordering = ('-added_at',)
-        db_table = u'comment'
 
 class FlaggedItem(models.Model):
     """A flag on a Question or Answer indicating offensive content."""

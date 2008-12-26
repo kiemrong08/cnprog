@@ -543,3 +543,24 @@ def users_favorites(request, user_id):
         "questions" : questions,
         "user" : user
     })
+
+def comments(request, id):
+    # only support get comments by ajax now
+    if request.is_ajax():
+        question = get_object_or_404(Question, id=id)
+        comments = question.comments.all().order_by('-id')
+        # {"Id":6,"PostId":38589,"CreationDate":"an hour ago","Text":"hello there!","UserDisplayName":"Jarrod Dixon","UserUrl":"/users/3/jarrod-dixon","DeleteUrl":null}
+        json_comments = []
+        for comment in comments:
+            user = comment.user
+            json_comments.append({"id" : comment.id,
+                "post_id" : id,
+                "add_date" : comment.added_at,
+                "text" : comment.comment,
+                "user_display_name" : user.username,
+                "user_url" : "/users/%s/%s" % (user.id, user.username),
+                "delete_url" : ""
+            })
+        
+        data = simplejson.dumps(json_comments)
+        return HttpResponse(data, mimetype="application/json")

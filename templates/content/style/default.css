@@ -1332,3 +1332,56 @@ div.started .reputation-score {
     color:#E1E818 !important;
     text-decoration:none;
 }
+
+div.comments {
+    line-height:150%;
+    padding:10px 0;
+}
+
+form.post-comments textarea {
+    height:4em;
+    margin-bottom:4px;
+}
+
+form.post-comments input {
+    margin-left:10px;
+    margin-top:1px;
+    vertical-align:top;
+    width:100px;
+}
+
+span.text-counter {
+    margin-right:20px;
+}
+
+span.form-error {
+    color:#990000;
+    font-size:90%;
+    font-weight:normal;
+    margin-left:5px;
+}
+
+div.comments-container, div.comments-container-accepted, div.comments-container-owner, div.comments-container-deleted {
+    display:none;
+    margin-top:3px;
+    padding:0 5px 5px;
+}
+
+div.comments-container, a.comments-link {
+    background-color:#EEEEEE;
+}
+
+.post-comments a {
+    color:#888888;
+    padding:0 3px 2px;
+}
+
+a.comments-link, a.comments-link-accepted, a.comments-link-owner, a.comments-link-deleted {
+    color:black;
+}
+
+.post-comments a:hover {
+    background-color:#777777;
+    color:white;
+    text-decoration:none;
+}

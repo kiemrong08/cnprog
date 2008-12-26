@@ -98,3 +98,167 @@
         }
     }
 } ();
+
+
+// site comments
+
+var comments = function() {
+
+    var jDivInit = function(postId) {
+        return $("#comments-" + postId);
+    };
+
+    var appendLoaderImg = function(postId) {
+        appendLoader("#comments-" + postId + " div.comments");
+    };
+
+    var canPostComments = function(postId, jDiv) {
+        var jHidden = jDiv.siblings("#can-post-comments-" + postId);
+        return jHidden.val() == "true";
+    };
+
+    var renderForm = function(postId, jDiv) {
+        var formId = "form-comments-" + postId;
+
+        // Only add form once to dom..
+        if (canPostComments(postId, jDiv)) {
+            if (jDiv.find("#" + formId).length == 0) {
+                var form = '<form id="' + formId + '" class="post-comments"><div>';
+                form += '<textarea name="comment" cols="70" rows="2" maxlength="300" onblur="comments.updateTextCounter(this)" ';
+                form += 'onfocus="comments.updateTextCounter(this)" onkeyup="comments.updateTextCounter(this)"></textarea>';
+                form += '<input type="submit" value="添加评论" /><br/><span class="text-counter"></span>';
+                form += '<span class="form-error"></span></div></form>';
+
+                jDiv.append(form);
+
+                setupFormValidation("#" + formId,
+                    { comment: { required: true, minlength: 10} },
+                    function() { postComment(postId, formId); });
+            }
+        }
+        else { // Let users know how to post comments.. 
+            var divId = "comments-rep-needed-" + postId;
+            if (jDiv.find("#" + divId).length == 0) {
+                jDiv.append('<div id="' + divId + '" style="color:red">commenting requires ' + repNeededForComments + ' reputation -- <a href="/faq" class="comment-user">see faq</a></span>');
+            }
+        }
+    };
+
+    var getComments = function(postId, jDiv) {
+        appendLoaderImg(postId);
+        $.getJSON("/questions/" + postId + "/comments/", function(json) { showComments(postId, json); });
+    };
+
+    var showComments = function(postId, json) {
+        var jDiv = jDivInit(postId);
+
+        jDiv = jDiv.find("div.comments");   // this div should contain any fetched comments..
+        jDiv.find("div[id^='comment-']").remove();  // clean previous calls..
+
+        removeLoader();
+
+        if (json && json.length > 0) {
+            for (var i = 0; i < json.length; i++)
+                renderComment(jDiv, json[i]);
+
+            jDiv.children().show();
+        }
+    };
+
+    // {"Id":6,"PostId":38589,"CreationDate":"an hour ago","Text":"hello there!","UserDisplayName":"Jarrod Dixon","UserUrl":"/users/3/jarrod-dixon","DeleteUrl":null}
+    var renderComment = function(jDiv, json) {
+        var html = '<div id="comment-' + json.id + '" style="display:none">' + json.text;
+        html += json.UserUrl ? '&nbsp;&ndash;&nbsp;<a href="' + json.user_url + '"' : '<span';
+        html += ' class="comment-user">' + json.user_display_name + (json.user_url ? '</a>' : '</span>');
+        html += ' <span class="comment-date">(' + json.add_date + ')</span>';
+
+        if (json.DeleteUrl) {
+            var img = "/content/images/close-small.png";
+            var imgHover = "/content/images/close-small-hover.png";
+            html += '<img onclick="comments.deleteComment($(this), ' + json.post_id + ', \'' + json.delete_url + '\')" src="' + img;
+            html += '" onmouseover="$(this).attr(\'src\', \'' + imgHover + '\')" onmouseout="$(this).attr(\'src\', \'' + img
+            html += '\')" title="删除此评论" />';
+        }
+
+        html += '</div>';
+
+        jDiv.append(html);
+    };
+
+    var postComment = function(postId, formId) {
+        appendLoaderImg(postId);
+
+        var formSelector = "#" + formId;
+        var textarea = $(formSelector + " textarea");
+
+        $.ajax({
+            type: "POST",
+            url: "/questions/" + postId + "/comments/",
+            dataType: "json",
+            data: { comment: textarea.val(), "fkey": fkey },
+            success: function(json) {
+                showComments(postId, json);
+                textarea.val("");
+                comments.updateTextCounter(textarea);
+                enableSubmitButton(formSelector);
+            },
+            error: function(res, textStatus, errorThrown) {
+                removeLoader();
+                showAjaxError(formSelector, res.responseText);
+                enableSubmitButton(formSelector);
+            }
+        });
+    };
+
+    // public methods..
+    return {
+
+        init: function() {
+            // Setup "show comments" clicks..
+            $("a[id^='comments-link-']").unbind("click").click(function() { comments.show($(this).attr("id").substr("comments-link-".length)); });
+        },
+
+        show: function(postId) {
+            var jDiv = jDivInit(postId);
+            getComments(postId, jDiv);
+            renderForm(postId, jDiv);
+            jDiv.show();
+            if (canPostComments(postId, jDiv)) jDiv.find("textarea").get(0).focus();
+            jDiv.siblings("a").unbind("click").click(function() { comments.hide(postId); }).text("隐藏评论");
+        },
+
+        hide: function(postId) {
+            var jDiv = jDivInit(postId);
+            var len = jDiv.children("div.comments").children().length;
+            var anchorText = len == 0 ? "添加评论" : "评论 (<b>" + len + "</b>)";
+
+            jDiv.hide();
+            jDiv.siblings("a").unbind("click").click(function() { comments.show(postId); }).html(anchorText);
+            jDiv.children("div.comments").children().hide();
+        },
+
+        deleteComment: function(jImg, postId, deleteUrl) {
+            if (confirm("真要删除此评论吗？")) {
+                jImg.hide();
+                appendLoaderImg(postId);
+                $.post(deleteUrl, { dataNeeded: "forIIS7" }, function(json) {
+                    showComments(postId, json);
+                }, "json");
+            }
+        },
+
+        updateTextCounter: function(textarea) {
+            var length = textarea.value ? textarea.value.length : 0;
+            var color = length > 270 ? "#f00" : length > 200 ? "#f60" : "#999";
+            var jSpan = $(textarea).siblings("span.text-counter");
+            jSpan.html((300 - length) + ' character' + (length == 299 ? '' : 's') + ' left').css("color", color);
+        }
+    };
+
+} ();
+
+$().ready(function() {
+    comments.init();
+});
+
+

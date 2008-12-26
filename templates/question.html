@@ -3,9 +3,13 @@
 {% load humanize %}
 {% block forejs %}
         <script type='text/javascript' src='/content/js/com.cnprog.editor.js'></script>
+        <script type='text/javascript' src='/content/js/com.cnprog.utils.js'></script>
         <script type='text/javascript' src='/content/js/com.cnprog.post.js'></script>
         <script type='text/javascript' src='/content/js/jquery.validate.pack.js'></script>
         <script type="text/javascript">
+        // define reputation needs for comments
+        var repNeededForComments = 50;
+        
         $().ready(function(){
             $("#nav_questions").attr('className',"youarehere");
             var answer_sort_tab = "{{ tab_id }}";
@@ -135,8 +139,11 @@
                                 
                             </div>
                             
-                            <div class="comment-link" style="margin-bottom:20px">
-                                <a href="#">添加评论</a>
+                            <div class="post-comments" style="margin-bottom:20px">
+                                <input id="can-post-comments-{{question.id}}" type="hidden" value="true"/>
+                                <a id="comments-link-{{question.id}}" class="comments-link">添加评论</a>
+                                <div id="comments-{{question.id}}" class="comments-container">
+                                <div class="comments"/></div>
                             </div>
                             
                         </div>
@@ -241,9 +248,11 @@
                                             </table>
                                             
                                         </div>
-                                        
-                                        <div id="comment-{{ answer.id }}" class="comment-link {% if answer.accepted %}comment-link-accepted{% endif %}" >
-                                            <a href="#">添加评论</a>
+                                        <div id="comment-{{ answer.id }}" class="post-comments {% if answer.accepted %}comment-link-accepted{% endif %}" >
+                                            <input id="can-post-comments-{{answer.id}}" type="hidden" value="true"/>
+                                            <a id="comments-link-{{answer.id}}" class="comments-link">添加评论</a>
+                                            <div id="comments-{{answer.id}}" class="comments-container">
+                                            <div class="comments"/></div>
                                         </div>
                                         
                                     </div>
