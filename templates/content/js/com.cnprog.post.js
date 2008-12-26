@@ -65,6 +65,7 @@
         else if(data.status == "1"){
             object.attr("src", "/content/images/vote-accepted.png");
             $("#"+answerContainerIdPrefix+postId).removeClass("accepted-answer");
+            $("#"+commentLinkIdPrefix+postId).removeClass("comment-link-accepted");
         }
         else if(data.success == "1"){
             var acceptedButtons = 'div.'+ voteContainerId +' img[id^='+ imgIdPrefixAccept +']';

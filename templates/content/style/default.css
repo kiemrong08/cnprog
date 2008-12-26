@@ -600,11 +600,14 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
 	border-bottom: 1px solid #3E6D8E;
 	border-right: 1px solid #7F9FB6;
 	margin: 2px 3px 2px 0;
-	padding: 3px 4px 3px 4px;
+	padding: 2px 4px 2px 4px;
 	text-decoration: none;
+    height:20px;
+    font-family:Microsoft Yahei,ËÎÌו,Tahoma;
 	font-size: 90%;
-	line-height: 25px;
+	line-height: 2.2;
 	white-space:nowrap;
+    vertical-align:baseline;
 }
 
 .post-tag:hover
