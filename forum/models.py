@@ -113,6 +113,11 @@ class Question(models.Model):
     def get_absolute_url(self):
         return '%s%s' % (reverse('question', args=[self.id]), self.title)
     
+    def has_favorite_by_user(self, user):
+        if not user.is_authenticated():
+            return False
+        return FavoriteQuestion.objects.filter(question=self, user=user).count() > 0
+        
     def get_answer_count_by_user(self, user_id):
         query_set = Answer.objects.filter(author__id=user_id)
         return query_set.filter(question=self).count()

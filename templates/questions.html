@@ -75,7 +75,7 @@
                 <table width="100%">
                     <tr>
                         <td colspan="2" class="gray"> 
-                            提问于<strong>{{ question.added_at|timesince }}</strong>前
+                        提问于<span title="{{ question.added_at }}"><strong>{% diff_date question.added_at %}</strong></span>
                         </td>
                     </tr>
                     <tr>

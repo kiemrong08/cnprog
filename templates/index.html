@@ -97,7 +97,7 @@
                 {% endfor %}
             </div>
             <div class="question-started">
-                    <span class="updatedtime" title="{{ question.last_activity_at }}"><strong>{{ question.last_activity_at|timesince }}</strong>前</span>
+                    <span class="updatedtime" title="{{ question.last_activity_at }}"><strong>{% diff_date question.last_activity_at %}</strong></span>
                     <a href="/users/{{ question.last_activity_by.id }}/{{ question.last_activity_by.username }}"><span class="big">{{ question.last_activity_by.username }}</span></a>
                     <span class="reputation-score" title="{{ question.author.reputation }}用户积分"> {{ question.author.reputation }}</span>
                     <span title="{{ question.author.gold }}金牌">

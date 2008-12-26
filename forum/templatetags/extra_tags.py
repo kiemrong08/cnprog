@@ -149,4 +149,4 @@ def diff_date(date, limen=2):
     if diff_days > limen:
         return date
     else:
-        return timesince(date)
+        return timesince(date) + u'前'

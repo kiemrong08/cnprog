@@ -8,6 +8,8 @@
     var answerContainerIdPrefix = 'answer-container-';
     var voteContainerId = 'vote-buttons';
     var imgIdPrefixAccept = 'answer-img-accept-';
+    var imgClassPrefixFavorite = 'question-img-favorite';
+    var divIdFavorite = 'favorite-number';
     var commentLinkIdPrefix = 'comment-';
     
     var VoteType = {
@@ -16,6 +18,15 @@
         downVote : 2,
         offensive : 3,
         favorite : 4
+    };
+
+    var getFavoriteButton = function(){
+        var favoriteButton = 'div.'+ voteContainerId +' img[class='+ imgClassPrefixFavorite +']';
+        return $(favoriteButton);
+    };
+    var getFavoriteNumber = function(){
+        var favoriteNumber = '#'+ divIdFavorite ;
+        return $(favoriteNumber);
     };
     
     var bindEvents = function(){
@@ -26,6 +37,11 @@
                Vote.accept($(event.target))
             });
         }
+        
+        var favoriteButton = getFavoriteButton();
+        favoriteButton.unbind('click').click(function(event){
+           Vote.favorite($(event.target))
+        });
     };
     
     var submit = function(object, voteType, callback) {
@@ -73,6 +89,29 @@
         }
     };
 
+    var callback_favorite = function(object, data){
+        if(data.allowed == "0" && data.success == "0"){
+            showMessage(object, "匿名用户无法操作，请先<a href='/account/signin/?next=/questions/"+ questionId +"'>注册或者登录</a>");
+        }
+        else if(data.status == "1"){
+            object.attr("src", "/content/images/vote-favorite-off.png");
+            var fav = getFavoriteNumber();
+            fav.removeClass("my-favorite-number");
+            if(data.count == 0)
+                data.count = '';
+            fav.text(data.count);
+        }
+        else if(data.success == "1"){
+            object.attr("src", "/content/images/vote-favorite-on.png");
+            var fav = getFavoriteNumber();
+            fav.text(data.count);
+            fav.addClass("my-favorite-number");
+        }
+        else{
+            showMessage(object, data.message);
+        }
+    };
+        
     return {
         init : function(qId, questionAuthor, userId){
             questionId = qId;
@@ -85,6 +124,10 @@
         accept: function(object){
             postId = object.attr("id").substring(imgIdPrefixAccept.length);
             submit(object, VoteType.acceptAnswer, callback_accept);
+        },
+        
+        favorite: function(object){
+            submit(object, VoteType.favorite, callback_favorite);
         }
     }
 } ();

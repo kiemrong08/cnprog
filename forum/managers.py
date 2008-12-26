@@ -54,9 +54,15 @@ class QuestionManager(models.Manager):
         """
         update counter+1 when user browse question page
         """
-        question.view_count = question.view_count + 1
-        question.save()
-
+        self.filter(id=question.id).update(view_count = question.view_count + 1)
+    
+    def update_favorite_count(self, question):
+        """
+        update favourite_count for given question
+        """
+        from forum.models import FavoriteQuestion
+        self.filter(id=question.id).update(favourite_count = FavoriteQuestion.objects.filter(question=question).count())
+        
     def get_similar_questions(self, question):
         """
         Get 10 similar questions for given one.

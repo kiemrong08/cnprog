@@ -69,10 +69,16 @@
                             <img class="question-img-upvote" src="/content/images/vote-arrow-up.png" title="这篇帖子有价值（再次点击取消操作）" >
                             <div class="vote-number">{{ question.score }}</div>
                             <img class="question-img-downvote" src="/content/images/vote-arrow-down.png" title="这篇帖子没有价值（再次点击取消操作）" >
-                            <img class="question-img-favorite" src="/content/images/vote-favorite-off.png" title="我要收藏这个问题（再次点击取消操作）" >
-                            {% ifnotequal question.favourite_count 0 %}
-                                <div class="favorite-number">{{ question.favourite_count }}</div>
-                            {% endifnotequal %}
+                            {% if favorited %}
+                            <img class="question-img-favorite" src="/content/images/vote-favorite-on.png" title="我要收藏这个问题（再次点击取消操作）" >
+                            <div id="favorite-number" class="favorite-number my-favorite-number">{{ question.favourite_count }}</div>
+                            {% else %}
+                            <img class="question-img-favorite" src="/content/images/vote-favorite-off.png" title="我要收藏这个问题（再次点击取消操作）" >   
+                                {% ifnotequal question.favourite_count 0 %}
+                                    <div id="favorite-number" class="favorite-number">{{ question.favourite_count }}</div>
+                                {% endifnotequal %}
+                            {% endif %}
+                            
                         </div>
                     </td>
                     <td>
@@ -101,7 +107,7 @@
                                             <table width="100%">
                 	                            <tr>
                     	                            	<td colspan="2"> 
-                                                        &nbsp;提问于<strong>{{ question.added_at|timesince }}</strong>前
+                                                        &nbsp;提问于<strong title="{{ question.added_at }}">{% diff_date question.added_at %}</strong>
                                                     </td>
                 	                            	
                 	                            </tr>
@@ -209,7 +215,7 @@
                                                         <table width="100%">
                             	                            <tr>
                                 	                            	<td colspan="2"> 
-                                                                    &nbsp;回答于<strong>{{ answer.added_at|timesince }}</strong>前
+                                                                    &nbsp;回答于<strong title="{{answer.added_at}}">{% diff_date answer.added_at %}</strong>
                                                                 </td>
                             	                            	
                             	                            </tr>
@@ -325,13 +331,13 @@
         {% endfor %}
     </div>
     <div class="paragraph">
-        提问时间： <div class="big">{{ question.added_at|timesince }}之前</div>
+        提问时间： <div class="big" title="{{ question.added_at }}">{% diff_date question.added_at %}</div>
     </div>
     <div class="paragraph"> 
      目前浏览数量：<div class="big">{{ question.view_count|intcomma }} 次</div>
     </div>
     <div class="paragraph"> 
-        最后更新时间：<div class="big">{{ question.last_activity_at|timesince }}之前</div>
+        最后更新时间：<div class="big" title="{{ question.last_activity_at }}">{% diff_date question.last_activity_at %}</div>
     </div>
 </div>
 
@@ -340,7 +346,7 @@
     <div id="" class="">
         <ul class="list-item">
         {% for question in similar_questions %}
-            <li><a href="/questions/{{question.id}}/{{ question.title }}">{{ question.title }}</a><span class="small"> ({{ question.last_activity_at|timesince }}前)</span</li>
+            <li><a href="/questions/{{question.id}}/{{ question.title }}">{{ question.title }}</a><span class="small" title="{{ question.last_activity_at }}"> ({% diff_date question.last_activity_at %})</span</li>
         {% endfor %}
         </ul>
     </div>

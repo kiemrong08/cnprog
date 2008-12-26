@@ -878,6 +878,10 @@ div.grippie {
     font-family:Arial;
     margin-top:-8px;
     font-weight:bold;
+    color:#808185
+}
+
+.my-favorite-number{
     color:#D4A849;
 }
 
@@ -967,6 +971,13 @@ form .errorlist li{
     color: White;
 	background-color: #AE0000;
 }
+
+.vote-notification a
+{
+    color: White;
+	text-decoration:underline;
+}
+
 
 /** PAGINATOR **/
 .paginator { 
