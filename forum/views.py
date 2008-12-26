@@ -35,6 +35,9 @@ def index(request):
         view_id = "latest"
         orderby = "-added_at"
     questions = Question.objects.all().order_by(orderby)[:30]
+    
+    # RISK - inner join queries
+    questions = questions.select_related();
     tags = Tag.objects.all().order_by("-id")[:100]
     #print datetime.datetime.now()
     min = max = tags[0].used_count
@@ -102,15 +105,18 @@ def questions(request, tagname=None, unanswered=False):
     # check if request is from tagged questions
     if tagname is not None:
         #print datetime.datetime.now()
-        objects_list = Paginator(Question.objects.filter(tags__name = unquote(tagname)).order_by(orderby), pagesize)
+        objects = Question.objects.filter(tags__name = unquote(tagname)).order_by(orderby)
         #print datetime.datetime.now()
     elif unanswered:
         #check if request is from unanswered questions
         template_file = "unanswered.html"
-        objects_list = Paginator(Question.objects.filter(answer_count=0).order_by(orderby), pagesize)
+        objects = Question.objects.filter(answer_count=0).order_by(orderby)
     else:
-        objects_list = Paginator(Question.objects.all().order_by(orderby), pagesize)
-    
+        objects = Question.objects.all().order_by(orderby)
+        
+    # RISK - inner join queries
+    objects = objects.select_related();
+    objects_list = Paginator(objects, pagesize)
     questions = objects_list.page(page)
     
     # Get related tags from this page objects
@@ -167,8 +173,9 @@ def ask(request):
         
     else:
         form = AskForm()
-        
-    tags = serializers.serialize("json", Tag.objects.all())
+
+    tags = Tag.objects.select_related('created_by')
+    tags = serializers.serialize("json", tags, fields=('name', 'used_count'))
     return render_to_response('ask.html', {
         'form' : form,
         'tags' : tags,
@@ -190,6 +197,8 @@ def question(request, id):
     question = get_object_or_404(Question, id=id)
     answer_form = AnswerForm()
     answers = Answer.objects.get_answers_from_question(question, request.user)
+    answers = answers.select_related(depth=1)
+    
     if answers is not None:
         answers = answers.order_by("-accepted", orderby)
     objects_list = Paginator(answers, ANSWERS_PAGE_SIZE)

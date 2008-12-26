@@ -1,3 +1,14 @@
+var showMessage = function(object, msg) {
+    var div = $('<div class="vote-notification"><h3>' + msg + '</h3>(点击消息框关闭)</div>');
+
+    div.click(function(event) {
+        $(".vote-notification").fadeOut("fast", function() { $(this).remove(); });
+    });
+
+    object.parent().append(div);
+    div.fadeIn("fast");
+};
+
 function appendLoader(containerSelector) {
     $(containerSelector).append('<img class="ajax-loader" src="/content/images/indicator.gif" title="读取中..." alt="读取中..." />');
 }

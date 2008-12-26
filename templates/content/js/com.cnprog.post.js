@@ -17,20 +17,9 @@
         offensive : 3,
         favorite : 4
     };
-
-    var showMessage = function(object, msg) {
-        var div = $('<div class="vote-notification"><h3>' + msg + '</h3>(点击消息框关闭)</div>');
-
-        div.click(function(event) {
-            $(".vote-notification").fadeOut("fast", function() { $(this).remove(); });
-        });
-
-        object.parent().append(div);
-        div.fadeIn("fast");
-    };
     
     var bindEvents = function(){
-        // find all accept button whose id begin with "answer-img-accept-"
+        // find all accept buttons whose ids begin with "answer-img-accept-"
         if(questionAuthorId == currentUserId){
             var acceptedButtons = 'div.'+ voteContainerId +' img[id^='+ imgIdPrefixAccept +']';
             $(acceptedButtons).unbind('click').click(function(event){
