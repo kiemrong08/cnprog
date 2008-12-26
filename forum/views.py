@@ -378,9 +378,13 @@ def vote(request, id):
                     new_item.save()
                     response_data['count']  = FavoriteQuestion.objects.filter(question=question).count()
                 Question.objects.update_favorite_count(question) 
+                
+            elif vote_type in ['1', '2', '5', '6']:
+                if not can_vote_up(request.user):
+                    response_data['allowed'] = -1
         else:
             response_data['success'] = 0
-            response_data['message'] = u'Request mode is not supported'
+            response_data['message'] = u'Request mode is not supported. Please try again.'
      
         data = simplejson.dumps(response_data)
     

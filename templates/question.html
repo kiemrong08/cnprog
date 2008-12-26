@@ -66,9 +66,9 @@
                 <tr>
                     <td style="width:50px;vertical-align:top">
                         <div class="vote-buttons">
-                            <img class="question-img-upvote" src="/content/images/vote-arrow-up.png" title="这篇帖子有价值（再次点击取消操作）" >
-                            <div class="vote-number">{{ question.score }}</div>
-                            <img class="question-img-downvote" src="/content/images/vote-arrow-down.png" title="这篇帖子没有价值（再次点击取消操作）" >
+                            <img id="question-img-upvote-{{ question.id }}" class="question-img-upvote" src="/content/images/vote-arrow-up.png" title="这篇帖子有价值（再次点击取消操作）" >
+                            <div id="question-vote-number-{{ question.id }}" class="vote-number">{{ question.score }}</div>
+                            <img id="question-img-downvote-{{ question.id }}" class="question-img-downvote" src="/content/images/vote-arrow-down.png" title="这篇帖子没有价值（再次点击取消操作）" >
                             {% if favorited %}
                             <img class="question-img-favorite" src="/content/images/vote-favorite-on.png" title="我要收藏这个问题（再次点击取消操作）" >
                             <div id="favorite-number" class="favorite-number my-favorite-number">{{ question.favourite_count }}</div>
@@ -177,7 +177,7 @@
                                 <td style="width:50px;vertical-align:top">
                                     <div class="vote-buttons">
                                         <img id="answer-img-upvote-{{ answer.id }}" class="answer-img-upvote" src="/content/images/vote-arrow-up.png" title="这篇帖子有价值（再次点击取消操作）" >
-                                        <div class="vote-number">{{ answer.score }}</div>
+                                        <div id="answer-vote-number-{{ answer.id }}" class="vote-number">{{ answer.score }}</div>
                                         <img id="answer-img-downvote-{{ answer.id }}" class="answer-img-downvote" src="/content/images/vote-arrow-down.png" title="这篇帖子没有价值（再次点击取消操作）" >
                                         {% ifequal user question.author  %}
                                         <img id="answer-img-accept-{{ answer.id }}" class="answer-img-accept" src="/content/images/vote-accepted{% if answer.accepted %}-on{% endif %}.png" title="最佳答案（再次点击取消操作）" >
@@ -346,7 +346,7 @@
     <div id="" class="">
         <ul class="list-item">
         {% for question in similar_questions %}
-            <li><a href="/questions/{{question.id}}/{{ question.title }}">{{ question.title }}</a><span class="small" title="{{ question.last_activity_at }}"> ({% diff_date question.last_activity_at %})</span</li>
+            <li><a href="/questions/{{question.id}}/{{ question.title }}">{{ question.title }}</a><span class="small" title="{{ question.last_activity_at }}"> ({% diff_date question.last_activity_at %})</span></li>
         {% endfor %}
         </ul>
     </div>
