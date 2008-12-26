@@ -126,7 +126,7 @@ var comments = function() {
             if (jDiv.find("#" + formId).length == 0) {
                 var form = '<form id="' + formId + '" class="post-comments"><div>';
                 form += '<textarea name="comment" cols="70" rows="2" maxlength="300" onblur="comments.updateTextCounter(this)" ';
-                form += 'onfocus="comments.updateTextCounter(this)" onkeyup="comments.updateTextCounter(this)"></textarea>';
+                form += 'onfocus="comments.updateTextCounter(this)" onkeyup="comments.updateTextCounter(this)"></textarea><br/>';
                 form += '<input type="submit" value="添加评论" /><br/><span class="text-counter"></span>';
                 form += '<span class="form-error"></span></div></form>';
 
@@ -169,7 +169,7 @@ var comments = function() {
     // {"Id":6,"PostId":38589,"CreationDate":"an hour ago","Text":"hello there!","UserDisplayName":"Jarrod Dixon","UserUrl":"/users/3/jarrod-dixon","DeleteUrl":null}
     var renderComment = function(jDiv, json) {
         var html = '<div id="comment-' + json.id + '" style="display:none">' + json.text;
-        html += json.UserUrl ? '&nbsp;&ndash;&nbsp;<a href="' + json.user_url + '"' : '<span';
+        html += json.user_url ? '&nbsp;&ndash;&nbsp;<a href="' + json.user_url + '"' : '<span';
         html += ' class="comment-user">' + json.user_display_name + (json.user_url ? '</a>' : '</span>');
         html += ' <span class="comment-date">(' + json.add_date + ')</span>';
 
@@ -196,7 +196,7 @@ var comments = function() {
             type: "POST",
             url: "/questions/" + postId + "/comments/",
             dataType: "json",
-            data: { comment: textarea.val(), "fkey": fkey },
+            data: { comment: textarea.val() },
             success: function(json) {
                 showComments(postId, json);
                 textarea.val("");
@@ -252,7 +252,7 @@ var comments = function() {
             var length = textarea.value ? textarea.value.length : 0;
             var color = length > 270 ? "#f00" : length > 200 ? "#f60" : "#999";
             var jSpan = $(textarea).siblings("span.text-counter");
-            jSpan.html((300 - length) + ' character' + (length == 299 ? '' : 's') + ' left').css("color", color);
+            jSpan.html('还可写' + (300 - length) + ' 字符').css("color", color);
         }
     };
 
