@@ -146,9 +146,9 @@
                             </div>
                             
                             <div class="post-comments" style="margin-bottom:20px">
-                                <input id="can-post-comments-{{question.id}}" type="hidden" value="true"/>
-                                <a id="comments-link-{{question.id}}" class="comments-link">添加评论</a>
-                                <div id="comments-{{question.id}}" class="comments-container">
+                                <input id="can-post-comments-question-{{question.id}}" type="hidden" value="true"/>
+                                <a id="comments-link-question-{{question.id}}" class="comments-link">{% if question.comment_count %}评论({{question.comment_count}}){% else %}添加评论{% endif %}</a>
+                                <div id="comments-question-{{question.id}}" class="comments-container">
                                 <div class="comments"/></div>
                             </div>
                             
@@ -253,9 +253,9 @@
                                             
                                         </div>
                                         <div id="comment-{{ answer.id }}" class="post-comments {% if answer.accepted %}comment-link-accepted{% endif %}" >
-                                            <input id="can-post-comments-{{answer.id}}" type="hidden" value="true"/>
-                                            <a id="comments-link-{{answer.id}}" class="comments-link">添加评论</a>
-                                            <div id="comments-{{answer.id}}" class="comments-container">
+                                            <input id="can-post-comments-answer-{{answer.id}}" type="hidden" value="true"/>
+                                            <a id="comments-link-answer-{{answer.id}}" class="comments-link">添加评论</a>
+                                            <div id="comments-answer-{{answer.id}}" class="comments-container">
                                             <div class="comments"/></div>
                                         </div>
                                         

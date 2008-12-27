@@ -208,6 +208,7 @@ def question(request, id):
     Question.objects.update_view_count(question)
     return render_to_response('question.html', {
         "question" : question,
+        "question_comment_count":question.comments.count(),
         "answer" : answer_form,
         "answers" : page_objects.object_list,
         "tags" : question.tags.all(),
@@ -581,31 +582,42 @@ def users_favorites(request, user_id):
         "user" : user
     })
 
-def comments(request, id):
+def question_comments(request, id):
+    question = get_object_or_404(Question, id=id)
+    return __comments(request, question)
+
+def answer_comments(request, id):
+    answer = get_object_or_404(Answer, id=id)
+    return __comments(request, answer)
+
+def __comments(request, obj):
+    def generate_comments_json():
+        comments = obj.comments.all().order_by('-id')
+        # {"Id":6,"PostId":38589,"CreationDate":"an hour ago","Text":"hello there!","UserDisplayName":"Jarrod Dixon","UserUrl":"/users/3/jarrod-dixon","DeleteUrl":null}
+        json_comments = []
+        for comment in comments:
+            user = comment.user
+            #print type(comment.added_at)
+            json_comments.append({"id" : comment.id,
+                "object_id" : obj.id,
+                "add_date" : comment.added_at.strftime('%Y-%m-%d'),
+                "text" : comment.comment,
+                "user_display_name" : user.username,
+                "user_url" : "/users/%s/%s" % (user.id, user.username),
+                "delete_url" : ""
+            })
+    
+        data = simplejson.dumps(json_comments)
+        return HttpResponse(data, mimetype="application/json")
+        
     # only support get comments by ajax now
     if request.is_ajax():
         if request.method == "GET":
-            question = get_object_or_404(Question, id=id)
-            comments = question.comments.all().order_by('-id')
-            # {"Id":6,"PostId":38589,"CreationDate":"an hour ago","Text":"hello there!","UserDisplayName":"Jarrod Dixon","UserUrl":"/users/3/jarrod-dixon","DeleteUrl":null}
-            json_comments = []
-            for comment in comments:
-                user = comment.user
-                #print type(comment.added_at)
-                json_comments.append({"id" : comment.id,
-                    "post_id" : id,
-                    "add_date" : comment.added_at.strftime('%Y-%m-%d'),
-                    "text" : comment.comment,
-                    "user_display_name" : user.username,
-                    "user_url" : "/users/%s/%s" % (user.id, user.username),
-                    "delete_url" : ""
-                })
-        
-            data = simplejson.dumps(json_comments)
-            return HttpResponse(data, mimetype="application/json")
+            return generate_comments_json()
         elif request.method == "POST":
-            question = get_object_or_404(Question, id=id)
             comment_data = request.POST.get('comment')
-            comment = Comment(content_object=question, comment=comment_data, user=request.user)
+            comment = Comment(content_object=obj, comment=comment_data, user=request.user)
             comment.save()
-            return HttpResponse('')
+            obj.comment_count = obj.comment_count + 1
+            obj.save()
+            return generate_comments_json()

@@ -439,7 +439,7 @@ CREATE TABLE  `cnprog`.`comment` (
   `comment` varchar(300) NOT NULL,
   `added_at` datetime NOT NULL,
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `content_type_id` (`content_type_id`,`object_id`,`user_id`),
+  KEY `content_type_id` (`content_type_id`,`object_id`,`user_id`),
   KEY `comment_content_type_id` (`content_type_id`),
   KEY `comment_user_id` (`user_id`),
   CONSTRAINT `content_type_id_refs_id_13a5866c` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`),
