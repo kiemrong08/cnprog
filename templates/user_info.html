@@ -1,7 +1,7 @@
 {% load extra_tags %}
 {% load humanize %}
 <div id="subheader">
-    <h1>{{user.username}}</h1>
+    <h1>{{view_user.username}}</h1>
     <div id="tabs"></div>
 </div>
 
@@ -12,12 +12,12 @@
             <table>
                 <tr>
                     <td style="padding: 20px 20px 8px;">
-                        {% gravatar user 128 %}
+                        {% gravatar view_user 128 %}
                     </td>
                 </tr>
                 <tr>
                     <td class="summaryinfo">
-                        <div class="summarycount">{{user.reputation|intcomma}}</div>
+                        <div class="summarycount">{{view_user.reputation|intcomma}}</div>
                         <div style="margin-top: 5px; font-weight: bold;">积分</div>
                     </td>
                 </tr>
@@ -30,33 +30,33 @@
             <table class="user-details">
                 <tr>
                     <td width="120">用户名</td>
-                    <td width="230"><b>{{user.username}}</b></td>
+                    <td width="230"><b>{{view_user.username}}</b></td>
                 </tr>
                 <tr>
                     <td>已加入</td>
-                    <td>{{ user.date_joined|timesince }}</td>
+                    <td>{{ view_user.date_joined|timesince }}</td>
                 </tr>
                 <tr>
                     <td>上次登录时间</td>
-                    <td><span class="relativetime" title="12/23/2008 1:51:03 AM UTC">{{ user.last_login|timesince }}前</span></td>
+                    <td><span class="relativetime" title="12/23/2008 1:51:03 AM UTC">{{ view_user.last_login|timesince }}前</span></td>
                 </tr>
-                {% if user.website %}
+                {% if view_user.website %}
                 <tr>
                     <td>个人网站</td>
                     <!--nofollow means prevent search engine follow-->
-                    <td><a rel="nofollow" href="{{user.website}}">{{user.website}}</a></td>
+                    <td><a rel="nofollow" href="{{view_user.website}}">{{view_user.website}}</a></td>
                 </tr>
                 {% endif  %}
-                {% if user.location %}
+                {% if view_user.location %}
                 <tr>
                     <td>位置</td>
-                    <td>{{user.location}}</td>
+                    <td>{{view_user.location}}</td>
                 </tr>
                 {% endif %}
-                {% if user.date_of_birth%}
+                {% if view_user.date_of_birth%}
                 <tr>
                     <td>年龄</td>
-                    <td>{% get_age user.date_of_birth %} 岁</td>
+                    <td>{% get_age view_user.date_of_birth %} 岁</td>
                 </tr>
                 {% endif %}
             </table>
@@ -64,8 +64,8 @@
         <!--cell-->
         <td width="380">
             <div id="user-about-me">
-            {% if user.about %}
-                {{user.about|escape|linebreaks}}
+            {% if view_user.about %}
+                {{view_user.about|escape|linebreaks}}
             {% endif %}
             </div>
         </td>

@@ -506,35 +506,35 @@ def user_stats(request, user_id):
     
     return render_to_response('user_stats.html',{
         "tab_name" : "stats",
-        "user" : user,
+        "view_user" : user,
         "questions" : questions,
         "answered_questions" : answered_questions,
         "up_votes" : up_votes,
         "down_votes" : down_votes,
         "total_votes": up_votes + down_votes,
         "tags" : tags
-    })
+    }, context_instance=RequestContext(request))
 
 def user_recent(request, user_id):
     user = get_object_or_404(User, id=user_id)
     return render_to_response('user_recent.html',{
         "tab_name" : "recent",
-        "user" : user
-    })
+        "view_user" : user
+    }, context_instance=RequestContext(request))
     
 def user_responses(request, user_id):
     user = get_object_or_404(User, id=user_id)
     return render_to_response('user_responses.html',{
         "tab_name" : "responses",
-        "user" : user
-    })
+        "view_user" : user
+    }, context_instance=RequestContext(request))
 
 def user_reputation_history(request, user_id):
     user = get_object_or_404(User, id=user_id)
     return render_to_response('user_reputation_history.html',{
         "tab_name" : "reputation_history",
-        "user" : user
-    })
+        "view_user" : user
+    }, context_instance=RequestContext(request))
 
 def users_favorites(request, user_id):
     user = get_object_or_404(User, id=user_id)
@@ -579,8 +579,8 @@ def users_favorites(request, user_id):
     return render_to_response('users_favorites.html',{
         "tab_name" : "favorites",
         "questions" : questions,
-        "user" : user
-    })
+        "view_user" : user
+    }, context_instance=RequestContext(request))
 
 def question_comments(request, id):
     question = get_object_or_404(Question, id=id)
