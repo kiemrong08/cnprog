@@ -78,22 +78,10 @@
                         <td width="40px" style="vertical-align:bottom">
                         {% gravatar question.author 32 %}
                         </td>
-                        <td style="vertical-align:top">
+                        <td style="width:120px; vertical-align:top">
                             <div><a href="/users/{{ question.author.id }}/{{ question.author }}"><span class="big">{{ question.author }}</span></a></div>
                             <div>
-                            <span class="reputation-score" title="{{ question.author.reputation }}用户积分">{{ question.author.reputation }}</span>
-                            <span title="{{ question.author.gold }}金牌">
-                            <span class="badge1">●</span>
-                            <span class="badgecount">{{ question.author.gold }}</span>
-                            </span>
-                            <span title="{{ question.author.silver }}银牌">
-                            <span class="badge2">●</span>
-                            <span class="badgecount">{{ question.author.silver }}</span>
-                            </span>
-                            <span title="{{ question.author.bronze }}铜牌">
-                            <span class="badge3">●</span>
-                            <span class="badgecount">{{ question.author.bronze }}</span>
-                            </span>
+                            {% get_score_badge question.author %}
                             </div>
                         </td>
                     </tr>

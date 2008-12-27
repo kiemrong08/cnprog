@@ -74,9 +74,9 @@
                             <div id="favorite-number" class="favorite-number my-favorite-number">{{ question.favourite_count }}</div>
                             {% else %}
                             <img class="question-img-favorite" src="/content/images/vote-favorite-off.png" title="我要收藏这个问题（再次点击取消操作）" >   
-                                {% ifnotequal question.favourite_count 0 %}
-                                    <div id="favorite-number" class="favorite-number">{{ question.favourite_count }}</div>
-                                {% endifnotequal %}
+                                
+                            <div id="favorite-number" class="favorite-number">{% ifnotequal question.favourite_count 0 %}{{ question.favourite_count }}{% endifnotequal %}</div>
+                        
                             {% endif %}
                             
                         </div>
@@ -112,25 +112,13 @@
                 	                            	
                 	                            </tr>
                 	                            <tr>
-                                                    <td width="40px" style="vertical-align:bottom">
+                                                    <td style="width:40px; vertical-align:bottom">
                                                     {% gravatar question.author 32 %}
                                                     </td>
-                                                    <td style="vertical-align:top">
+                                                    <td style="width:120px; vertical-align:top">
                                                         <div><a href="/users/{{ question.author.id }}/{{ question.author }}">{{ question.author }}</a></div>
                                                         <div>
-                                                        <span class="reputation-score" title="{{ question.author.reputation }}用户积分">{{ question.author.reputation }}</span>
-                                                        <span title="{{ question.author.gold }}金牌">
-                                                        <span class="badge1">●</span>
-                                                        <span class="badgecount">{{ question.author.gold }}</span>
-                                                        </span>
-                                                        <span title="{{ question.author.silver }}银牌">
-                                                        <span class="badge2">●</span>
-                                                        <span class="badgecount">{{ question.author.silver }}</span>
-                                                        </span>
-                                                        <span title="{{ question.author.bronze }}铜牌">
-                                                        <span class="badge3">●</span>
-                                                        <span class="badgecount">{{ question.author.bronze }}</span>
-                                                        </span>
+                                                        {% get_score_badge question.author %}
                                                         </div>
                                                     </td>
                 	                            </tr>
@@ -162,7 +150,7 @@
                     <a name="sort-top"></a>
                     <h3>{{ question.answer_count }}个回答：</h3>
                     <div id="tab" class="">
-                        <a id="oldest" href="?sort=oldest#sort-top" title="最先回答显示在最前面">最早回答</a>
+                        <a id="oldest" href="?sort=oldest#sort-top" title="最先回答显示在最前面">最先回答</a>
                         <a id="latest" href="?sort=latest#sort-top" title="最晚回答显示在最前面">最近回答</a>
                         <a id="votes" href="?sort=votes#sort-top" title="投票次数最多的显示在最前面">投票最多</a>
                     </div>
@@ -223,22 +211,10 @@
                                                                 <td width="40px" style="vertical-align:bottom">
                                                                 {% gravatar answer.author 32 %}
                                                                 </td>
-                                                                <td style="vertical-align:top">
-                                                                    <div><a href="#">{{ answer.author }}</a></div>
+                                                                <td style="width:120px; vertical-align:top">
+                                                                    <div><a href="/users/{{ answer.author.id }}/{{ answer.author.username }}">{{ answer.author }}</a></div>
                                                                     <div>
-                                                                    <span class="reputation-score" title="{{ answer.author.reputation }}用户积分">{{ answer.author.reputation }}</span>
-                                                                    <span title="{{ answer.author.gold }}金牌">
-                                                                    <span class="badge1">●</span>
-                                                                    <span class="badgecount">{{ answer.author.gold }}</span>
-                                                                    </span>
-                                                                    <span title="{{ answer.author.silver }}银牌">
-                                                                    <span class="badge2">●</span>
-                                                                    <span class="badgecount">{{ answer.author.silver }}</span>
-                                                                    </span>
-                                                                    <span title="{{ answer.author.bronze }}铜牌">
-                                                                    <span class="badge3">●</span>
-                                                                    <span class="badgecount">{{ answer.author.bronze }}</span>
-                                                                    </span>
+                                                                    {% get_score_badge answer.author %}
                                                                     </div>
                                                                 </td>
                             	                            </tr>

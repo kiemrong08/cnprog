@@ -97,21 +97,8 @@
                 {% endfor %}
             </div>
             <div class="question-started">
-                    <span class="updatedtime" title="{{ question.last_activity_at }}"><strong>{% diff_date question.last_activity_at %}</strong></span>
-                    <a href="/users/{{ question.last_activity_by.id }}/{{ question.last_activity_by.username }}"><span class="big">{{ question.last_activity_by.username }}</span></a>
-                    <span class="reputation-score" title="{{ question.author.reputation }}用户积分"> {{ question.author.reputation }}</span>
-                    <span title="{{ question.author.gold }}金牌">
-                    <span class="badge1">●</span>
-                    <span class="badgecount">{{ question.author.gold }}</span>
-                    </span>
-                    <span title="{{ question.author.silver }}银牌">
-                    <span class="badge2">●</span>
-                    <span class="badgecount">{{ question.author.silver }}</span>
-                    </span>
-                    <span title="{{ question.author.bronze }}铜牌">
-                    <span class="badge3">●</span>
-                    <span class="badgecount">{{ question.author.bronze }}</span>
-                    </span>
+                    <span class="updatedtime" title="{{ question.last_activity_at }}"><strong>{% diff_date question.last_activity_at %}</strong></span> <span class="big"><a href="/users/{{ question.last_activity_by.id }}/{{ question.last_activity_by.username }}">{{ question.last_activity_by.username }}</a></span>&nbsp;{% get_score_badge question.last_activity_by %}
+   
             </div>
             
         </div>
@@ -120,20 +107,26 @@
     
     <div>
 
-        <h3>想查看更多问题吗？请查阅<a href="/questions">完整问题列表</a>，或者<a href="/tags">受欢迎的标签</a>。请帮助我们回答<a href="/unanswered">没有回答的问题</a>。</h3>
+        <h3>在寻找更多问题吗？请查阅<a href="/questions">完整问题列表</a>，或者<a href="/tags">受欢迎的标签</a>。请帮助我们回答<a href="/questions/unanswered">没有回答的问题</a>。</h3>
     </div>
 </div>
 {% endblock %}
 
 {% block sidebar %}
 <div class="yellow-box">
-    <h3 class="darkred">欢迎 !</h3>
-    <div>
-        <b>CNPROG.COM</b> - 中国程序员互动问答社区<br><br>
-        旨在通过开放的技术交流，分享软件开发经验，提高中国程序员的技术水平。      
-        <br><br>
-        沟通促进成长，分享实现梦想！
-        
+    <h3 class="darkred">CNPROG.COM 欢迎您 !</h3>
+    <div class="highlight-box">
+        <span class="darkred">CNProg</span>是一个<strong>面向程序员</strong>的<strong>可协作编辑</strong>的<strong>问答社区</strong>。<br>
+        <p>
+        您可以在这里提问各类<strong>技术问题</strong> - 问题不分语言和平台。
+        同时也希望您对力所能及的其他问题，给予您的宝贵答案。
+        </p>
+        <div style="text-align:right">
+            <a href="/about">关于本站 »</a>
+            <br>
+            <a href="/faq">faq »</a>
+            <br>
+        </div>
     </div>
 </div>
 <div class="gray-box">
@@ -168,5 +161,8 @@
         </div>
     </div>
 </div>
+{% endblock %}
+{% block endjs %}
+
 {% endblock %}
 

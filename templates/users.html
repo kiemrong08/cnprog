@@ -52,16 +52,10 @@
     		                <div class="user-info">
     										    <div class="user-action-time"><br /></div>
     										    <div class="user-gravatar32"><a href="/users/{{user.id}}/{{user.username}}">{% gravatar user 32 %}</a></div>
-    										    <div class="user-details"><a href="/users/{{user.id}}/{{user.username}}">{{user.username}}</a><br/><span class="reputation-score" title="{{user.reputation}}用户积分">{{user.reputation}}</span>
-    											{% if user.gold %}
-    												<span title="{{user.gold}}金牌"><span class="badge1">&#9679;</span><span class="badgecount">{{user.gold}}</span></span>
-    											{% endif %}
-    											{% if user.silver %}
-    												<span title="{{user.silver}}银牌"><span class="badge2">&#9679;</span><span class="badgecount">{{user.silver}}</span></span>
-    											{% endif %}
-    											{% if user.bronze %}
-    												<span title="{{user.bronze}}铜牌"><span class="badge3">&#9679;</span><span class="badgecount">{{user.bronze}}</span></span>
-    											{% endif %}</div>
+    										    <div class="user-details">
+                                                <a href="/users/{{user.id}}/{{user.username}}">{{user.username}}</a><br>{% get_score_badge user %}
+                                                
+                                           </div>
     										</div>
     		                {% if forloop.counter|divisibleby:"7" %}
     		                    </td>

@@ -399,6 +399,27 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
 	background-color:#ff9900;
 }
 
+.header-notification{
+    font-size:85%;
+    color:red;
+    padding-top:10px;
+}
+
+.highlight-box{
+    letter-spacing:1px;
+    color:#735005;
+}
+
+.highlight-box p{
+    margin:5px 0 0px 0;
+}
+
+.highlight-box a{
+    color:#735005;
+    font-size:90%;
+    font-weight:bold;
+}
+
 .yellow-box{
     background-color:#FFFFCC;
     border:1px dotted #D8D2A9;
@@ -636,6 +657,7 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
     padding-top:10px;
     float:right;
     padding-bottom:3px;
+    
 }
 
 .updatedtime{
@@ -669,6 +691,7 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
 .badge1
 {
 	margin-left:3px;
+    padding-right:2px;
 	font-size: 120%;
 	color: #FFCC00;
 }
@@ -676,6 +699,7 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
 .badge2
 {
 	margin-left:3px;
+    padding-right:2px;
 	font-size: 120%;
 	color: #C0C0C0;
 }
@@ -683,6 +707,7 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
 .badge3
 {
 	margin-left:3px;
+    padding-right:2px;
 	font-size: 120%;
 	color: #CC9966;
 }

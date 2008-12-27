@@ -1,4 +1,5 @@
-﻿                <table border="0" class="header-table" >
+﻿{% load extra_tags %}
+                <table border="0" class="header-table" >
                     <tbody>
                         <tr>
                             <td style="width:200px;height:90px;vertical-align:bottom">
@@ -13,7 +14,7 @@
                                             <td style="width:500px; vertical-align:top; padding-top:5px;">
                                                 <div id="header-links">
                                                     {% if user.is_authenticated %}
-                                                        <a href="/account/">{{ user.username }}</a> <span class="link-separator">|</span><a href="/account/signout/">注销</a>
+                                                        <a href="/users/{{ user.id }}/{{ user.username }}/">{{ user.username }}</a> {% get_score_badge user %} <span class="link-separator">|</span><a href="/account/signout/">注销</a>
                                                     {% else %}
                                                         <a href="/account/">登录</a>
                                                     {% endif %}
@@ -22,6 +23,7 @@
                                                     <span class="link-separator">|</span>
                                                     <a href="#">常见问题</a>
                                                 </div>
+                                                
 
 
                                             </td>
@@ -53,6 +55,7 @@
                                                         <LI class="" id="nav_unanswered">
                                                             <A href="/questions/unanswered/">没有回答的问题</A>
                                                         </LI>
+
                                                     </UL>
                                                 </div>
                                             </td>

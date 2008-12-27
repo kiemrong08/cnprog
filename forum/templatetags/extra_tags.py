@@ -4,6 +4,7 @@ import math
 import re
 import logging
 from django import template
+from django.utils.encoding import smart_unicode
 from django.utils.safestring import mark_safe
 from django.utils.timesince import timesince
 
@@ -108,6 +109,32 @@ def cnprog_pagesize(context):
             "pagesize" : context["pagesize"],
             "is_paginated": context["is_paginated"]
         }
+        
+@register.simple_tag
+def get_score_badge(user):
+    BADGE_TEMPLATE = '<span class="reputation-score" title="%(reputation)s用户积分">%(reputation)s</span>'
+    if user.gold > 0 :
+        BADGE_TEMPLATE = '%s%s' % (BADGE_TEMPLATE, '<span title="%(gold)s金牌">'
+        '<span class="badge1">●</span>'
+        '<span class="badgecount">%(gold)s</span>'
+        '</span>')
+    if user.silver > 0:
+        BADGE_TEMPLATE = '%s%s' % (BADGE_TEMPLATE, '<span title="%(silver)s银牌">'
+        '<span class="badge2">●</span>'
+        '<span class="badgecount">%(silver)s</span>'
+        '</span>')
+    if user.bronze > 0:
+        BADGE_TEMPLATE = '%s%s' % (BADGE_TEMPLATE, '<span title="%(bronze)s铜牌">'
+        '<span class="badge3">●</span>'
+        '<span class="badgecount">%(bronze)s</span>'
+        '</span>')
+    BADGE_TEMPLATE = smart_unicode(BADGE_TEMPLATE, encoding='utf-8', strings_only=False, errors='strict')
+    return mark_safe(BADGE_TEMPLATE % {
+        'reputation' : user.reputation,
+        'gold' : user.gold,
+        'silver' : user.silver,
+        'bronze' : user.bronze,
+    })
         
 @register.simple_tag
 def get_age(birthday):
