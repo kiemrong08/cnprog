@@ -62,7 +62,7 @@
 <div id="main-body" class="">
     <div id="askform">
         <form id="fmanswer" action="{% url answer question.id %}" method="post">
-            <table style="width:100%;">
+            <table style="width:100%;" id="question-table">
                 <tr>
                     <td style="width:50px;vertical-align:top">
                         <div class="vote-buttons">
@@ -101,10 +101,8 @@
                                 <table width="585px">
             	                    <tr>
                                         <td width="300px" style="vertical-align:top">
-                                            <span class="offensive-flag">
-                                                <a href="#" title="检举该帖为垃圾信息（含人身攻击、谩骂、恶意言论等）">
-                                                垃圾帖？
-                                                </a>
+                                        <span id="question-offensive-flag-{{ question.id }}" class="offensive-flag" title="检举该帖为垃“水帖”（含广告、人身攻击、恶意言论等）"><a>垃圾帖？</a><span class="darkred">{% if can_view_offensive_flags %} {% if question.offensive_flag_count %}({{ question.offensive_flag_count }}){% endif %}{% endif %}</span>
+                                                         
                                             </span>
                                         </td>
             	                    	<td width="100px"></td>
@@ -191,17 +189,13 @@
                                             <table width="585px">
                         	                    <tr>
                                                     <td width="300px" style="vertical-align:top">
-                                                        <span class="offensive-flag">
+                                                        <span class="linksopt">
                                                             <a href="#{{ answer.id }}" title="该回答的链接地址">
                                                             链接
                                                             </a>
                                                         </span>
                                                         <span class="link-separator">|</span>
-                                                        <span class="offensive-flag">
-                                                            <a href="#" title="检举该帖为垃圾信息（含人身攻击、谩骂、恶意言论等）">
-                                                            垃圾帖？
-                                                            </a>
-                                                        </span>
+                                                        <span id="answer-offensive-flag-{{ answer.id }}" class="offensive-flag" title="检举该帖为垃“水帖”（含广告、人身攻击、恶意言论等）"><a>垃圾帖？</a><span class="darkred">{% if can_view_offensive_flags %} {% if answer.offensive_flag_count %}({{ answer.offensive_flag_count }}){% endif %}{% endif %}</span></span>
                                                     </td>
                         	                    	<td width="100px"></td>
                                                  <td >

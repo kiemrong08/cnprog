@@ -195,6 +195,8 @@ def question(request, id):
         orderby = "-added_at"
         
     question = get_object_or_404(Question, id=id)
+    can_view_offensive  = can_view_offensive_flags(request.user)
+
     answer_form = AnswerForm()
     answers = Answer.objects.get_answers_from_question(question, request.user)
     answers = answers.select_related(depth=1)
@@ -227,6 +229,7 @@ def question(request, id):
         "answer" : answer_form,
         "answers" : page_objects.object_list,
         "user_answer_votes": user_answer_votes,
+        "can_view_offensive_flags" : can_view_offensive,
         "tags" : question.tags.all(),
         "tab_id" : view_id,
         "favorited" : favorited,
@@ -329,6 +332,14 @@ def vote(request, id):
         status  =  0, By default
                    1, Cancel
                    2, Vote is too old to be canceled
+    
+    offensive code:
+        allowed = -3, Don't have enough flags left
+                  -2, Don't have enough reputation score to do this
+                   0, not allowed
+                   1, allowed
+        status  =  0, by default
+                   1, can't do it again
     """
     response_data = {
         "allowed": 1,
@@ -337,7 +348,13 @@ def vote(request, id):
         "count"  : 0, 
         "message" : ''
     }
-   
+    
+    def can_vote(vote_score, user):
+        if vote_score == 1:
+            return can_vote_up(request.user)
+        else:
+            return can_vote_down(request.user)
+        
     try:
         if not request.user.is_authenticated():
             response_data['allowed'] = 0
@@ -409,7 +426,7 @@ def vote(request, id):
                 
                 if post.author == request.user:
                     response_data['allowed'] = -1
-                elif not can_vote_up(request.user):
+                elif not can_vote(vote_score, request.user):
                     response_data['allowed'] = -2
                 elif post.votes.filter(user=request.user).count() > 0:
                     vote = post.votes.filter(user=request.user)[0]
@@ -443,7 +460,25 @@ def vote(request, id):
                     if votes_left <= VOTE_RULES['scope_warn_votes_left']:
                         response_data['message'] = u'%s votes left' % votes_left
                     response_data['count'] = post.score
+            elif vote_type in ['7', '8']:
+                post = question
+                post_id = id
+                if vote_type == '8':
+                    post_id = request.POST.get('postId')
+                    post = get_object_or_404(Answer, id=post_id)
+                
+                if FlaggedItem.objects.get_flagged_items_count_today(request.user) >= VOTE_RULES['scope_flags_per_user_per_day']:
+                    response_data['allowed'] = -3
+                elif not can_flag_offensive(request.user):
+                    response_data['allowed'] = -2
+                elif post.flagged_items.filter(user=request.user).count() > 0:
+                    response_data['status'] = 1
+                else:
+                    item = FlaggedItem(user=request.user, content_object=post, flagged_at=datetime.datetime.now())
+                    onFlaggedItem(item, post, request.user)
+                    response_data['count'] = post.offensive_flag_count
                     
+                print 2    
         else:
             response_data['success'] = 0
             response_data['message'] = u'Request mode is not supported. Please try again.'

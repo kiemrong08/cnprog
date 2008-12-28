@@ -66,6 +66,20 @@ class Vote(models.Model):
     def is_downvote(self):
         return self.vote == self.VOTE_DOWN
 
+class FlaggedItem(models.Model):
+    """A flag on a Question or Answer indicating offensive content."""
+    content_type   = models.ForeignKey(ContentType)
+    object_id      = models.PositiveIntegerField()
+    content_object = generic.GenericForeignKey('content_type', 'object_id')
+    user           = models.ForeignKey(User, related_name='flagged_items')
+    flagged_at     = models.DateTimeField(default=datetime.datetime.now)
+
+    objects = FlaggedItemManager()
+    
+    class Meta:
+        unique_together = ('content_type', 'object_id', 'user')
+        db_table = u'flagged_item'
+        
 class Question(models.Model):
     CLOSE_REASONS = (
         (1, u'Exact duplicate'),
@@ -114,6 +128,7 @@ class Question(models.Model):
     html                 = models.TextField()
     comments             = generic.GenericRelation(Comment)
     votes                = generic.GenericRelation(Vote)
+    flagged_items        = generic.GenericRelation(FlaggedItem)
     
     objects = QuestionManager()
 
@@ -179,6 +194,7 @@ class Answer(models.Model):
     html                 = models.TextField()
     comments             = generic.GenericRelation(Comment)
     votes                = generic.GenericRelation(Vote)
+    flagged_items        = generic.GenericRelation(FlaggedItem)
     
     objects = AnswerManager()
     
@@ -191,19 +207,6 @@ class Answer(models.Model):
             
     class Meta:
         db_table = u'answer'
-
-
-class FlaggedItem(models.Model):
-    """A flag on a Question or Answer indicating offensive content."""
-    content_type   = models.ForeignKey(ContentType)
-    object_id      = models.PositiveIntegerField()
-    content_object = generic.GenericForeignKey('content_type', 'object_id')
-    user           = models.ForeignKey(User, related_name='flagged_items')
-    flagged_at     = models.DateTimeField(default=datetime.datetime.now)
-
-    class Meta:
-        unique_together = ('content_type', 'object_id', 'user')
-        db_table = u'flagged_item'
         
         
        

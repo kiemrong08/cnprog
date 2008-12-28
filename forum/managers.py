@@ -128,10 +128,9 @@ class AnswerManager(models.Manager):
                                Q(deleted=False) | Q(deleted_by=user))
 
 class VoteManager(models.Manager):
-    # TODO: Check vote value: 0 down, 1 up
     COUNT_UP_VOTE_BY_USER = "SELECT count(*) FROM vote WHERE user_id = %s AND vote = 1"
     COUNT_DOWN_VOTE_BY_USER = "SELECT count(*) FROM vote WHERE user_id = %s AND vote = -1"
-    COUNT_VOTES_PER_DAY_BY_USER = "SELECT COUNT(*) FROM vote WHERE user_id = %s AND DATEDIFF(%s, voted_at) = 0"
+    COUNT_VOTES_PER_DAY_BY_USER = "SELECT COUNT(*) FROM vote WHERE user_id = %s AND DATE(voted_at) = DATE(NOW())"
     def get_up_vote_count_from_user(self, user):
         if user is not None:
             cursor = connection.cursor()
@@ -153,9 +152,22 @@ class VoteManager(models.Manager):
     def get_votes_count_today_from_user(self, user):
         if user is not None:
             cursor = connection.cursor()
-            cursor.execute(self.COUNT_VOTES_PER_DAY_BY_USER, [user.id, datetime.datetime.now()])
+            cursor.execute(self.COUNT_VOTES_PER_DAY_BY_USER, [user.id])
             row = cursor.fetchone()
             return row[0]
 
         else:
             return 0
+            
+class FlaggedItemManager(models.Manager):
+    COUNT_FLAGS_PER_DAY_BY_USER = "SELECT COUNT(*) FROM flagged_item WHERE user_id = %s AND DATE(flagged_at) = DATE(NOW())"
+    def get_flagged_items_count_today(self, user):
+        if user is not None:
+            cursor = connection.cursor()
+            cursor.execute(self.COUNT_FLAGS_PER_DAY_BY_USER, [user.id])
+            row = cursor.fetchone()
+            return row[0]
+
+        else:
+            return 0
+        

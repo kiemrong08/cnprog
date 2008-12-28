@@ -946,9 +946,23 @@ div.grippie {
     color:#777;
     font-size:90%;
     padding:3px;
+    cursor:pointer;
 }
 
 .offensive-flag a:hover{
+    background-color:#777;
+    text-decoration:none;
+    color:#fff;
+}
+
+.linksopt a{
+    color:#777;
+    font-size:90%;
+    padding:3px;
+    cursor:pointer;
+}
+
+.linksopt a:hover{
     background-color:#777;
     text-decoration:none;
     color:#fff;

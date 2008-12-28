@@ -4,6 +4,7 @@ Authorisation related functions.
 The actions a User is authorised to perform are dependent on their reputation
 and superuser status.
 """
+import datetime
 from django.db import transaction
 
 VOTE_UP                   = 15
@@ -26,6 +27,8 @@ VOTE_RULES = {
     'scope_flags_per_user_per_day' : 5,  # how many times user can flag posts everyday
     'scope_warn_votes_left' : 10,        # start when to warn user how many votes left
     'scope_deny_unvote_days' : 1,        # if 1 days passed, user can't cancel votes.
+    'scope_flags_invisible_main_page' : 3, # post doesn't show on main page if has more than 3 offensive flags
+    'scope_flags_delete_post' : 5,         # post will be deleted if it has more than 5 offensive flags
 }
 
 REPUTATION_RULES = {
@@ -125,7 +128,29 @@ def can_accept_answer(user, question, answer):
 def calculate_reputation(origin, offset):
     result = int(origin) + int(offset)
     return result if result > 0 else 1
+
+@transaction.commit_on_success
+def onFlaggedItem(item, post, user):
+
+    item.save()
+    post.offensive_flag_count = post.offensive_flag_count + 1
+    post.save()
     
+    post.author.reputation = calculate_reputation(post.author.reputation, int(REPUTATION_RULES['lose_by_flagged']))
+    post.author.save()
+    
+    #todo: These should be updated to work on same revisions.
+    if post.offensive_flag_count ==  VOTE_RULES['scope_flags_invisible_main_page'] :
+        post.author.reputation = calculate_reputation(post.author.reputation, int(REPUTATION_RULES['lose_by_flagged_lastrevision_3_times']))
+        post.author.save()
+    elif post.offensive_flag_count == VOTE_RULES['scope_flags_delete_post']:
+        post.author.reputation = calculate_reputation(post.author.reputation, int(REPUTATION_RULES['lose_by_flagged_lastrevision_5_times']))
+        post.author.save()
+        post.deleted = True
+        #post.deleted_at = datetime.datetime.now()
+        #post.deleted_by = Admin
+        post.save()
+
 @transaction.commit_on_success
 def onAnswerAccept(answer, user):
     answer.accepted = True
@@ -133,10 +158,9 @@ def onAnswerAccept(answer, user):
     answer.save()
     answer.question.save()
     
-    print answer.author.reputation
     answer.author.reputation = calculate_reputation(answer.author.reputation, int(REPUTATION_RULES['gain_by_answer_accepted']))
     answer.author.save()
-    print answer.author.reputation
+
     user.reputation = calculate_reputation(user.reputation, int(REPUTATION_RULES['gain_by_accepting_answer']))
     user.save()
 
@@ -149,7 +173,6 @@ def onAnswerAcceptCanceled(answer, user):
     
     answer.author.reputation = calculate_reputation(answer.author.reputation, int(REPUTATION_RULES['lose_by_accepted_answer_cancled']))
     answer.author.save()
-    print answer.author.reputation
     
     user.reputation = calculate_reputation(user.reputation, int(REPUTATION_RULES['lose_by_canceling_accepted_answer']))
     user.save()
@@ -162,6 +185,7 @@ def onUpVoted(vote, post, user):
     post.score = int(post.score) + 1
     post.save()
     
+    #todo: Here needs to check if user has been gained more scores than allowed by upvoted
     author = post.author
     author.reputation = calculate_reputation(author.reputation, int(REPUTATION_RULES['gain_by_upvoted']))
     author.save()

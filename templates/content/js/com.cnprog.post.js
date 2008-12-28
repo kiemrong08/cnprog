@@ -16,30 +16,36 @@
     var divIdFavorite = 'favorite-number';
     var commentLinkIdPrefix = 'comment-';
     var voteNumberClass = "vote-number";
+    var offensiveIdPrefixQuestionFlag = 'question-offensive-flag-';
+    var offensiveIdPrefixAnswerFlag = 'answer-offensive-flag-';
+    var offensiveClassFlag = 'offensive-flag';
     
     var acceptAnonymousMessage = "用户权限不在操作范围";
     var acceptOwnAnswerMessage = "不能设置自己的回答为最佳答案";
     var favoriteAnonymousMessage = "匿名用户不能收藏问题，请先<a href='/account/signin/?next=/questions/{{QuestionID}}'>注册或者登录</a>";
     var voteAnonymousMessage = "匿名用户不能投票，请先<a href='/account/signin/?next=/questions/{{QuestionID}}'>注册或者登录</a>";
-    var upVoteRequiredScoreMessage = "需要+15积分才能投支持票";
-    var downVoteRequiredScoreMessage = "需要+100积分才能投反对票";
+    var upVoteRequiredScoreMessage = "需要+15积分才能投支持票。查看<a href='/faq'>faq</a>";
+    var downVoteRequiredScoreMessage = "需要+100积分才能投反对票。查看<a href='/faq'>faq</a>";
     var voteOwnDeniedMessage = "不能给自己的帖子投票";
-    var voteRequiredMoreVotes = "对不起，您已用完今日所有的投票。查看<a href='/faq'>faq</a>。";
-    var voteDenyCancelMessage = "这个投票已经过时，不能撤销。查看<a href='/faq'>faq</a>。";
+    var voteRequiredMoreVotes = "对不起，您已用完今日所有的投票。查看<a href='/faq'>faq</a>";
+    var voteDenyCancelMessage = "这个投票已经过时，不能撤销。查看<a href='/faq'>faq</a>";
+    var offensiveConfirmation = "确定要归类该帖为广告、人身攻击、恶意言论吗？";
+    var offensiveAnonymousMessage = "匿名用户不能操作，请先<a href='/account/signin/?next=/questions/{{QuestionID}}'>注册或者登录</a>";
+    var offensiveTwiceMessage = "不能重复操作。查看<a href='/faq'>faq</a>";
+    var offensiveNoFlagsLeftMessage = "对不起，您已用完今日所有的5次‘水帖’操作。查看<a href='/faq'>faq</a>";
+    var offensiveNoPermissionMessage = "需要+15积分才能归类‘水帖’。查看<a href='/faq'>faq</a>";
     
     var VoteType = {
         acceptAnswer : 0,
         questionUpVote : 1,
         questionDownVote : 2,
-        offensive : 3,
         favorite : 4,
         answerUpVote: 5,
-        answerDownVote:6
+        answerDownVote:6,
+        offensiveQuestion : 7,
+        offensiveAnswer:8
     };
 
-    var getQuestionId = function(){
-        return questionId;
-    }
     var getFavoriteButton = function(){
         var favoriteButton = 'div.'+ voteContainerId +' img[class='+ imgClassPrefixFavorite +']';
         return $(favoriteButton);
@@ -71,6 +77,16 @@
     var getAnswerVoteDownButton = function(id){
         var answerVoteDownButton = 'div.'+ voteContainerId +' img[id='+ imgIdPrefixAnswerVotedown + id + ']';
         return $(answerVoteDownButton);
+    };
+    
+    var getOffensiveQuestionFlag = function(){
+        var offensiveQuestionFlag = 'table[id=question-table] span[class='+ offensiveClassFlag +']';
+        return $(offensiveQuestionFlag);
+    };
+    
+    var getOffensiveAnswerFlags = function(){
+        var offensiveQuestionFlag = 'div.answer span[class='+ offensiveClassFlag +']';
+        return $(offensiveQuestionFlag);
     };
    
     var setVoteImage = function(voteType, undo, object){
@@ -129,6 +145,14 @@
         var answerVoteDownButton = getAnswerVoteDownButtons();
         answerVoteDownButton.unbind('click').click(function(event){
            Vote.vote($(event.target), VoteType.answerDownVote)
+        });
+    
+        getOffensiveQuestionFlag().unbind('click').click(function(event){
+           Vote.offensive(this, VoteType.offensiveQuestion)
+        });
+    
+        getOffensiveAnswerFlags().unbind('click').click(function(event){
+           Vote.offensive(this, VoteType.offensiveAnswer)
         });
     };
     
@@ -233,6 +257,25 @@
         }
     };
         
+    var callback_offensive = function(object, voteType, data){
+        object = $(object);
+        if(data.allowed == "0" && data.success == "0"){
+            showMessage(object, offensiveAnonymousMessage.replace("{{QuestionID}}", questionId));
+        }
+        else if(data.allowed == "-3"){
+            showMessage(object, offensiveNoFlagsLeftMessage);
+        }  
+        else if(data.allowed == "-2"){
+            showMessage(object, offensiveNoPermissionMessage);
+        }  
+        else if(data.status == "1"){
+            showMessage(object, offensiveTwiceMessage);
+        }  
+        else if(data.success == "1"){
+            $(object).children('span[class=darkred]').text("("+ data.count +")");
+        }
+    };
+        
     return {
         init : function(qId, questionAuthor, userId){
             questionId = qId;
@@ -268,6 +311,17 @@
             }
             
             submit(object, voteType, callback_vote);
+        },
+        
+        offensive: function(object, voteType){
+            if(!currentUserId || currentUserId.toUpperCase() == "NONE"){
+                showMessage($(object), offensiveAnonymousMessage.replace("{{QuestionID}}", questionId));
+                return false;   
+            }
+            if(confirm(offensiveConfirmation)){
+                postId = object.id.substr(object.id.lastIndexOf('-') + 1);
+                submit(object, voteType, callback_offensive);
+            }
         }
     }
 } ();
