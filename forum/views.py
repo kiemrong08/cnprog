@@ -255,15 +255,20 @@ def answer(request, id):
         form = AnswerForm(request.POST)
         if form.is_valid():
             try:
+                update_time = datetime.datetime.now()
                 answer = Answer(
                     question = question,
                     author = request.user,
-                    added_at = datetime.datetime.now(),
+                    added_at = update_time,
                     html = sanitize_html(form.cleaned_data['text']),
                 )
                 answer.save()
                 Question.objects.update_answer_count(question)
                 
+                question = get_object_or_404(Question, id=id)
+                question.last_activity_at = update_time 
+                question.last_activity_by = request.user
+                question.save()
             except Exception,e:
                 logging.error(e)
                 
