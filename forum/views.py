@@ -313,11 +313,6 @@ def tags(request):
 def tag(request, tag):    
     return questions(request, tagname=tag)
 
-
-
-
-
-@transaction.autocommit
 def vote(request, id):
     """
     accept answer code:
@@ -371,7 +366,9 @@ def vote(request, id):
                         for answer_of_question in Answer.objects.get_answers_from_question(question, request.user):
                             if answer_of_question != answer and answer_of_question.accepted:
                                 onAnswerAcceptCanceled(answer_of_question, request.user)
-                                
+                        
+                        #make sure retrieve data again after above author changes, they may have related data
+                        answer = get_object_or_404(Answer, id=answer_id)
                         onAnswerAccept(answer, request.user)
                       
                 else:
@@ -450,7 +447,7 @@ def vote(request, id):
         else:
             response_data['success'] = 0
             response_data['message'] = u'Request mode is not supported. Please try again.'
-     
+
         data = simplejson.dumps(response_data)
     
     except Excecption, e:

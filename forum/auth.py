@@ -4,6 +4,8 @@ Authorisation related functions.
 The actions a User is authorised to perform are dependent on their reputation
 and superuser status.
 """
+from django.db import transaction
+
 VOTE_UP                   = 15
 FLAG_OFFENSIVE            = 15
 POST_IMAGES               = 15
@@ -120,28 +122,39 @@ def can_accept_answer(user, question, answer):
 ###########################################
 ## actions and reputation changes event
 ###########################################
+def calculate_reputation(origin, offset):
+    result = int(origin) + int(offset)
+    return result if result > 0 else 1
+    
+@transaction.commit_on_success
 def onAnswerAccept(answer, user):
     answer.accepted = True
     answer.question.answer_accepted = True
     answer.save()
     answer.question.save()
     
-    answer.author.reputation = answer.author.reputation + int(REPUTATION_RULES['gain_by_answer_accepted'])
+    print answer.author.reputation
+    answer.author.reputation = calculate_reputation(answer.author.reputation, int(REPUTATION_RULES['gain_by_answer_accepted']))
     answer.author.save()
-    
-    user.reputation = user.reputation + int(REPUTATION_RULES['gain_by_accepting_answer'])
+    print answer.author.reputation
+    user.reputation = calculate_reputation(user.reputation, int(REPUTATION_RULES['gain_by_accepting_answer']))
+    user.save()
 
+@transaction.commit_on_success
 def onAnswerAcceptCanceled(answer, user):
     answer.accepted = False
     answer.question.answer_accepted = False
     answer.save()
     answer.question.save()
     
-    answer.author.reputation = answer.author.reputation + int(REPUTATION_RULES['lose_by_accepted_answer_cancled'])
+    answer.author.reputation = calculate_reputation(answer.author.reputation, int(REPUTATION_RULES['lose_by_accepted_answer_cancled']))
     answer.author.save()
+    print answer.author.reputation
     
-    user.reputation = user.reputation + int(REPUTATION_RULES['lose_by_canceling_accepted_answer'])
-    
+    user.reputation = calculate_reputation(user.reputation, int(REPUTATION_RULES['lose_by_canceling_accepted_answer']))
+    user.save()
+
+@transaction.commit_on_success    
 def onUpVoted(vote, post, user):
     vote.save()
     
@@ -150,9 +163,10 @@ def onUpVoted(vote, post, user):
     post.save()
     
     author = post.author
-    author.reputation = author.reputation + int(REPUTATION_RULES['gain_by_upvoted'])
+    author.reputation = calculate_reputation(author.reputation, int(REPUTATION_RULES['gain_by_upvoted']))
     author.save()
     
+@transaction.commit_on_success    
 def onUpVotedCanceled(vote, post, user):
     vote.delete()
     
@@ -161,9 +175,10 @@ def onUpVotedCanceled(vote, post, user):
     post.save() 
     
     author = post.author
-    author.reputation = author.reputation + int(REPUTATION_RULES['lose_by_upvote_canceled'])
+    author.reputation = calculate_reputation(author.reputation, int(REPUTATION_RULES['lose_by_upvote_canceled']))
     author.save()
-    
+
+@transaction.commit_on_success    
 def onDownVoted(vote, post, user):
     vote.save()
 
@@ -172,12 +187,13 @@ def onDownVoted(vote, post, user):
     post.save()
     
     author = post.author
-    author.reputation = author.reputation + int(REPUTATION_RULES['lose_by_downvoted'])
+    author.reputation = calculate_reputation(author.reputation, int(REPUTATION_RULES['lose_by_downvoted']))
     author.save()
     
-    user.reputation = user.reputation + int(REPUTATION_RULES['lose_by_downvoting'])
+    user.reputation = calculate_reputation(user.reputation, int(REPUTATION_RULES['lose_by_downvoting']))
     user.save()
-    
+
+@transaction.commit_on_success    
 def onDownVotedCanceled(vote, post, user):
     vote.delete()
     
@@ -186,10 +202,11 @@ def onDownVotedCanceled(vote, post, user):
     post.save()
     
     author = post.author
-    author.reputation = author.reputation + int(REPUTATION_RULES['gain_by_downvote_canceled'])
+    author.reputation = calculate_reputation(author.reputation, int(REPUTATION_RULES['gain_by_downvote_canceled']))
     author.save()
     
-    user.reputation = user.reputation + int(REPUTATION_RULES['gain_by_canceling_downvote'])
+    user.reputation = calculate_reputation(user.reputation, int(REPUTATION_RULES['gain_by_canceling_downvote']))
     user.save()
     
+
     
