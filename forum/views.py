@@ -200,7 +200,7 @@ def question(request, id):
     answers = answers.select_related(depth=1)
     favorited = question.has_favorite_by_user(request.user)
     question_vote = question.votes.filter(user=request.user)
-    if question_vote is not None:
+    if question_vote is not None and question_vote.count() > 0:
         question_vote = question_vote[0]
         
     if answers is not None:
