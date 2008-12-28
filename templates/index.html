@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load extra_tags %}
 {% load humanize %}
+{% block title %}{% spaceless %}首页{% endspaceless %}{% endblock %}
 {% block forejs %}
        <script type="text/javascript">
         $().ready(function(){
@@ -118,7 +119,7 @@
     <div class="highlight-box">
         <span class="darkred">CNProg</span>是一个<strong>面向程序员</strong>的<strong>可协作编辑</strong>的<strong>问答社区</strong>。<br>
         <p>
-        您可以在这里提问各类<strong>技术问题</strong> - 问题不分语言和平台。
+        您可以在这里提问各类<strong>程序技术问题</strong> - 问题不分语言和平台。
         同时也希望您对力所能及的其他问题，给予您的宝贵答案。
         </p>
         <div style="text-align:right">

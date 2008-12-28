@@ -1,7 +1,8 @@
 {% extends "base.html" %}
-
+{% block title %}{% spaceless %}我要提问{% endspaceless %}{% endblock %}
 {% block forejs %}
         <script type='text/javascript' src='/content/js/com.cnprog.editor.js'></script>
+        <script type='text/javascript' src='/content/js/com.cnprog.utils.js'></script>
         <script type='text/javascript' src='/content/js/jquery.validate.pack.js'></script>
         <script type="text/javascript">
         
@@ -41,9 +42,8 @@
                 }
                 
             });
-
-            //form validation
-            $("#fmask").validate({
+            
+             $("#fmask").validate({
                 rules: {
         			tags: {
         				required: true,
@@ -74,7 +74,7 @@
                 }
                 
             });
-
+            
         });
         </script>
 {% endblock %}
@@ -147,16 +147,16 @@
                 <b>您的问题与编程相关吗？</b>
             </li>
             <li>
-                我们建议您提的问题是可以被答复的，而不仅仅是可以讨论。
+                建议您提的问题是可以被答复的，而不仅仅是可以讨论。
             </li>
             <li>
-                问题描述详细，但不冗余。
+                请详细描述您的问题。
             </li>
             <li>
                 我们推荐您使用中文描述问题，这样可以得到更多的答复机会。
             </li>
         </ul>
-         <a href="/faq/" target="_blank" style="float:right;position:relative">查看常见问题 »</a>
+         <a href="/faq/" target="_blank" title="查看常见问题" style="float:right;position:relative">faq »</a>
          <br>  
     </div>
 </div>

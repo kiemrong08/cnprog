@@ -767,7 +767,7 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
 }
 
 #editor{
-    font-family: Consolas, Monaco, Liberation Mono, Lucida Console, Monospace;
+    
     font-size:100%;
     width:600px;
     min-height:200px;
@@ -775,7 +775,7 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
 }
 
 .wmd-preview{
-    font-family: Consolas, Monaco, Liberation Mono, Lucida Console, Monospace;
+
     margin-top:10px;
     padding:5px;
     width:590px;

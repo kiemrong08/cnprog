@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load extra_tags %}
 {% load humanize %}
+{% block title %}{% spaceless %}{{ question.title }}{% endspaceless %}{% endblock %}
 {% block forejs %}
         <script type='text/javascript' src='/content/js/com.cnprog.editor.js'></script>
         <script type='text/javascript' src='/content/js/com.cnprog.utils.js'></script>
