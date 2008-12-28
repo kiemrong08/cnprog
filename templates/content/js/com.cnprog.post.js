@@ -15,6 +15,17 @@
     var imgIdPrefixAnswerVotedown = 'answer-img-downvote-';
     var divIdFavorite = 'favorite-number';
     var commentLinkIdPrefix = 'comment-';
+    var voteNumberClass = "vote-number";
+    
+    var acceptAnonymousMessage = "用户权限不在操作范围";
+    var acceptOwnAnswerMessage = "不能设置自己的回答为最佳答案";
+    var favoriteAnonymousMessage = "匿名用户不能收藏问题，请先<a href='/account/signin/?next=/questions/{{QuestionID}}'>注册或者登录</a>";
+    var voteAnonymousMessage = "匿名用户不能投票，请先<a href='/account/signin/?next=/questions/{{QuestionID}}'>注册或者登录</a>";
+    var upVoteRequiredScoreMessage = "需要+15积分才能投支持票";
+    var downVoteRequiredScoreMessage = "需要+100积分才能投反对票";
+    var voteOwnDeniedMessage = "不能给自己的帖子投票";
+    var voteRequiredMoreVotes = "对不起，您已用完今日所有的投票。查看<a href='/faq'>faq</a>。";
+    var voteDenyCancelMessage = "这个投票已经过时，不能撤销您的投票。查看<a href='/faq'>faq</a>。";
     
     var VoteType = {
         acceptAnswer : 0,
@@ -26,6 +37,9 @@
         answerDownVote:6
     };
 
+    var getQuestionId = function(){
+        return questionId;
+    }
     var getFavoriteButton = function(){
         var favoriteButton = 'div.'+ voteContainerId +' img[class='+ imgClassPrefixFavorite +']';
         return $(favoriteButton);
@@ -42,15 +56,45 @@
         var questionVoteDownButton = 'div.'+ voteContainerId +' img[id^='+ imgIdPrefixQuestionVotedown +']';
         return $(questionVoteDownButton);
     };
-    var getAnswerVoteUpButton = function(){
+    var getAnswerVoteUpButtons = function(){
         var answerVoteUpButton = 'div.'+ voteContainerId +' img[id^='+ imgIdPrefixAnswerVoteup +']';
         return $(answerVoteUpButton);
     };
-    var getAnswerVoteDownButton = function(){
+    var getAnswerVoteDownButtons = function(){
         var answerVoteDownButton = 'div.'+ voteContainerId +' img[id^='+ imgIdPrefixAnswerVotedown +']';
         return $(answerVoteDownButton);
     };
+    var getAnswerVoteUpButton = function(id){
+        var answerVoteUpButton = 'div.'+ voteContainerId +' img[id='+ imgIdPrefixAnswerVoteup + id + ']';
+        return $(answerVoteUpButton);
+    };
+    var getAnswerVoteDownButton = function(id){
+        var answerVoteDownButton = 'div.'+ voteContainerId +' img[id='+ imgIdPrefixAnswerVotedown + id + ']';
+        return $(answerVoteDownButton);
+    };
    
+    var setVoteImage = function(voteType, undo, object){
+        var flag = undo ? "" : "-on";
+        var arrow = (voteType == VoteType.questionUpVote || voteType == VoteType.answerUpVote) ? "up" : "down";
+        object.attr("src", "/content/images/vote-arrow-"+ arrow + flag +".png");
+        
+        // if undo voting, then undo the pair of arrows.
+        if(undo){
+            if(voteType == VoteType.questionUpVote || voteType == VoteType.questionDownVote){
+                $(getQuestionVoteUpButton()).attr("src", "/content/images/vote-arrow-up.png");
+                $(getQuestionVoteDownButton()).attr("src", "/content/images/vote-arrow-down.png");
+            }
+            else{
+                $(getAnswerVoteUpButton(postId)).attr("src", "/content/images/vote-arrow-up.png");
+                $(getAnswerVoteDownButton(postId)).attr("src", "/content/images/vote-arrow-down.png");
+            }
+        }
+    };
+    
+    var setVoteNumber = function(object, number){
+        var voteNumber = object.parent('div.'+ voteContainerId).find('div.'+ voteNumberClass);
+        $(voteNumber).text(number);
+    };
     
     var bindEvents = function(){
         // accept answers
@@ -77,12 +121,12 @@
            Vote.vote($(event.target), VoteType.questionDownVote)
         });
     
-        var answerVoteUpButton = getAnswerVoteUpButton();
+        var answerVoteUpButton = getAnswerVoteUpButtons();
         answerVoteUpButton.unbind('click').click(function(event){
            Vote.vote($(event.target), VoteType.answerUpVote)
         });
         
-        var answerVoteDownButton = getAnswerVoteDownButton();
+        var answerVoteDownButton = getAnswerVoteDownButtons();
         answerVoteDownButton.unbind('click').click(function(event){
            Vote.vote($(event.target), VoteType.answerDownVote)
         });
@@ -106,10 +150,10 @@
     // callback function for Accept Answer action
     var callback_accept = function(object, voteType, data){
         if(data.allowed == "0" && data.success == "0"){
-            showMessage(object, "用户权限不在操作范围");
+            showMessage(object, acceptAnonymousMessage);
         }
         else if(data.allowed == "-1"){
-            showMessage(object, "不能设置自己的回答为最佳答案");
+            showMessage(object, acceptOwnAnswerMessage);
         }
         else if(data.status == "1"){
             object.attr("src", "/content/images/vote-accepted.png");
@@ -135,7 +179,7 @@
 
     var callback_favorite = function(object, voteType, data){
         if(data.allowed == "0" && data.success == "0"){
-            showMessage(object, "匿名用户不能使用收藏，请先<a href='/account/signin/?next=/questions/"+ questionId +"'>注册或者登录</a>");
+            showMessage(object, favoriteAnonymousMessage.replace("{{QuestionID}}", questionId));
         }
         else if(data.status == "1"){
             object.attr("src", "/content/images/vote-favorite-off.png");
@@ -158,24 +202,34 @@
         
     var callback_vote = function(object, voteType, data){
         if(data.allowed == "0" && data.success == "0"){
-            showMessage(object, "匿名用户不能投票，请先<a href='/account/signin/?next=/questions/"+ questionId +"'>注册或者登录</a>");
+            showMessage(object, voteAnonymousMessage.replace("{{QuestionID}}", questionId));
+        }
+        else if(data.allowed == "-3"){
+            showMessage(object, voteRequiredMoreVotes);
+        }
+        else if(data.allowed == "-2"){
+            if(voteType == VoteType.questionUpVote || voteType == VoteType.answerUpVote){
+                showMessage(object, upVoteRequiredScoreMessage);
+            }
+            else if(voteType == VoteType.questionDownVote || voteType == VoteType.answerDownVote){
+                showMessage(object, downVoteRequiredScoreMessage);
+            }
         }
         else if(data.allowed == "-1"){
-            if(voteType == VoteType.questionUpVote || voteType == VoteType.answerUpVote){
-                showMessage(object, "需要+15积分才能投支持票");
-            }
-            else if(voteType == VoteType.questionDownVote || voteType == VoteType.answerDownVote){
-                showMessage(object, "需要+100积分才能投反对票");
-            }
+            showMessage(object, voteOwnDeniedMessage);
         }
+        else if(data.status == "2"){
+            showMessage(object, voteDenyCancelMessage);
+        }
+        else if(data.status == "1"){
+            setVoteImage(voteType, true, object);
+            setVoteNumber(object, data.count);
+        }     
         else if(data.success == "1"){
-            if(voteType == VoteType.questionUpVote || voteType == VoteType.answerUpVote){
-                object.attr("src", "/content/images/vote-arrow-up-on.png");
-            }
-            else if(voteType == VoteType.questionDownVote || voteType == VoteType.answerDownVote){
-               object.attr("src", "/content/images/vote-arrow-down-on.png");
-            }
-            
+            setVoteImage(voteType, false, object);
+            setVoteNumber(object, data.count);
+            if(data.message.length > 0)
+                showMessage(object, data.message);
         }
     };
         
@@ -194,10 +248,18 @@
         },
         
         favorite: function(object){
+            if(!currentUserId || currentUserId.toUpperCase() == "NONE"){
+                showMessage(object, favoriteAnonymousMessage.replace("{{QuestionID}}", questionId));
+                return false;
+            }
             submit(object, VoteType.favorite, callback_favorite);
         },
             
         vote: function(object, voteType){
+            if(!currentUserId || currentUserId.toUpperCase() == "NONE"){
+                showMessage(object, voteAnonymousMessage.replace("{{QuestionID}}", questionId));
+                return false;   
+            }
             if(voteType == VoteType.answerUpVote){
                 postId = object.attr("id").substring(imgIdPrefixAnswerVoteup.length);
             }
@@ -234,9 +296,9 @@ function createComments(type) {
         if (canPostComments(id, jDiv)) {
             if (jDiv.find("#" + formId).length == 0) {
                 var form = '<form id="' + formId + '" class="post-comments"><div>';
-                form += '<textarea name="comment" cols="70" rows="2" maxlength="300" onblur="'+ objectType +'Comments.updateTextCounter(this)" ';
-                form += 'onfocus="' + objectType + 'Comments.updateTextCounter(this)" onkeyup="'+ objectType +'Comments.updateTextCounter(this)"></textarea><br/>';
-                form += '<input type="submit" value="添加评论" /><br/><span class="text-counter"></span>';
+                form += '<textarea name="comment" cols="60" rows="5" maxlength="300" onblur="'+ objectType +'Comments.updateTextCounter(this)" ';
+                form += 'onfocus="' + objectType + 'Comments.updateTextCounter(this)" onkeyup="'+ objectType +'Comments.updateTextCounter(this)"></textarea>';
+                form += '<input type="submit" value="添加评论" /><br><span class="text-counter"></span>';
                 form += '<span class="form-error"></span></div></form>';
 
                 jDiv.append(form);
@@ -314,7 +376,7 @@ function createComments(type) {
             },
             error: function(res, textStatus, errorThrown) {
                 removeLoader();
-                showAjaxError(formSelector, res.responseText);
+                showMessage(formSelector, res.responseText);
                 enableSubmitButton(formSelector);
             }
         });

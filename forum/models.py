@@ -36,9 +36,35 @@ class Comment(models.Model):
     added_at       = models.DateTimeField(default=datetime.datetime.now)
 
     class Meta:
-        unique_together = ('content_type', 'object_id', 'user')
         ordering = ('-added_at',)
         db_table = u'comment'
+
+class Vote(models.Model):
+    VOTE_UP = +1
+    VOTE_DOWN = -1
+    VOTE_CHOICES = (
+        (VOTE_UP,   u'Up'),
+        (VOTE_DOWN, u'Down'),
+    )
+
+    content_type   = models.ForeignKey(ContentType)
+    object_id      = models.PositiveIntegerField()
+    content_object = generic.GenericForeignKey('content_type', 'object_id')
+    user           = models.ForeignKey(User, related_name='votes')
+    vote           = models.SmallIntegerField(choices=VOTE_CHOICES)
+    voted_at       = models.DateTimeField(default=datetime.datetime.now)
+    
+    objects = VoteManager()
+    
+    class Meta:
+        unique_together = ('content_type', 'object_id', 'user')
+        db_table = u'vote'
+
+    def is_upvote(self):
+        return self.vote == self.VOTE_UP
+
+    def is_downvote(self):
+        return self.vote == self.VOTE_DOWN
 
 class Question(models.Model):
     CLOSE_REASONS = (
@@ -87,6 +113,7 @@ class Question(models.Model):
     summary              = models.CharField(max_length=180)
     html                 = models.TextField()
     comments             = generic.GenericRelation(Comment)
+    votes                = generic.GenericRelation(Vote)
     
     objects = QuestionManager()
 
@@ -151,37 +178,13 @@ class Answer(models.Model):
     last_edited_by       = models.ForeignKey(User, null=True, blank=True, related_name='last_edited_answers')
     html                 = models.TextField()
     comments             = generic.GenericRelation(Comment)
+    votes                = generic.GenericRelation(Vote)
     
     objects = AnswerManager()
     
     class Meta:
         db_table = u'answer'
 
-class Vote(models.Model):
-    VOTE_UP = +1
-    VOTE_DOWN = -1
-    VOTE_CHOICES = (
-        (VOTE_UP,   u'Up'),
-        (VOTE_DOWN, u'Down'),
-    )
-
-    content_type   = models.ForeignKey(ContentType)
-    object_id      = models.PositiveIntegerField()
-    content_object = generic.GenericForeignKey('content_type', 'object_id')
-    user           = models.ForeignKey(User, related_name='votes')
-    vote           = models.SmallIntegerField(choices=VOTE_CHOICES)
-    
-    objects = VoteManager()
-    
-    class Meta:
-        unique_together = ('content_type', 'object_id', 'user')
-        db_table = u'vote'
-
-    def is_upvote(self):
-        return self.vote == self.VOTE_UP
-
-    def is_downvote(self):
-        return self.vote == self.VOTE_DOWN
 
 class FlaggedItem(models.Model):
     """A flag on a Question or Answer indicating offensive content."""

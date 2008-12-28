@@ -19,6 +19,28 @@ DISABLE_URL_NOFOLLOW      = 2000
 CLOSE_OTHER_QUESTIONS     = 3000
 LOCK_POSTS                = 4000
 
+VOTE_RULES = {
+    'scope_votes_per_user_per_day' : 30, # how many votes of one user has everyday
+    'scope_flags_per_user_per_day' : 5,  # how many times user can flag posts everyday
+    'scope_warn_votes_left' : 10,        # start when to warn user how many votes left
+    'scope_deny_unvote_days' : 1,        # if 1 days passed, user can't cancel votes.
+}
+
+REPUTATION_RULES = {
+    'initial_score'                       : 1,
+    'scope_per_day_by_upvotes'            : 200,
+    'gain_by_upvoted'                     : 10,
+    'gain_by_answer_accepted'             : 15,
+    'gain_by_accepting_answer'            : 2,
+    'gain_by_downvote_canceled'           : 2,
+    'gain_by_canceling_downvote'          : 1,
+    'lose_by_downvoted'                   : -2,
+    'lose_by_flagged'                     : -2,
+    'lose_by_downvoting'                  : -1,
+    'lose_by_flagged_lastrevision_3_times': -30,
+    'lose_by_flagged_lastrevision_5_times': -100,
+    'lost_by_upvote_canceled'             : -10,
+}
 def can_vote_up(user):
     """Determines if a User can vote Questions and Answers up."""
     return user.is_authenticated() and (

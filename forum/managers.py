@@ -1,9 +1,9 @@
-﻿from django.contrib.auth.models import User, UserManager
+﻿import datetime
+import logging
+from django.contrib.auth.models import User, UserManager
 from django.db import connection, models, transaction
 from django.db.models import Q
 from forum.models import *
-
-import logging
 
 class QuestionManager(models.Manager):
     def update_tags(self, question, tagnames, user):
@@ -131,7 +131,7 @@ class VoteManager(models.Manager):
     # TODO: Check vote value: 0 down, 1 up
     COUNT_UP_VOTE_BY_USER = "SELECT count(*) FROM vote WHERE user_id = %s AND vote = 1"
     COUNT_DOWN_VOTE_BY_USER = "SELECT count(*) FROM vote WHERE user_id = %s AND vote = -1"
-    
+    COUNT_VOTES_PER_DAY_BY_USER = "SELECT COUNT(*) FROM vote WHERE user_id = %s AND DATEDIFF(%s, voted_at) = 0"
     def get_up_vote_count_from_user(self, user):
         if user is not None:
             cursor = connection.cursor()
@@ -147,5 +147,15 @@ class VoteManager(models.Manager):
             cursor.execute(self.COUNT_DOWN_VOTE_BY_USER, [user.id])
             row = cursor.fetchone()
             return row[0]
+        else:
+            return 0
+            
+    def get_votes_count_today_from_user(self, user):
+        if user is not None:
+            cursor = connection.cursor()
+            cursor.execute(self.COUNT_VOTES_PER_DAY_BY_USER, [user.id, datetime.datetime.now()])
+            row = cursor.fetchone()
+            return row[0]
+
         else:
             return 0

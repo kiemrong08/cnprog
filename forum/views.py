@@ -199,7 +199,10 @@ def question(request, id):
     answers = Answer.objects.get_answers_from_question(question, request.user)
     answers = answers.select_related(depth=1)
     favorited = question.has_favorite_by_user(request.user)
-    
+    question_vote = question.votes.filter(user=request.user)
+    if question_vote is not None:
+        question_vote = question_vote[0]
+        
     if answers is not None:
         answers = answers.order_by("-accepted", orderby)
     objects_list = Paginator(answers, ANSWERS_PAGE_SIZE)
@@ -208,6 +211,7 @@ def question(request, id):
     Question.objects.update_view_count(question)
     return render_to_response('question.html', {
         "question" : question,
+        "question_vote" : question_vote,
         "question_comment_count":question.comments.count(),
         "answer" : answer_form,
         "answers" : page_objects.object_list,
@@ -307,8 +311,17 @@ def vote(request, id):
     accept answer code:
         response_data['allowed'] = -1, Accept his own answer   0, no allowed - Anonymous    1, Allowed - by default
         response_data['success'] =  0, failed                                               1, Success - by default
-        response_data['status']  =  0, By default                                           1, Answer has been accepted already 
+        response_data['status']  =  0, By default                                           1, Answer has been accepted already(Cancel)
 
+    vote code:
+        allowed = -3, Don't have enough votes left
+                  -2, Don't have enough reputation score     
+                  -1, Vote his own post   
+                   0, no allowed - Anonymous    
+                   1, Allowed - by default
+        status  =  0, By default
+                   1, Cancel
+                   2, Vote is too old to be canceled
     """
     response_data = {
         "allowed": 1,
@@ -381,8 +394,86 @@ def vote(request, id):
                 Question.objects.update_favorite_count(question) 
                 
             elif vote_type in ['1', '2', '5', '6']:
-                if not can_vote_up(request.user):
+                post_id = id
+                post = question
+                vote_score = 1
+                if vote_type in ['5', '6']:
+                    answer_id = request.POST.get('postId')
+                    answer = get_object_or_404(Answer, id=answer_id)
+                    post_id = answer_id
+                    post = answer
+                if vote_type in ['2', '6']:
+                    vote_score = -1
+                
+                if post.author == request.user:
                     response_data['allowed'] = -1
+                elif not can_vote_up(request.user):
+                    response_data['allowed'] = -2
+                elif post.votes.filter(user=request.user).count() > 0:
+                    vote = post.votes.filter(user=request.user)[0]
+                    # unvote should be less than certain time
+                    if (datetime.datetime.now() - vote.voted_at).days > VOTE_RULES['scope_deny_unvote_days']:
+                        response_data['status'] = 2
+                    else:
+                        voted = vote.vote
+                        vote.delete()
+                        if voted > 0:
+                            # cancel upvote
+                            post.vote_up_count = post.vote_up_count-1
+                            post.score = post.score-1
+                            post.save() 
+                            author = post.author
+                            author.reputation=author.reputation + int(REPUTATION_RULES['lost_by_upvote_canceled'])
+                            author.save()
+                            
+                        else:
+                            # cancel downvote
+                            post.vote_down_count = post.vote_down_count-1
+                            post.score = post.score + 1
+                            post.save()
+                            
+                            author = post.author
+                            author.reputation = author.reputation + int(REPUTATION_RULES['gain_by_downvote_canceled'])
+                            author.save()
+                            
+                            me = request.user
+                            me.reputation = me.reputation + int(REPUTATION_RULES['gain_by_canceling_downvote'])
+                            me.save()
+                            
+                        response_data['status'] = 1
+                        response_data['count'] = post.score
+                elif Vote.objects.get_votes_count_today_from_user(request.user) >= VOTE_RULES['scope_votes_per_user_per_day']:
+                    response_data['allowed'] = -3
+                else:
+                    vote = Vote(user=request.user, content_object=post, vote=vote_score, voted_at=datetime.datetime.now())
+                    vote.save()
+                    if vote_score > 0:
+                        # upvote
+                        post.vote_up_count = post.vote_up_count+1
+                        post.score = post.score+1
+                        post.save()
+                        
+                        author = post.author
+                        author.reputation = author.reputation + int(REPUTATION_RULES['gain_by_upvoted'])
+                        author.save()
+                        
+                    else:
+                        # downvote
+                        post.vote_down_count = post.vote_down_count+1
+                        post.score = post.score-1
+                        post.save()
+                        author = post.author
+                        author.reputation = author.reputation + int(REPUTATION_RULES['lose_by_downvoted'])
+                        author.save()
+                        
+                        me = request.user
+                        me.reputation = me.reputation + int(REPUTATION_RULES['lose_by_downvoting'])
+                        me.save()
+                    votes_left = VOTE_RULES['scope_votes_per_user_per_day'] - Vote.objects.get_votes_count_today_from_user(request.user)    
+                    if votes_left <= VOTE_RULES['scope_warn_votes_left']:
+                        response_data['message'] = u'%s votes left' % votes_left
+                    response_data['count'] = post.score
+                    
         else:
             response_data['success'] = 0
             response_data['message'] = u'Request mode is not supported. Please try again.'

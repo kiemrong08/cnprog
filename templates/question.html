@@ -66,9 +66,15 @@
                 <tr>
                     <td style="width:50px;vertical-align:top">
                         <div class="vote-buttons">
+                            {% if question_vote %}
+                            <img id="question-img-upvote-{{ question.id }}" class="question-img-upvote" src="/content/images/vote-arrow-up{% if question_vote.is_upvote %}-on{% endif %}.png" title="这篇帖子有价值（再次点击取消操作）" >
+                            <div id="question-vote-number-{{ question.id }}" class="vote-number">{{ question.score }}</div>
+                            <img id="question-img-downvote-{{ question.id }}" class="question-img-downvote" src="/content/images/vote-arrow-down{% if question_vote.is_downvote %}-on{% endif %}.png" title="这篇帖子没有价值（再次点击取消操作）" >
+                            {% else %}
                             <img id="question-img-upvote-{{ question.id }}" class="question-img-upvote" src="/content/images/vote-arrow-up.png" title="这篇帖子有价值（再次点击取消操作）" >
                             <div id="question-vote-number-{{ question.id }}" class="vote-number">{{ question.score }}</div>
-                            <img id="question-img-downvote-{{ question.id }}" class="question-img-downvote" src="/content/images/vote-arrow-down.png" title="这篇帖子没有价值（再次点击取消操作）" >
+                            <img id="question-img-downvote-{{ question.id }}" class="question-img-downvote" src="/content/images/vote-arrow-down.png" title="这篇帖子没有价值（再次点击取消操作）" >    
+                            {% endif %}
                             {% if favorited %}
                             <img class="question-img-favorite" src="/content/images/vote-favorite-on.png" title="我要收藏这个问题（再次点击取消操作）" >
                             <div id="favorite-number" class="favorite-number my-favorite-number">{{ question.favourite_count }}</div>
@@ -318,7 +324,7 @@
 </div>
 
 <div class="gray-box">
-    <h3>相似标签的问题</h3>
+    <h3>相似的问题</h3>
     <div id="" class="">
         <ul class="list-item">
         {% for question in similar_questions %}

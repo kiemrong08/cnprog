@@ -44,7 +44,7 @@ table
 	border-spacing: 0;
 }
 
-input, select, button
+input, select, button, textarea
 {
 	border: 1px solid #999;
 	font-size:100%;
@@ -893,8 +893,8 @@ div.grippie {
 
 .vote-number{
     font-family:Arial;
-    padding:5px 0 10px 0;
-    font-size:200%;
+    padding:0px 0 3px 0;
+    font-size:220%;
     font-weight:bold;
     color:#777;
 }
@@ -1364,8 +1364,12 @@ div.comments {
     padding:10px 0;
 }
 
+div.post-comments{
+    width:585px
+}
+
 form.post-comments textarea {
-    height:4em;
+    height:6em;
     margin-bottom:4px;
 }
 
