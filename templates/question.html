@@ -141,7 +141,7 @@
                             
                             <div class="post-comments" style="margin-bottom:20px">
                                 <input id="can-post-comments-question-{{question.id}}" type="hidden" value="true"/>
-                                <a id="comments-link-question-{{question.id}}" class="comments-link">{% if question.comment_count %}评论({{question.comment_count}}){% else %}添加评论{% endif %}</a>
+                                <a id="comments-link-question-{{question.id}}" class="comments-link">{% if question.comment_count %}评论 <strong>({{question.comment_count}})</strong>{% else %}添加评论{% endif %}</a>
                                 <div id="comments-question-{{question.id}}" class="comments-container">
                                 <div class="comments"/></div>
                             </div>
@@ -170,9 +170,9 @@
                             <tr>
                                 <td style="width:50px;vertical-align:top">
                                     <div class="vote-buttons">
-                                        <img id="answer-img-upvote-{{ answer.id }}" class="answer-img-upvote" src="/content/images/vote-arrow-up.png" title="这篇帖子有价值（再次点击取消操作）" >
+                                        <img id="answer-img-upvote-{{ answer.id }}" class="answer-img-upvote" src="/content/images/vote-arrow-up{% get_user_vote_image user_answer_votes answer.id 1 %}.png" title="这篇帖子有价值（再次点击取消操作）" >
                                         <div id="answer-vote-number-{{ answer.id }}" class="vote-number">{{ answer.score }}</div>
-                                        <img id="answer-img-downvote-{{ answer.id }}" class="answer-img-downvote" src="/content/images/vote-arrow-down.png" title="这篇帖子没有价值（再次点击取消操作）" >
+                                        <img id="answer-img-downvote-{{ answer.id }}" class="answer-img-downvote" src="/content/images/vote-arrow-down{% get_user_vote_image user_answer_votes answer.id -1 %}.png" title="这篇帖子没有价值（再次点击取消操作）" >
                                         {% ifequal user question.author  %}
                                         <img id="answer-img-accept-{{ answer.id }}" class="answer-img-accept" src="/content/images/vote-accepted{% if answer.accepted %}-on{% endif %}.png" title="最佳答案（再次点击取消操作）" >
                                         {% else %}

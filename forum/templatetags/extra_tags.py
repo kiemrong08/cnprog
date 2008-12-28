@@ -137,6 +137,13 @@ def get_score_badge(user):
     })
         
 @register.simple_tag
+def get_user_vote_image(dic, key, arrow):
+    if dic.has_key(key):
+        if int(dic[key]) == int(arrow):
+            return '-on'
+    return ''
+    
+@register.simple_tag
 def get_age(birthday):
     current_time = datetime.datetime(*time.localtime()[0:6])
     diff = current_time - birthday

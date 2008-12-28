@@ -34,12 +34,14 @@ REPUTATION_RULES = {
     'gain_by_accepting_answer'            : 2,
     'gain_by_downvote_canceled'           : 2,
     'gain_by_canceling_downvote'          : 1,
+    'lose_by_canceling_accepted_answer'   : -2,
+    'lose_by_accepted_answer_cancled'     : -15,
     'lose_by_downvoted'                   : -2,
     'lose_by_flagged'                     : -2,
     'lose_by_downvoting'                  : -1,
     'lose_by_flagged_lastrevision_3_times': -30,
     'lose_by_flagged_lastrevision_5_times': -100,
-    'lost_by_upvote_canceled'             : -10,
+    'lose_by_upvote_canceled'             : -10,
 }
 def can_vote_up(user):
     """Determines if a User can vote Questions and Answers up."""
@@ -113,4 +115,81 @@ def can_accept_answer(user, question, answer):
     return (user.is_authenticated() and 
         question.author != answer.author and
         question.author == user) or user.is_superuser
+    
+    
+###########################################
+## actions and reputation changes event
+###########################################
+def onAnswerAccept(answer, user):
+    answer.accepted = True
+    answer.question.answer_accepted = True
+    answer.save()
+    answer.question.save()
+    
+    answer.author.reputation = answer.author.reputation + int(REPUTATION_RULES['gain_by_answer_accepted'])
+    answer.author.save()
+    
+    user.reputation = user.reputation + int(REPUTATION_RULES['gain_by_accepting_answer'])
+
+def onAnswerAcceptCanceled(answer, user):
+    answer.accepted = False
+    answer.question.answer_accepted = False
+    answer.save()
+    answer.question.save()
+    
+    answer.author.reputation = answer.author.reputation + int(REPUTATION_RULES['lose_by_accepted_answer_cancled'])
+    answer.author.save()
+    
+    user.reputation = user.reputation + int(REPUTATION_RULES['lose_by_canceling_accepted_answer'])
+    
+def onUpVoted(vote, post, user):
+    vote.save()
+    
+    post.vote_up_count = int(post.vote_up_count) + 1
+    post.score = int(post.score) + 1
+    post.save()
+    
+    author = post.author
+    author.reputation = author.reputation + int(REPUTATION_RULES['gain_by_upvoted'])
+    author.save()
+    
+def onUpVotedCanceled(vote, post, user):
+    vote.delete()
+    
+    post.vote_up_count = int(post.vote_up_count) - 1
+    post.score = int(post.score) - 1
+    post.save() 
+    
+    author = post.author
+    author.reputation = author.reputation + int(REPUTATION_RULES['lose_by_upvote_canceled'])
+    author.save()
+    
+def onDownVoted(vote, post, user):
+    vote.save()
+
+    post.vote_down_count = int(post.vote_down_count) + 1
+    post.score = int(post.score) - 1
+    post.save()
+    
+    author = post.author
+    author.reputation = author.reputation + int(REPUTATION_RULES['lose_by_downvoted'])
+    author.save()
+    
+    user.reputation = user.reputation + int(REPUTATION_RULES['lose_by_downvoting'])
+    user.save()
+    
+def onDownVotedCanceled(vote, post, user):
+    vote.delete()
+    
+    post.vote_down_count = int(post.vote_down_count) - 1
+    post.score = post.score + 1
+    post.save()
+    
+    author = post.author
+    author.reputation = author.reputation + int(REPUTATION_RULES['gain_by_downvote_canceled'])
+    author.save()
+    
+    user.reputation = user.reputation + int(REPUTATION_RULES['gain_by_canceling_downvote'])
+    user.save()
+    
     

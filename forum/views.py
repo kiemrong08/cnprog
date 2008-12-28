@@ -198,11 +198,22 @@ def question(request, id):
     answer_form = AnswerForm()
     answers = Answer.objects.get_answers_from_question(question, request.user)
     answers = answers.select_related(depth=1)
+    
     favorited = question.has_favorite_by_user(request.user)
-    question_vote = question.votes.filter(user=request.user)
+    question_vote = question.votes.select_related().filter(user=request.user)
     if question_vote is not None and question_vote.count() > 0:
         question_vote = question_vote[0]
         
+    user_answer_votes = {}
+    for answer in answers:
+        vote = answer.get_user_vote(request.user)
+        if vote is not None and not user_answer_votes.has_key(answer.id):
+            vote_value = -1
+            if vote.is_upvote():
+                vote_value = 1
+            user_answer_votes[answer.id] = vote_value
+            
+            
     if answers is not None:
         answers = answers.order_by("-accepted", orderby)
     objects_list = Paginator(answers, ANSWERS_PAGE_SIZE)
@@ -215,6 +226,7 @@ def question(request, id):
         "question_comment_count":question.comments.count(),
         "answer" : answer_form,
         "answers" : page_objects.object_list,
+        "user_answer_votes": user_answer_votes,
         "tags" : question.tags.all(),
         "tab_id" : view_id,
         "favorited" : favorited,
@@ -352,22 +364,15 @@ def vote(request, id):
                         response_data['allowed'] = -1
                     # check if answer has been accepted already
                     elif answer.accepted:
+                        onAnswerAcceptCanceled(answer, request.user)
                         response_data['status'] = 1
-                        answer.accepted = False
-                        answer.question.answer_accepted = False
-                        answer.save()
-                        answer.question.save()
                     else:
                         # set other answers in this question not accepted first
                         for answer_of_question in Answer.objects.get_answers_from_question(question, request.user):
                             if answer_of_question != answer and answer_of_question.accepted:
-                                answer_of_question.accepted = False
-                                answer_of_question.save()
+                                onAnswerAcceptCanceled(answer_of_question, request.user)
                                 
-                        answer.accepted = True
-                        answer.question.answer_accepted = True
-                        answer.save()
-                        answer.question.save()
+                        onAnswerAccept(answer, request.user)
                       
                 else:
                     response_data['allowed'] = 0
@@ -412,33 +417,17 @@ def vote(request, id):
                 elif post.votes.filter(user=request.user).count() > 0:
                     vote = post.votes.filter(user=request.user)[0]
                     # unvote should be less than certain time
-                    if (datetime.datetime.now() - vote.voted_at).days > VOTE_RULES['scope_deny_unvote_days']:
+                    if (datetime.datetime.now().day - vote.voted_at.day) >= VOTE_RULES['scope_deny_unvote_days']:
                         response_data['status'] = 2
                     else:
                         voted = vote.vote
-                        vote.delete()
                         if voted > 0:
                             # cancel upvote
-                            post.vote_up_count = post.vote_up_count-1
-                            post.score = post.score-1
-                            post.save() 
-                            author = post.author
-                            author.reputation=author.reputation + int(REPUTATION_RULES['lost_by_upvote_canceled'])
-                            author.save()
+                            onUpVotedCanceled(vote, post, request.user)
                             
                         else:
                             # cancel downvote
-                            post.vote_down_count = post.vote_down_count-1
-                            post.score = post.score + 1
-                            post.save()
-                            
-                            author = post.author
-                            author.reputation = author.reputation + int(REPUTATION_RULES['gain_by_downvote_canceled'])
-                            author.save()
-                            
-                            me = request.user
-                            me.reputation = me.reputation + int(REPUTATION_RULES['gain_by_canceling_downvote'])
-                            me.save()
+                            onDownVotedCanceled(vote, post, request.user)
                             
                         response_data['status'] = 1
                         response_data['count'] = post.score
@@ -446,29 +435,13 @@ def vote(request, id):
                     response_data['allowed'] = -3
                 else:
                     vote = Vote(user=request.user, content_object=post, vote=vote_score, voted_at=datetime.datetime.now())
-                    vote.save()
                     if vote_score > 0:
                         # upvote
-                        post.vote_up_count = post.vote_up_count+1
-                        post.score = post.score+1
-                        post.save()
-                        
-                        author = post.author
-                        author.reputation = author.reputation + int(REPUTATION_RULES['gain_by_upvoted'])
-                        author.save()
-                        
+                        onUpVoted(vote, post, request.user)
                     else:
                         # downvote
-                        post.vote_down_count = post.vote_down_count+1
-                        post.score = post.score-1
-                        post.save()
-                        author = post.author
-                        author.reputation = author.reputation + int(REPUTATION_RULES['lose_by_downvoted'])
-                        author.save()
+                        onDownVoted(vote, post, request.user)
                         
-                        me = request.user
-                        me.reputation = me.reputation + int(REPUTATION_RULES['lose_by_downvoting'])
-                        me.save()
                     votes_left = VOTE_RULES['scope_votes_per_user_per_day'] - Vote.objects.get_votes_count_today_from_user(request.user)    
                     if votes_left <= VOTE_RULES['scope_warn_votes_left']:
                         response_data['message'] = u'%s votes left' % votes_left

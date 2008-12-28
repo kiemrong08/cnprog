@@ -327,7 +327,9 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
 .big{
     font-size:120%;
     font-weight:600;
+    
 }
+
 .paragraph{
     line-height:20px;
     margin-bottom:10px;   
@@ -815,6 +817,7 @@ div.grippie {
     cursor:s-resize;
     height:9px;
     overflow:hidden;
+    width:600px;
 }
 .resizable-textarea textarea {
     display:block;

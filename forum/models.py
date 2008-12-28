@@ -182,6 +182,13 @@ class Answer(models.Model):
     
     objects = AnswerManager()
     
+    def get_user_vote(self, user):
+        votes = self.votes.filter(user=user)
+        if votes.count() > 0:
+            return votes[0]
+        else:
+            return None
+            
     class Meta:
         db_table = u'answer'
 

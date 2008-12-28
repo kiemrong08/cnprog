@@ -25,7 +25,7 @@
     var downVoteRequiredScoreMessage = "需要+100积分才能投反对票";
     var voteOwnDeniedMessage = "不能给自己的帖子投票";
     var voteRequiredMoreVotes = "对不起，您已用完今日所有的投票。查看<a href='/faq'>faq</a>。";
-    var voteDenyCancelMessage = "这个投票已经过时，不能撤销您的投票。查看<a href='/faq'>faq</a>。";
+    var voteDenyCancelMessage = "这个投票已经过时，不能撤销。查看<a href='/faq'>faq</a>。";
     
     var VoteType = {
         acceptAnswer : 0,
