@@ -851,10 +851,11 @@ div.grippie {
 }
 
 .openid-samples{
-    
+      
 }
 
 .openid-samples .list, .list li{
+    font-family:Trebuchet MS,"segoe ui",Helvetica,"Microsoft YaHei",ËÎÌו,Tahoma,Verdana,MingLiu,PMingLiu,Arial,sans-serif;  
     list-style:none !important;
     margin-left:-30px !important;
     line-height:20px !important;

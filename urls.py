@@ -8,10 +8,14 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     (r'^$', index),
+    (r'^favicon\.ico$', 'django.views.generic.simple.redirect_to', {'url': '/content/images/favicon.ico'}),
+    (r'^favicon\.gif$', 'django.views.generic.simple.redirect_to', {'url': '/content/images/favicon.gif'}),
     (r'^content/(?P<path>.*)$', 'django.views.static.serve',
         {'document_root': os.path.join(os.path.dirname(__file__), 'templates/content').replace('\\','/')}
     ),
     (r'^account/', include('django_authopenid.urls')),
+    (r'^about/$', app.about),
+    (r'^faq/$', app.faq),
     url(r'^answers/(?P<id>\d+)/comments/$', app.answer_comments, name='answer_comments'),
     (r'^questions/$', app.questions),
     (r'^questions/ask/$', app.ask),
