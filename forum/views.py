@@ -16,7 +16,9 @@ from forum.models import *
 from forum.auth import *
 from utils.html import sanitize_html
 
-
+# used in index page
+INDEX_PAGE_SIZE = 30
+INDEX_TAGS_SIZE = 100
 # used in tags list
 DEFAULT_PAGE_SIZE = 65
 # used in questions
@@ -34,11 +36,11 @@ def index(request):
     except KeyError:
         view_id = "latest"
         orderby = "-added_at"
-    questions = Question.objects.all().order_by(orderby)[:30]
+    questions = Question.objects.filter(deleted=False).order_by(orderby)[:INDEX_PAGE_SIZE]
     
     # RISK - inner join queries
     questions = questions.select_related();
-    tags = Tag.objects.all().order_by("-id")[:100]
+    tags = Tag.objects.all().order_by("-id")[:INDEX_TAGS_SIZE]
     #print datetime.datetime.now()
     min = max = tags[0].used_count
     for tag in tags:
@@ -111,14 +113,14 @@ def questions(request, tagname=None, unanswered=False):
     # check if request is from tagged questions
     if tagname is not None:
         #print datetime.datetime.now()
-        objects = Question.objects.filter(tags__name = unquote(tagname)).order_by(orderby)
+        objects = Question.objects.filter(deleted=False, tags__name = unquote(tagname)).order_by(orderby)
         #print datetime.datetime.now()
     elif unanswered:
         #check if request is from unanswered questions
         template_file = "unanswered.html"
-        objects = Question.objects.filter(answer_count=0).order_by(orderby)
+        objects = Question.objects.filter(deleted=False, answer_count=0).order_by(orderby)
     else:
-        objects = Question.objects.all().order_by(orderby)
+        objects = Question.objects.filter(deleted=False).order_by(orderby)
         
     # RISK - inner join queries
     objects = objects.select_related();
@@ -201,7 +203,6 @@ def question(request, id):
         orderby = "-added_at"
         
     question = get_object_or_404(Question, id=id)
-    can_view_offensive  = can_view_offensive_flags(request.user)
 
     answer_form = AnswerForm()
     answers = Answer.objects.get_answers_from_question(question, request.user)
@@ -235,7 +236,6 @@ def question(request, id):
         "answer" : answer_form,
         "answers" : page_objects.object_list,
         "user_answer_votes": user_answer_votes,
-        "can_view_offensive_flags" : can_view_offensive,
         "tags" : question.tags.all(),
         "tab_id" : view_id,
         "favorited" : favorited,
@@ -253,6 +253,29 @@ def question(request, id):
         }
         }, context_instance=RequestContext(request))
  
+@login_required 
+def close(request, id):
+    question = get_object_or_404(Question, id=id)
+    # open question
+    if not can_close_question(request.user, question):
+        return HttpResponse('Permission denied.')
+    if request.method == 'POST':
+        form = CloseForm(request.POST)
+        if form.is_valid():
+            reason = form.cleaned_data['reason']
+            question.closed = True
+            question.closed_by = request.user
+            question.closed_at = datetime.datetime.now()
+            question.close_reason = reason
+            question.save()
+        return HttpResponseRedirect(question.get_absolute_url())
+    else:
+        form = CloseForm()
+        return render_to_response('close.html', {
+            'form' : form,
+            'question' : question,
+            }, context_instance=RequestContext(request))
+        
 #TODO: allow anynomus
 @login_required 
 def answer(request, id):

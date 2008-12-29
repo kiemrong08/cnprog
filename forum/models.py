@@ -11,6 +11,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.template.defaultfilters import slugify
 from django.db.models.signals import post_delete, post_save, pre_save
 from forum.managers import *
+from const import *
 
 class Tag(models.Model):
     name       = models.CharField(max_length=255, unique=True)
@@ -38,6 +39,8 @@ class Comment(models.Model):
     class Meta:
         ordering = ('-added_at',)
         db_table = u'comment'
+    def __unicode__(self):
+        return self.comment
 
 class Vote(models.Model):
     VOTE_UP = +1
@@ -59,7 +62,9 @@ class Vote(models.Model):
     class Meta:
         unique_together = ('content_type', 'object_id', 'user')
         db_table = u'vote'
-
+    def __unicode__(self):
+        return '[%s] voted at %s: %s' %(self.user, self.voted_at, self.vote)
+        
     def is_upvote(self):
         return self.vote == self.VOTE_UP
 
@@ -79,19 +84,10 @@ class FlaggedItem(models.Model):
     class Meta:
         unique_together = ('content_type', 'object_id', 'user')
         db_table = u'flagged_item'
+    def __unicode__(self):
+        return '[%s] flagged at %s' %(self.user, self.flagged_at)
         
 class Question(models.Model):
-    CLOSE_REASONS = (
-        (1, u'Exact duplicate'),
-        (2, u'Not programming related'),
-        (3, u'Subjective and argumentative'),
-        (4, u'Not a real question'),
-        (5, u'Blatantly offensive'),
-        (6, u'No longer relevant'),
-        (7, u'Too localized'),
-        (8, u'Spam'),
-    )
-    
     title    = models.CharField(max_length=300)
     author   = models.ForeignKey(User, related_name='questions')
     added_at = models.DateTimeField(default=datetime.datetime.now)
@@ -162,8 +158,11 @@ class Question(models.Model):
         
     def get_answer_count_by_user(self, user_id):
         query_set = Answer.objects.filter(author__id=user_id)
-        return query_set.filter(question=self).count()
+        return query_set.filter(question=self).count()       
     
+    def get_question_title(self):
+        return u'%s %s' % (self.title, CONST['closed']) if self.closed else self.title
+        
     def __unicode__(self):
         return self.title
         
@@ -208,7 +207,8 @@ class Answer(models.Model):
     class Meta:
         db_table = u'answer'
         
-        
+    def __unicode__(self):
+        return self.html    
        
 class FavoriteQuestion(models.Model):
     """A favorite Question of a User."""
@@ -217,6 +217,8 @@ class FavoriteQuestion(models.Model):
     added_at = models.DateTimeField(default=datetime.datetime.now)
     class Meta:
         db_table = u'favorite_question'
+    def __unicode__(self):
+        return '[%s] favorited at %s' %(self.user, self.added_at)
     
 class Badge(models.Model):
     """Awarded for notable actions performed on the site by Users."""
@@ -290,6 +292,10 @@ User.add_to_class('location', models.CharField(max_length=100, blank=True))
 User.add_to_class('date_of_birth', models.DateField(null=True, blank=True))
 User.add_to_class('about', models.TextField(blank=True))   
 
+def get_profile_url(self):
+    """Returns the URL for this User's profile."""
+    return '%s%s/' % (reverse('user', args=[self.id]), self.username)
+    
 def calculate_gravatar_hash(instance, **kwargs):
     """Calculates a User's gravatar hash from their email address."""
     if kwargs.get('raw', False):

@@ -1,9 +1,12 @@
 {% extends "base.html" %}
 {% load extra_tags %}
+{% load extra_filters %}
 {% load humanize %}
-{% block title %}{% spaceless %}{{ question.title }}{% endspaceless %}{% endblock %}
+{% block title %}{% spaceless %}{{ question.get_question_title }}{% endspaceless %}{% endblock %}
 {% block forejs %}
+        {% if not question.closed %}
         <script type='text/javascript' src='/content/js/com.cnprog.editor.js'></script>
+        {% endif %}
         <script type='text/javascript' src='/content/js/com.cnprog.utils.js'></script>
         <script type='text/javascript' src='/content/js/com.cnprog.post.js'></script>
         <script type='text/javascript' src='/content/js/jquery.validate.pack.js'></script>
@@ -18,6 +21,11 @@
             
             Vote.init({{ question.id }}, '{{ question.author.id }}','{{ user.id }}');
             
+            {% if not question.closed %}initEditor();{% endif %}
+
+        });
+        
+        function initEditor(){
             $('#editor').TextAreaResizer();
             //highlight code synctax when editor has new text
             $("#editor").typeWatch({highlight: false, wait: 3000,
@@ -48,7 +56,9 @@
         			}
                 }
             });
-        });
+            
+            lanai.highlightSyntax();
+        }
          
         </script>
 {% endblock %}
@@ -56,7 +66,7 @@
 {% block content %}
 <div id="question-title" class="">
     <h3>
-        <a href="{{ question.get_absolute_url }}">{{ question.title }}</a>
+        <a href="{{ question.get_absolute_url }}">{{ question.get_question_title }}</a>
     </h3>
     
 </div>
@@ -102,9 +112,15 @@
                                 <table width="585px">
             	                    <tr>
                                         <td width="300px" style="vertical-align:top">
-                                        <span id="question-offensive-flag-{{ question.id }}" class="offensive-flag" title="检举该帖为垃“水帖”（含广告、人身攻击、恶意言论等）"><a>垃圾帖？</a><span class="darkred">{% if can_view_offensive_flags %} {% if question.offensive_flag_count %}({{ question.offensive_flag_count }}){% endif %}{% endif %}</span>
-                                                         
+                                            {% if user|can_close_question:question %}
+                                            <span class="action-link"><a href="{% url close question.id %}">关闭问题</a></span>
+                                            <span class="link-separator">|</span>
+                                            {% endif %}
+                                            
+                                            <span id="question-offensive-flag-{{ question.id }}" class="offensive-flag" title="检举该帖为垃“水帖”（含广告、人身攻击、恶意言论等）"><a>垃圾帖？</a><span class="darkred">{% if user|can_view_offensive_flags %} {% if question.offensive_flag_count %}({{ question.offensive_flag_count }}){% endif %}{% endif %}</span>
+                                                             
                                             </span>
+                                            
                                         </td>
             	                    	<td width="100px"></td>
                                      <td >
@@ -150,6 +166,12 @@
                     </td>
                 </tr>
             </table>
+            {% if question.closed %}
+            <div class="question-status">
+            <h3>问题以“{% get_close_reason question.close_reason %}”的原因被 <a href="{{ question.closed_by.get_profile_url }}">{{ question.closed_by.username }}</a> 于{% diff_date question.closed_at %}<font class="darkred">关闭</font></h3>
+            </div>
+            {% endif %}
+            
             {% ifnotequal question.answer_count 0 %}
                 <div id="main-bar" class="">
                     <a name="sort-top"></a>
@@ -252,46 +274,24 @@
             <div style="clear:both">
             </div>
             
+            {% if not question.closed %}
             <div style="padding:10px 0 0 0;">
                 <h3>您的回答：</h3>
             </div>
-            
-            
             <div id="description" class="" >
                 {{ answer.text }}
                 <div class="preview-toggle"><span id="pre-collapse" title="打开或者关闭Markdown编辑器的实时预览">预览开关</span></div>
                 <div id="previewer" class="wmd-preview"></div>
                 
             </div>
-
-            <br>
-            {% if not user.is_authenticated %}
-            <table id="login-box"> 
-                <tr> 
-                    <td style="vertical-align:middle;"> 
-                    <strong>使用 <a href="http://openid.net/" title="了解更多有关OpenID的信息">OpenID</a> 登录：</strong><br>
-                        {{ answer.openid }}
-                        <div class="title-desc">
-                            获取您自己的<a href="https://www.myopenid.com/" target=="_blank">OpenID</a>。
-                        </div>
-                    </td> 
-                    <td style="vertical-align:middle; padding: 0px 40px 0px 40px"> 
-                        <div style="position: absolute; margin-top:40px; background-color:white; margin-left:-10px; padding:5px;">或</div> 
-                        <div style="width:1px; border-left:solid 1px #999; height:8em; margin:auto;"></div> 
-                    </td> 
-                    <td style="vertical-align:middle;"> 
-                        <strong>您的大名:</strong><br>
-                        {{ answer.user }}
-                        <p>
-                        <strong>电子邮件:（不会公开显示）</strong><br>
-                        {{ answer.email }}
-                        </p>
-                    </td> 
-                </tr> 
-            </table>    
-            {% endif %}
             {{ answer.text.errors }}
             <input type="submit" value="回答该问题" class="submit">
+            {% endif %}
+            <br><br>
+            <div><h3>没有找到您需要的答案？查看更多标识为
+                {% for tag in question.tagname_list %}
+                     <a href="{% url forum.views.tag tag|urlencode %}" class="post-tag" title="查看有关'{{ tag }}'的问题" rel="tag">{{ tag }}</a>
+                {% endfor %}的问题，或者<a href="{% url ask %}">提出您自己的问题</a>。</h3></div>
         </form>
     </div>
 </div>
@@ -308,13 +308,13 @@
         {% endfor %}
     </div>
     <div class="paragraph">
-        提问时间： <div class="big" title="{{ question.added_at }}">{% diff_date question.added_at %}</div>
+        提问时间： <div class="big" title="{{ question.added_at }}">{{ question.added_at|timesince }}前</div>
     </div>
     <div class="paragraph"> 
      目前浏览数量：<div class="big">{{ question.view_count|intcomma }} 次</div>
     </div>
     <div class="paragraph"> 
-        最后更新时间：<div class="big" title="{{ question.last_activity_at }}">{% diff_date question.last_activity_at %}</div>
+        最后更新时间：<div class="big" title="{{ question.last_activity_at }}">{{ question.last_activity_at|timesince }}前</div>
     </div>
 </div>
 
@@ -323,7 +323,7 @@
     <div id="" class="">
         <ul class="list-item">
         {% for question in similar_questions %}
-            <li><a href="/questions/{{question.id}}/{{ question.title }}">{{ question.title }}</a><span class="small" title="{{ question.last_activity_at }}"> ({% diff_date question.last_activity_at %})</span></li>
+            <li><a href="/questions/{{question.id}}/{{ question.get_question_title }}">{{ question.get_question_title }}</a><span class="small" title="{{ question.last_activity_at }}"> ({% diff_date question.last_activity_at %})</span></li>
         {% endfor %}
         </ul>
     </div>
@@ -333,10 +333,5 @@
 {% endblock %}
 
 {% block endjs %}
-<script language="javascript">
-//highlight code syntax after loading content in editor
-lanai.highlightSyntax();
-
-</script>
 {% endblock %}
 

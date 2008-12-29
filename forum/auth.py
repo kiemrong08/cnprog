@@ -48,6 +48,7 @@ REPUTATION_RULES = {
     'lose_by_flagged_lastrevision_5_times': -100,
     'lose_by_upvote_canceled'             : -10,
 }
+
 def can_vote_up(user):
     """Determines if a User can vote Questions and Answers up."""
     return user.is_authenticated() and (

@@ -937,6 +937,13 @@ div.grippie {
     padding:5px;
 }
 
+.question-status{
+    margin-top:10px;
+    padding: 20px;
+    background-color:#eee;
+    text-align:center;
+}
+
 .answer-mark{
     text-align:left;
     font-size:90%;
@@ -964,6 +971,19 @@ div.grippie {
 }
 
 .linksopt a:hover{
+    background-color:#777;
+    text-decoration:none;
+    color:#fff;
+}
+
+.action-link a{
+    color:#777;
+    font-size:90%;
+    padding:3px;
+    cursor:pointer;
+}
+
+.action-link a:hover{
     background-color:#777;
     text-decoration:none;
     color:#fff;

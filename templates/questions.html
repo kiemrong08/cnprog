@@ -59,7 +59,7 @@
             <div class="qustion-title">
                 <h3>
                     <a href="{{ question.get_absolute_url }}" title="{{ question.summary }}...">
-                        {{ question.title }}
+                        {{ question.get_question_title }}
                     </a>
                 </h3>
                 
@@ -73,6 +73,26 @@
                 {% endfor %}
             </div>
             <div class="questions-mark">
+                {% ifequal tab_id 'active'%}
+                <table width="100%">
+                    <tr>
+                        <td colspan="2" class="gray"> 
+                        最后更新于<span title="{{ question.last_activity_at }}"><strong>{% diff_date question.last_activity_at %}</strong></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width:40px;vertical-align:bottom">
+                        {% gravatar question.last_activity_by 32 %}
+                        </td>
+                        <td style="width:120px;vertical-align:top">
+                            <div><a href="/users/{{ question.last_activity_by.id }}/{{ question.last_activity_by.username }}"><span class="big">{{ question.last_activity_by.username }}</span></a></div>
+                            <div>
+                            {% get_score_badge question.last_activity_by %}
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                {% else %}
                 <table width="100%">
                     <tr>
                         <td colspan="2" class="gray"> 
@@ -91,6 +111,7 @@
                         </td>
                     </tr>
                 </table>
+                {% endifequal %}
             </div>
             
         </div>

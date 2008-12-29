@@ -1,6 +1,7 @@
 ﻿import re
 from django import forms
-
+from models import *
+from const import *
 class AskForm(forms.Form):
     title  = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'size' : 70, 'autocomplete' : 'off'}))
     text   = forms.CharField(widget=forms.Textarea(attrs={'id':'editor'}))
@@ -16,7 +17,9 @@ class AskForm(forms.Form):
 
         return data
     
+    
     def clean_tags(self):
+        #tagname_re = re.compile(r'^[\u4e00-\u9fa5-a-z0-9+#.]+$')
         data = self.cleaned_data['tags']
         data = data.strip()
         if len(data) < 1:
@@ -30,12 +33,14 @@ class AskForm(forms.Form):
                 raise forms.ValidationError(u'每个标签的长度不超过20')
             
             #TODO: regex match not allowed characters here
+            
             if tag.find('/') > -1 or tag.find('\\') > -1 or tag.find('<') > -1 or tag.find('>') > -1 or tag.find('&') > -1 or tag.find('\'') > -1 or tag.find('"') > -1:
+            #if not tagname_re.match(tag):
                 raise forms.ValidationError(u'标签请使用英文字母，中文或者数字字符串（. - _ # 也可以）')
             # only keep one same tag
             if tag not in list_temp:
                 list_temp.append(tag)
-        return ' '.join(list_temp)
+        return u' '.join(list_temp)
         
 class AnswerForm(forms.Form):
     text   = forms.CharField(widget=forms.Textarea(attrs={'id':'editor'}))
@@ -51,3 +56,6 @@ class AnswerForm(forms.Form):
         elif len(text.strip()) < 30:    
             raise forms.ValidationError(u'内容至少要30个字符')
         return data
+        
+class CloseForm(forms.Form):
+    reason = forms.ChoiceField(choices=CLOSE_REASONS)

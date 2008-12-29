@@ -18,8 +18,9 @@ urlpatterns = patterns('',
     (r'^faq/$', app.faq),
     url(r'^answers/(?P<id>\d+)/comments/$', app.answer_comments, name='answer_comments'),
     (r'^questions/$', app.questions),
-    (r'^questions/ask/$', app.ask),
+    url(r'^questions/ask/$', app.ask, name='ask'),
     (r'^questions/unanswered/$', app.unanswered),
+    url(r'^questions/(?P<id>\d+)/close/$', app.close, name='close'),
     url(r'^questions/(?P<id>\d+)/answer/$', app.answer, name='answer'),
     url(r'^questions/(?P<id>\d+)/vote/$', app.vote, name='vote'),
     url(r'^questions/(?P<id>\d+)/comments/$', app.question_comments, name='question_comments'),
@@ -37,5 +38,5 @@ urlpatterns = patterns('',
     # to INSTALLED_APPS to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
-    (r'^admin/(.*)', admin.site.root),
+    (r'^nimda/(.*)', admin.site.root),
 )

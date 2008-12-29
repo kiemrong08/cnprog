@@ -86,7 +86,7 @@
             <div class="qustion-title">
                 <h3>
                     <a href="{{ question.get_absolute_url }}" title="{{ question.summary }}...">
-                        {{ question.title }}
+                        {{ question.get_question_title }}
                     </a>
                 </h3>
                 
@@ -98,7 +98,12 @@
                 {% endfor %}
             </div>
             <div class="question-started">
+                    {% ifequal tab_id 'active'%}
                     <span class="updatedtime" title="{{ question.last_activity_at }}"><strong>{% diff_date question.last_activity_at %}</strong></span> <span class="big"><a href="/users/{{ question.last_activity_by.id }}/{{ question.last_activity_by.username }}">{{ question.last_activity_by.username }}</a></span>&nbsp;{% get_score_badge question.last_activity_by %}
+                    {% else %}
+                    <span class="updatedtime" title="{{ question.added_at }}"><strong>{% diff_date question.added_at %}</strong></span> <span class="big"><a href="/users/{{ question.author.id }}/{{ question.author.username }}">{{ question.author.username }}</a></span>&nbsp;{% get_score_badge question.author %}
+                    {% endifequal %}
+                    
    
             </div>
             

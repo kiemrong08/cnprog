@@ -33,7 +33,7 @@
     var offensiveAnonymousMessage = "匿名用户不能操作，请先<a href='/account/signin/?next=/questions/{{QuestionID}}'>注册或者登录</a>";
     var offensiveTwiceMessage = "不能重复操作。查看<a href='/faq'>faq</a>";
     var offensiveNoFlagsLeftMessage = "对不起，您已用完今日所有的5次‘水帖’操作。查看<a href='/faq'>faq</a>";
-    var offensiveNoPermissionMessage = "需要+15积分才能归类‘水帖’。查看<a href='/faq'>faq</a>";
+    var offensiveNoPermissionMessage = "需要+15积分才能归类‘垃圾帖’。查看<a href='/faq'>faq</a>";
     
     var VoteType = {
         acceptAnswer : 0,
