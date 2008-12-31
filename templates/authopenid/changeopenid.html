@@ -2,7 +2,11 @@
 {% load i18n %}
 
 {% block content %}
-<h4 class="headblue">{% trans "Account: change OpenID URL" %}</h4>
+<div id="main-bar" class="">
+    <h3>
+        {% trans "Account: change OpenID URL" %}
+    </h3>
+</div>
 
 <p>{% blocktrans %}This is where you can change your OpenID URL. Make sure you remember it!{% endblocktrans %}</p>
 {% if form.errors %}

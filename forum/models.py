@@ -163,12 +163,44 @@ class Question(models.Model):
     def get_question_title(self):
         return u'%s %s' % (self.title, CONST['closed']) if self.closed else self.title
         
+    def get_revision_url(self):
+        return reverse('question_revisions', args=[self.id])
+
+    def get_latest_revision(self):
+        return self.revisions.all()[0]    
+        
     def __unicode__(self):
         return self.title
         
     class Meta:
         db_table = u'question'
 
+class QuestionRevision(models.Model):
+    """A revision of a Question."""
+    question   = models.ForeignKey(Question, related_name='revisions')
+    revision   = models.PositiveIntegerField(blank=True)
+    title      = models.CharField(max_length=300)
+    author     = models.ForeignKey(User, related_name='question_revisions')
+    revised_at = models.DateTimeField()
+    tagnames   = models.CharField(max_length=125)
+    summary    = models.CharField(max_length=300, blank=True)
+    text       = models.TextField()
+
+    class Meta:
+        db_table = u'question_revision'
+        ordering = ('-revision',)
+
+    def save(self, **kwargs):
+        """Looks up the next available revision number."""
+        if not self.revision:
+            self.revision = QuestionRevision.objects.filter(
+                question=self.question).values_list('revision',
+                                                    flat=True)[0] + 1
+        super(QuestionRevision, self).save(**kwargs)
+
+    def __unicode__(self):
+        return u'revision %s of %s' % (self.revision, self.title)
+        
 class Answer(models.Model):
     question = models.ForeignKey(Question, related_name='answers')
     author   = models.ForeignKey(User, related_name='answers')
@@ -204,12 +236,39 @@ class Answer(models.Model):
         else:
             return None
             
+    def get_latest_revision(self):
+        return self.revisions.all()[0]  
+        
+    def get_absolute_url(self):
+        return '%s%s#%s' % (reverse('question', args=[self.question.id]), self.question.title, self.id)
+        
     class Meta:
         db_table = u'answer'
         
     def __unicode__(self):
         return self.html    
-       
+
+class AnswerRevision(models.Model):
+    """A revision of an Answer."""
+    answer     = models.ForeignKey(Answer, related_name='revisions')
+    revision   = models.PositiveIntegerField()
+    author     = models.ForeignKey(User, related_name='answer_revisions')
+    revised_at = models.DateTimeField()
+    summary    = models.CharField(max_length=300, blank=True)
+    text       = models.TextField()
+
+    class Meta:
+        db_table = u'answer_revision'
+        ordering = ('-revision',)
+
+    def save(self, **kwargs):
+        """Looks up the next available revision number if not set."""
+        if not self.revision:
+            self.revision = AnswerRevision.objects.filter(
+                answer=self.answer).values_list('revision',
+                                                flat=True)[0] + 1
+        super(AnswerRevision, self).save(**kwargs)
+        
 class FavoriteQuestion(models.Model):
     """A favorite Question of a User."""
     question      = models.ForeignKey(Question)
@@ -295,6 +354,7 @@ User.add_to_class('about', models.TextField(blank=True))
 def get_profile_url(self):
     """Returns the URL for this User's profile."""
     return '%s%s/' % (reverse('user', args=[self.id]), self.username)
+User.add_to_class('get_profile_url', get_profile_url)
     
 def calculate_gravatar_hash(instance, **kwargs):
     """Calculates a User's gravatar hash from their email address."""

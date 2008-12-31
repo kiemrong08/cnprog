@@ -1,0 +1,27 @@
+{% extends "base_content.html" %}
+{% load extra_tags %}
+{% load humanize %}
+{% block title %}{% spaceless %}退出登录{% endspaceless %}{% endblock %}
+{% block forejs %}
+    <script type="text/javascript">
+    $().ready(function(){
+        $('#btLogout').bind('click', function(){ window.location.href='/account/signout/?next={{ next }}'; });
+    
+    });
+    </script>
+{% endblock %}
+{% block content %}
+<div id="main-bar" class="">
+    <h3>
+        退出登录
+    </h3>
+</div>
+<div id="main-body" style="width:100%">
+    <div class="paragraph"> 您是系统的<strong class="darkred">注册</strong>用户，可以随时使用OpenID帐号登录系统或者注销登录。 </div>
+ 
+    <h3><input id="btLogout" type="button" value="点击退出登录"></h3>
+</div>
+{% endblock %}
+
+
+

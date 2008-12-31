@@ -4,7 +4,6 @@
 {% block title %}{% spaceless %}用户资料{% endspaceless %}{% endblock %}
 {% block forestyle%}
     <style type="text/css">
-	    h1 { font-size: 200%; }
  		.history-table td { padding: 5px; }
  		.user-stats-table { margin-left:50px; }
 	</style>
@@ -22,10 +21,10 @@
         <table>
             <tr>
                 <td>
-                    <div style="text-align: right;" class="summarycount">{{questions|length}}</div>
+                    <div style="text-align: right;" class="summarysubcount">{{questions|length}}</div>
                 </td>
-                <td style="vertical-align: middle; padding-left: 10px;">
-                    <h1>个问题</h1>
+                <td style="vertical-align: bottom; padding-left: 10px;">
+                    <h2>个问题</h2>
                 </td>
             </tr>
         </table>
@@ -35,10 +34,10 @@
         <table>
             <tr>
                 <td>
-                    <div style="text-align: right;" class="summarycount">{{answered_questions|length}}</div>
+                    <div style="text-align: right;" class="summarysubcount">{{answered_questions|length}}</div>
                 </td>
-                <td style="vertical-align: middle; padding-left: 10px;">
-                    <h1>个回答</h1>
+                <td style="vertical-align: bottom; padding-left: 10px;">
+                    <h2>个回答</h2>
                 </td>
             </tr>
         </table>
@@ -47,7 +46,7 @@
             <div class="answer-summary">
                 <!--TODO:locate answer in question's answers list-->
                 <a title="{{answered_question.summary}}" href="/questions/{{answered_question.id}}/{{answered_question.title}}">
-                    <div class="answer-votes {% if answered_question.answer_accepted %}answered-accepted{% endif %}">{% get_total_count answered_question.vote_up_count  answered_question.vote_down_count %}</div>
+                    <div class="answer-votes {% if answered_question.answer_accepted %}answered-accepted{% endif %}" title="该问题总共有{% get_total_count answered_question.vote_up_count  answered_question.vote_down_count %}个投票">{% get_total_count answered_question.vote_up_count  answered_question.vote_down_count %}</div>
                 </a>
                 <div class="answer-link">
                     <!--TODO:locate answer in question's answers list-->
@@ -57,14 +56,14 @@
             {% endfor %}
         </div>
         <p>&nbsp;</p>
-        <a name="votes"/>
+        <a name="votes"></a>
         <table>
             <tr>
                 <td>
-                    <div style="text-align: right;" class="summarycount">{{total_votes}}</div>
+                    <div style="text-align: right;" class="summarysubcount">{{total_votes}}</div>
                 </td>
-                <td style="vertical-align: middle; padding-left: 10px;">
-                    <h1>个投票</h1>                    
+                <td style="vertical-align: bottom; padding-left: 10px;">
+                    <h2>个投票</h2>                    
                 </td>
             </tr>
         </table>
@@ -74,14 +73,14 @@
                     <td width="60">
                         <div class="votebox" style="background:none">
                             <img width="40" height="25" style="cursor: default;" src="/content/images/vote-arrow-up-on.png"/>
-                            <span title="total number of up votes this user has given" class="vote-count-post">{{up_votes}}</span>
+                            <span title="该用户投的赞成票总数" class="vote-count-post">{{up_votes}}</span>
                             <img width="40" height="25" style="cursor: default;" src="/content/images/vote-arrow-down.png"/>
                         </div>
                     </td>
                     <td width="60">
                         <div class="votebox" style="background:none">
                             <img width="40" height="25" style="cursor: default;" src="/content/images/vote-arrow-up.png"/>
-                            <span title="total number of down votes this user has given" class="vote-count-post">{{down_votes}}</span>
+                            <span title="用户投的反对票总数" class="vote-count-post">{{down_votes}}</span>
                             <img width="40" height="25" style="cursor: default;" src="/content/images/vote-arrow-down-on.png"/>
                         </div>
                     </td>
@@ -89,14 +88,14 @@
             </table>
         </div>
         <p>&nbsp;</p>
-        <a name="tags"/>
+        <a name="tags"></a>
         <table>
             <tr>
                 <td>
-                    <div style="text-align: right;" class="summarycount">{{tags|length}}</div>
+                    <div style="text-align: right;" class="summarysubcount">{{tags|length}}</div>
                 </td>
-                <td style="vertical-align: middle; padding-left: 10px;">
-                    <h1>个标签</h1>
+                <td style="vertical-align: bottom; padding-left: 10px;">
+                    <h2>个标签</h2>
                 </td>
             </tr>
         </table>
@@ -105,7 +104,7 @@
                 <tr>
                     <td width="180">
                         {% for tag in tags%}
-                        <a rel="tag" title="查看有关'{{ tag }}'的问题" class="post-tag" href="{% url forum.views.tag tag %}">{{tag.name}}</a><span class="item-multiplier">× {{ tag.used_count|intcomma }}</span><br/>
+                        <a rel="tag" title="查看有关'{{ tag }}'的问题" class="post-tag" href="{% url forum.views.tag tag|urlencode %}">{{tag.name}}</a><br>
                             {% if forloop.counter|divisibleby:"10" %}
                                 </td>
                                 <td width="180">
@@ -116,57 +115,19 @@
             </table>
         </div>
         <p>&nbsp;</p>
-        <a name="badges"/>
+        <a name="badges"></a>
         <table>
             <tr>
                 <td>
-                    <div style="text-align: right;" class="summarycount">81</div>
+                    <div style="text-align: right;" class="summarycount"></div>
                 </td>
                 <td style="vertical-align: middle; padding-left: 10px;">
-                    <h1>Badges</h1>                    
+                    <h2></h2>                    
                 </td>
             </tr>
         </table>
         <div class="user-stats-table">
-            <table>
-                <tr>
-                    <td width="180">
-                        <a class="badge" title="bronze badge: Question voted up more than 10 times" href="/badges/20/nice-question"><span class="badge3">●</span> Nice Question</a><span class="item-multiplier">× 7</span><br/>
-                        <a class="badge" title="bronze badge: Answer voted up more than 10 times" href="/badges/23/nice-answer"><span class="badge3">●</span> Nice Answer</a><span class="item-multiplier">× 37</span><br/>
-                        <a class="badge" title="silver badge: Edited 100 entries" href="/badges/12/strunk-white"><span class="badge2">●</span> Strunk & White</a><br/>
-                        <a class="badge" title="silver badge: First answer was accepted with at least 10 up votes" href="/badges/19/enlightened"><span class="badge2">●</span> Enlightened</a><span class="item-multiplier">× 8</span><br/>
-                        <a class="badge" title="bronze badge: Deleted own post with 3 or more upvotes" href="/badges/37/disciplined"><span class="badge3">●</span> Disciplined</a><br/>
-                        <a class="badge" title="silver badge: Judged best answer and voted up 40 times" href="/badges/18/guru"><span class="badge2">●</span> Guru</a><br/>
-                    </td>
-                    <td width="180">
-                        <a class="badge" title="silver badge: Answer voted up more than 25 times" href="/badges/24/good-answer"><span class="badge2">●</span> Good Answer</a><span class="item-multiplier">× 7</span><br/>
-                        <a class="badge" title="bronze badge: Asked a question with 1,000 views" href="/badges/26/popular-question"><span class="badge3">●</span> Popular Question</a><span class="item-multiplier">× 2</span><br/>
-                        <a class="badge" title="silver badge: Asked a question with 2,500 views" href="/badges/27/notable-question"><span class="badge2">●</span> Notable Question</a><br/>
-                        <a class="badge" title="silver badge: Created a tag used by 50 questions" href="/badges/11/taxonomist"><span class="badge2">●</span> Taxonomist</a><br/>
-                        <a class="badge" title="bronze badge: Answered your own question with at least 3 up votes" href="/badges/14/self-learner"><span class="badge3">●</span> Self-Learner</a><br/>
-                        <a class="badge" title="silver badge: Voted 300 times" href="/badges/32/civic-duty"><span class="badge2">●</span> Civic Duty</a><br/>
-                    </td>
-                    <td width="180">
-                        <a class="badge" title="bronze badge: Deleted own post with 3 or more downvotes" href="/badges/38/peer-pressure"><span class="badge3">●</span> Peer Pressure</a><br/>
-                        <a class="badge" title="gold badge: Answer voted up more than 100 times" href="/badges/25/great-answer"><span class="badge1">●</span> Great Answer</a><br/>
-                        <a class="badge" title="bronze badge: First rollback" href="/badges/4/cleanup"><span class="badge3">●</span> Cleanup</a><br/>
-                        <a class="badge" title="bronze badge: First retag" href="/badges/5/organizer"><span class="badge3">●</span> Organizer</a><br/>
-                        <a class="badge" title="bronze badge: First flagged post" href="/badges/8/citizen-patrol"><span class="badge3">●</span> Citizen Patrol</a><br/>
-                        <a class="badge" title="bronze badge: First down vote" href="/badges/7/critic"><span class="badge3">●</span> Critic</a><br/>
-                    </td>
-                    <td width="180">
-                        <a class="badge" title="bronze badge: Left 10 comments" href="/badges/31/commentator"><span class="badge3">●</span> Commentator</a><br/>
-                        <a class="badge" title="bronze badge: First edit" href="/badges/3/editor"><span class="badge3">●</span> Editor</a><br/>
-                        <a class="badge" title="bronze badge: Answered first question with at least one up vote" href="/badges/1/teacher"><span class="badge3">●</span> Teacher</a><br/>
-                        <a class="badge" title="bronze badge: Completed all user profile fields" href="/badges/9/autobiographer"><span class="badge3">●</span> Autobiographer</a><br/>
-                        <a class="badge" title="bronze badge: First up vote" href="/badges/6/supporter"><span class="badge3">●</span> Supporter</a><br/>
-                        <a class="badge" title="bronze badge: First accepted answer" href="/badges/10/scholar"><span class="badge3">●</span> Scholar</a><br/>
-                    </td>
-                    <td width="180">
-                        <a class="badge" title="bronze badge: Asked first question with at least one up vote" href="/badges/2/student"><span class="badge3">●</span> Student</a><br/>
-                    </td>
-                </tr>
-            </table>
+            
         </div>
         {% include "user_footer.html" %}
 	</div>

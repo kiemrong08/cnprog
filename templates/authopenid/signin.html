@@ -2,9 +2,12 @@
 {% block title %}{% spaceless %}用户登录{% endspaceless %}{% endblock %}
 {% block forejs %}
 	<script type="text/javascript" src="/content/js/jquery.openid.js?"></script>
+    <script type='text/javascript' src='/content/js/com.cnprog.utils.js'></script>
+    <script type='text/javascript' src='/content/js/jquery.validate.pack.js'></script>
 	<script type="text/javascript">
 	$().ready(function(){
 	    openid.init('id_openid_url');
+        setupFormValidation("#openid_form", {bsignin:{required: true}});
 	});
 	</script>
 {% endblock %}
@@ -17,9 +20,9 @@
 <div class="login">
     <form name="openid_form" action="{% url user_signin %}" method="post">
     {{ form2.next }}
-    <div class="message">您当前为<strong class="darkred">匿名</strong>用户，可以正常使用提问、回答功能。登录系统后，可以获得积累积分等额外功能。</div>
+    <div class="message">使用CNProg<strong class="darkred">无需注册</strong>，使用OpenID登录后绑定系统用户即可。</div>
     <div id="openid_choice">
-        <div style="padding:10px 0 10px 0"><strong>请选择您的帐号类型并完成正确的OpenID地址：</strong> </div>
+        <div style="padding:10px 0 10px 0"><strong>请选择您的帐号类型并完成正确的OpenID地址（如：替换{username}为您的对应帐号）：</strong> </div>
         <div id="openid_btns"></div>
     </div>
     <br>
@@ -28,26 +31,11 @@
         {% if msg %}
         	<p class="warning">{{ msg }}</p>
         {% endif %}
-        {{ form2.openid_url }} <input name="bsignin" type="submit" value="登录" class="openid-login-submit" />
+        {{ form2.openid_url }} <input id="bsignin" name="bsignin" type="submit" value="登录" class="openid-login-submit" />
 	</div>
     
-    <div id="openid-samples" style="margin-bottom:20px">
-        <br>
-        <span class="darkred"><strong>常见的OpenID地址示例：</strong></span>
-    
-        <ul class="list">
-            <li>http://openid.aol.com/<strong>yourname</strong></li>
-            <li>http://<strong>yourname</strong>.myopenid.com/</li>
-            <li>https://me.yahoo.com/<strong>yourname</strong> (或者 http://yahoo.com/ )</li>
-            <li>http://claimid.com/<strong>yourname</strong></li>
-            <li>http://<strong>yourname</strong>.wordpress.com/</li>
-            <li>http://<strong>yourname</strong>.blogspot.com/</li>
-            <li>http://technorati.com/people/technorati/<strong>yourname</strong></li>
-            <li>http://<strong>yourname</strong>.pip.verisignlabs.com/</li>
-            <li>http://<strong>yourname</strong>.livejournal.com/</li>
-            <li>http://www.flickr.com/photos/<strong>yourname</strong></li>
-        </ul>
-        <span class="darkred"><strong>登录前请确认您的OpenID帐号已经在服务提供商激活。</strong></span>
+    <div style="margin:20px 0 20px 0">
+        <span class="darkred">登录前请确认您的OpenID帐号已经在服务提供商被激活或启用。</span>
     </div
 
 </form>

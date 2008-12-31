@@ -19,6 +19,9 @@
     var offensiveIdPrefixQuestionFlag = 'question-offensive-flag-';
     var offensiveIdPrefixAnswerFlag = 'answer-offensive-flag-';
     var offensiveClassFlag = 'offensive-flag';
+    var questionControlsId = 'question-controls';
+    var removeQuestionLinkIdPrefix = 'question-delete-link-';
+    var removeAnswerLinkIdPrefix = 'answer-delete-link-';
     
     var acceptAnonymousMessage = "用户权限不在操作范围";
     var acceptOwnAnswerMessage = "不能设置自己的回答为最佳答案";
@@ -34,6 +37,10 @@
     var offensiveTwiceMessage = "不能重复操作。查看<a href='/faq'>faq</a>";
     var offensiveNoFlagsLeftMessage = "对不起，您已用完今日所有的5次‘水帖’操作。查看<a href='/faq'>faq</a>";
     var offensiveNoPermissionMessage = "需要+15积分才能归类‘垃圾帖’。查看<a href='/faq'>faq</a>";
+    var removeConfirmation = "确定要删除/撤销删除该帖吗？";
+    var removeAnonymousMessage = "匿名用户不能删除或撤销删除帖子";
+    var recoveredMessage = "操作成功！该帖子已被恢复。";
+    var deletedMessage = "操作成功！该帖子已删除。"
     
     var VoteType = {
         acceptAnswer : 0,
@@ -43,7 +50,9 @@
         answerUpVote: 5,
         answerDownVote:6,
         offensiveQuestion : 7,
-        offensiveAnswer:8
+        offensiveAnswer:8,
+        removeQuestion: 9,
+        removeAnswer:10
     };
 
     var getFavoriteButton = function(){
@@ -87,6 +96,16 @@
     var getOffensiveAnswerFlags = function(){
         var offensiveQuestionFlag = 'div.answer span[class='+ offensiveClassFlag +']';
         return $(offensiveQuestionFlag);
+    };
+    
+    var getremoveQuestionLink = function(){
+        var removeQuestionLink = 'div#question-controls a[id^='+ removeQuestionLinkIdPrefix +']';
+        return $(removeQuestionLink);
+    };
+    
+    var getremoveAnswersLinks = function(){
+        var removeAnswerLinks = 'div.answer-controls a[id^='+ removeAnswerLinkIdPrefix +']';
+        return $(removeAnswerLinks);
     };
    
     var setVoteImage = function(voteType, undo, object){
@@ -153,6 +172,14 @@
     
         getOffensiveAnswerFlags().unbind('click').click(function(event){
            Vote.offensive(this, VoteType.offensiveAnswer)
+        });
+    
+        getremoveQuestionLink().unbind('click').click(function(event){
+            Vote.remove(this, VoteType.removeQuestion)
+        });
+    
+        getremoveAnswersLinks().unbind('click').click(function(event){
+            Vote.remove(this, VoteType.removeAnswer)
         });
     };
     
@@ -276,6 +303,18 @@
         }
     };
         
+    var callback_remove = function(object, voteType, data){
+        if(data.allowed == "0" && data.success == "0"){
+            showMessage(object, removeAnonymousMessage.replace("{{QuestionID}}", questionId));
+        }
+        else if(data.status == "1"){
+            showMessage(object, recoveredMessage);
+        }  
+        else if(data.success == "1"){
+            showMessage(object, deletedMessage);
+        }
+    };
+        
     return {
         init : function(qId, questionAuthor, userId){
             questionId = qId;
@@ -322,6 +361,17 @@
                 postId = object.id.substr(object.id.lastIndexOf('-') + 1);
                 submit(object, voteType, callback_offensive);
             }
+        },
+            
+        remove: function(object, voteType){
+            if(!currentUserId || currentUserId.toUpperCase() == "NONE"){
+                showMessage($(object), removeAnonymousMessage.replace("{{QuestionID}}", questionId));
+                return false;   
+            }
+            if(confirm(removeConfirmation)){
+                postId = object.id.substr(object.id.lastIndexOf('-') + 1);
+                submit($(object), voteType, callback_remove);
+            }
         }
     }
 } ();
@@ -358,7 +408,7 @@ function createComments(type) {
                 jDiv.append(form);
 
                 setupFormValidation("#" + formId,
-                    { comment: { required: true, minlength: 10} },
+                    { comment: { required: true, minlength: 10} }, '',
                     function() { postComment(id, formId); });
             }
         }

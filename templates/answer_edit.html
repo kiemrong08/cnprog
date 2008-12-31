@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{% spaceless %}我要提问{% endspaceless %}{% endblock %}
+{% block title %}{% spaceless %}修改回答{% endspaceless %}{% endblock %}
 {% block forejs %}
         <script type='text/javascript' src='/content/js/com.cnprog.editor.js'></script>
         <script type='text/javascript' src='/content/js/com.cnprog.utils.js'></script>
@@ -7,8 +7,6 @@
         <script type="text/javascript">
         
         $().ready(function(){
-            //set current module button style
-            $("#nav_ask").attr('className',"youarehere");
             $('#editor').TextAreaResizer();
             
             //highlight code synctax when editor has new text
@@ -25,26 +23,13 @@
                 $('#previewer').toggle();
                 $('#pre-collapse').text(txt);
             });
-            
-            //Tags autocomplete action
-            var tags = {{ tags|safe }};
-        	$("#id_tags").autocomplete(tags, {
-                minChars: 1,
-        		matchContains: true,
-                max: 20,
-                multiple: true,
-                multipleSeparator: " ",
-        		formatItem: function(row, i, max) {
-        			return row.n + " ("+ row.c +")";
-        		},
-                formatResult: function(row, i, max){
-                    return row.n;
-                }
-                
-            });
- 
-            setupFormValidation("#fmask", CPValidator.getQuestionFormRules(), CPValidator.getQuestionFormMessages());
 
+            setupFormValidation("#fmedit", CPValidator.getQuestionFormRules(), CPValidator.getQuestionFormMessages());
+            
+            $('#id_revision').unbind().change(function(){
+                $("#select_revision").click();
+            });
+            
             lanai.highlightSyntax();
             
         });
@@ -54,62 +39,34 @@
 {% block content %}
 <div id="main-bar" class="">
     <h3>
-        我要提问
+        修改回答 [<a href="{{ answer.question.get_absolute_url }}#{{ answer.id }}">返回</a>]
     </h3>
     
 </div>
 <div id="main-body" class="">
     <div id="askform">
-        <form id="fmask" action="{% url forum.views.ask %}" method="post" >
-            <div class="form-item">
-                <label for="id_title" ><strong>标题:</strong></label> <span class="form-error"></span><br> 
-                {{ form.title }} {{ form.title.errors }}  
-                <div class="title-desc">
-                    请输入对问题具有描述性质的标题 - “帮忙！紧急求助！”不是建议的提问方式。
-                </div>     
-            </div>
-    
+        <form id="fmedit" action="{% url edit_answer answer.id %}" method="post" >
+            <label for="id_revision" ><strong>版本:</strong></label> <br> 
+            {% if revision_form.revision.errors %}{{ revision_form.revision.errors.as_ul }}{% endif %}
+            <div style="vertical-align:middle">
+            {{ revision_form.revision }} <input type="submit" style="display:none" id="select_revision" name="select_revision" value="选择版本">
+            </div><br> <br>
+             
             <div class="form-item">
                 {{ form.text }}
-                
+                <span class="form-error"></span>
                 <div class="preview-toggle"><span id="pre-collapse" title="打开或者关闭Markdown编辑器的实时预览">预览开关</span></div>
                 <div id="previewer" class="wmd-preview"></div>
-                <span class="form-error"></span>
+                
             </div>
-            <div class="form-item">
-                <strong>标签:</strong> <span class="form-error"></span><br>
-                {{ form.tags }}  {{ form.tags.errors }}
-                <div class="title-desc">
-                    多个标签请用空格间隔-最多5个标签。（优先使用自动匹配的英文标签。）
-                </div>
+            
+            <strong>{{ form.summary.label_tag }}</strong> <br>
+            {{ form.summary }}  {{ form.summary.errors }}
+            <div class="title-desc">
+                输入本次修改的简单概述（如：修改了别字，修正了语法，改进了样式等。非必填项。）
             </div>
             <br>
-            {% if not user.is_authenticated %}
-            <table id="login-box"> 
-                <tr> 
-                    <td style="vertical-align:middle;"> 
-                    <strong>使用 <a href="http://openid.net/" title="了解更多有关OpenID的信息">OpenID</a> 登录：</strong><br>
-                        {{ form.openid }}
-                        <div class="title-desc">
-                            获取您自己的<a href="https://www.myopenid.com/" target=="_blank">OpenID</a>。
-                        </div>
-                    </td> 
-                    <td style="vertical-align:middle; padding: 0px 40px 0px 40px"> 
-                        <div style="position: absolute; margin-top:40px; background-color:white; margin-left:-10px; padding:5px;">或</div> 
-                        <div style="width:1px; border-left:solid 1px #999; height:8em; margin:auto;"></div> 
-                    </td> 
-                    <td style="vertical-align:middle;"> 
-                        <strong>您的大名:</strong><br>
-                        {{ form.user }}
-                        <p>
-                        <strong>电子邮件:（不会公开显示）</strong><br>
-                        {{ form.email }}
-                        </p>
-                    </td> 
-                </tr> 
-            </table>    
-            {% endif %}
-            <input type="submit" value="现在提问" class="submit" />
+            <input type="submit" value="现在修改" class="submit" />
         </form>
     </div>
 </div>

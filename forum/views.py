@@ -4,17 +4,23 @@ import logging
 from urllib import quote, unquote
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse,Http404
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from django.template import RequestContext
 from django.utils.html import *
 from django.utils import simplejson
 from django.core import serializers 
 from django.db import transaction
+
+from utils.html import sanitize_html
+from markdown2 import Markdown
+from lxml.html.diff import htmldiff
+
 from forum.forms import *
 from forum.models import *
 from forum.auth import *
-from utils.html import sanitize_html
+from forum.const import *
+
 
 # used in index page
 INDEX_PAGE_SIZE = 30
@@ -27,6 +33,16 @@ QUESTIONS_PAGE_SIZE = 10
 USERS_PAGE_SIZE = 35
 # used in answers
 ANSWERS_PAGE_SIZE = 10 
+markdowner = Markdown(html4tags=True)
+
+def _get_tags_cache_json():
+    tags = Tag.objects.all()
+    tags_list = []
+    for tag in tags:
+        dic = {'n': tag.name, 'c': tag.used_count }
+        tags_list.append(dic)
+    tags = simplejson.dumps(tags_list)
+    return tags
 
 def index(request):
     view_id = request.GET.get('sort', None)
@@ -161,6 +177,7 @@ def ask(request):
         form = AskForm(request.POST)
         if form.is_valid():
             added_at = datetime.datetime.now()
+            html = sanitize_html(markdowner.convert(form.cleaned_data['text']))
             question = Question(
                 title            = strip_tags(form.cleaned_data['title']),
                 author           = request.user,
@@ -168,22 +185,31 @@ def ask(request):
                 last_activity_at = added_at,
                 last_activity_by = request.user,
                 tagnames         = form.cleaned_data['tags'].strip(),
-                html             = sanitize_html(form.cleaned_data['text']),
-                summary          = strip_tags(form.cleaned_data['text'])[:120]
+                html             = html,
+                summary          = strip_tags(html)[:120]
             )
-            
             question.save()
             
+            # create the first revision
+            QuestionRevision.objects.create(
+                question   = question,
+                revision   = 1,
+                title      = question.title,
+                author     = request.user,
+                revised_at = added_at,
+                tagnames   = question.tagnames,
+                summary    = CONST['default_version'],
+                text       = form.cleaned_data['text']
+            )
             #TODO:add wiki support
             #TODO:add badge support
             
-            return HttpResponseRedirect("/questions/%s" % question.id)
+            return HttpResponseRedirect(question.get_absolute_url())
         
     else:
         form = AskForm()
 
-    tags = Tag.objects.select_related('created_by')
-    tags = serializers.serialize("json", tags, fields=('name', 'used_count'))
+    tags = _get_tags_cache_json()
     return render_to_response('ask.html', {
         'form' : form,
         'tags' : tags,
@@ -203,7 +229,8 @@ def question(request, id):
         orderby = "-added_at"
         
     question = get_object_or_404(Question, id=id)
-
+    if question.deleted and not can_view_deleted_post(request.user, question):
+        raise Http404
     answer_form = AnswerForm()
     answers = Answer.objects.get_answers_from_question(question, request.user)
     answers = answers.select_related(depth=1)
@@ -256,7 +283,6 @@ def question(request, id):
 @login_required 
 def close(request, id):
     question = get_object_or_404(Question, id=id)
-    # open question
     if not can_close_question(request.user, question):
         return HttpResponse('Permission denied.')
     if request.method == 'POST':
@@ -275,7 +301,278 @@ def close(request, id):
             'form' : form,
             'question' : question,
             }, context_instance=RequestContext(request))
+ 
+@login_required 
+def reopen(request, id):
+    question = get_object_or_404(Question, id=id)
+    # open question
+    if not can_reopen_question(request.user, question):
+        return HttpResponse('Permission denied.')
+    if request.method == 'POST' :
+        Question.objects.filter(id=question.id).update(closed=False,
+            closed_by=None, closed_at=None, close_reason=None)
+        return HttpResponseRedirect(question.get_absolute_url())
+    else:
+        return render_to_response('reopen.html', {
+            'question' : question,
+            }, context_instance=RequestContext(request))
+      
+@login_required
+def edit_question(request, id):
+    question = get_object_or_404(Question, id=id)
+    if question.deleted and not can_view_deleted_post(request.user, question):
+        raise Http404
+    if can_edit_post(request.user, question):
+        return _edit_question(request, question)
+    elif can_retag_questions(request.user):
+        return _retag_question(request, question)
+    else:
+        raise Http404
         
+def _retag_question(request, question):
+    if request.method == 'POST':
+        form = RetagQuestionForm(question, request.POST)
+        if form.is_valid():
+            if form.has_changed():
+                latest_revision = question.get_latest_revision()
+                retagged_at = datetime.datetime.now()
+                # Update the Question itself
+                Question.objects.filter(id=question.id).update(
+                    tagnames         = form.cleaned_data['tags'],
+                    last_edited_at   = retagged_at,
+                    last_edited_by   = request.user,
+                    last_activity_at = retagged_at,
+                    last_activity_by = request.user
+                )
+                # Update the Question's tag associations
+                tags_updated = Question.objects.update_tags(question,
+                    form.cleaned_data['tags'], request.user)
+                # Create a new revision
+                QuestionRevision.objects.create(
+                    question   = question,
+                    title      = latest_revision.title,
+                    author     = request.user,
+                    revised_at = retagged_at,
+                    tagnames   = form.cleaned_data['tags'],
+                    summary    = CONST['retagged'],
+                    text       = latest_revision.text
+                )
+                # TODO Badges related to retagging / Tag usage
+                # TODO Badges related to editing Questions
+            return HttpResponseRedirect(question.get_absolute_url())
+    else:
+        form = RetagQuestionForm(question)
+    return render_to_response('question_retag.html', {
+        'question': question,
+        'form' : form,
+        'tags' : _get_tags_cache_json(),
+    }, context_instance=RequestContext(request))
+        
+
+def _edit_question(request, question):
+    latest_revision = question.get_latest_revision()
+    revision_form = None
+    if request.method == 'POST':
+        if 'select_revision' in request.POST:
+            # user has changed revistion number
+            revision_form = RevisionForm(question, latest_revision, request.POST)
+            if revision_form.is_valid():
+                # Replace with those from the selected revision
+                form = EditQuestionForm(question,
+                    QuestionRevision.objects.get(question=question,
+                        revision=revision_form.cleaned_data['revision']))
+            else:
+                form = EditQuestionForm(question, latest_revision, request.POST)
+        else:
+            # Always check modifications against the latest revision
+            form = EditQuestionForm(question, latest_revision, request.POST)
+            if form.is_valid():
+                html = sanitize_html(markdowner.convert(form.cleaned_data['text']))
+                if form.has_changed():
+                    edited_at = datetime.datetime.now()
+                    tags_changed = (latest_revision.tagnames !=
+                                    form.cleaned_data['tags'])
+                    tags_updated = False
+                    # Update the Question itself
+                    updated_fields = {
+                        'title': form.cleaned_data['title'],
+                        'last_edited_at': edited_at,
+                        'last_edited_by': request.user,
+                        'last_activity_at': edited_at,
+                        'last_activity_by': request.user,
+                        'tagnames': form.cleaned_data['tags'],
+                        'summary': strip_tags(html)[:120],
+                        'html': html,
+                    }
+                    
+                    # only save when it's checked
+                    # because wiki doesn't allow to be edited if last version has been enabled already
+                    # and we make sure this in forms.
+                    if ('wiki' in form.cleaned_data and
+                        form.cleaned_data['wiki']):
+                        updated_fields['wiki'] = True
+                        updated_fields['wikified_at'] = edited_at
+                        
+                    Question.objects.filter(
+                        id=question.id).update(**updated_fields)
+                    # Update the Question's tag associations
+                    if tags_changed:
+                        tags_updated = Question.objects.update_tags(
+                            question, question.tagnames, request.user)
+                    # Create a new revision
+                    revision = QuestionRevision(
+                        question   = question,
+                        title      = form.cleaned_data['title'],
+                        author     = request.user,
+                        revised_at = edited_at,
+                        tagnames   = form.cleaned_data['tags'],
+                        text       = form.cleaned_data['text'],
+                    )
+                    if form.cleaned_data['summary']:
+                        revision.summary = form.cleaned_data['summary']
+                    else:
+                        revision.summary = 'No.%s Revision' % latest_revision.revision
+                    revision.save()
+                    # TODO 5 body edits by the author = automatic wiki mode
+                    # TODO 4 individual editors = automatic wiki mode
+                    # TODO Badges related to Tag usage
+                    # TODO Badges related to editing Questions
+                return HttpResponseRedirect(question.get_absolute_url())
+    else:
+        
+        revision_form = RevisionForm(question, latest_revision)
+        form = EditQuestionForm(question, latest_revision)
+    return render_to_response('question_edit.html', {
+        'question': question,
+        'revision_form': revision_form,
+        'form' : form,
+        'tags' : _get_tags_cache_json()
+    }, context_instance=RequestContext(request))
+
+
+@login_required
+def edit_answer(request, id):
+    answer = get_object_or_404(Answer, id=id)
+    if answer.deleted and not can_view_deleted_post(request.user, answer):
+        raise Http404
+    elif not can_edit_post(request.user, answer):
+        raise Http404
+    else:
+        latest_revision = answer.get_latest_revision()
+        if request.method == "POST":
+            if 'select_revision' in request.POST:
+                # user has changed revistion number
+                revision_form = RevisionForm(answer, latest_revision, request.POST)
+                if revision_form.is_valid():
+                    # Replace with those from the selected revision
+                    form = EditAnswerForm(answer,
+                        AnswerRevision.objects.get(answer=answer,
+                            revision=revision_form.cleaned_data['revision']))
+                else:
+                    form = EditAnswerForm(answer, latest_revision, request.POST)
+            else:
+                form = EditAnswerForm(answer, latest_revision, request.POST)
+                if form.is_valid():
+                    html = sanitize_html(markdowner.convert(form.cleaned_data['text']))
+                    if form.has_changed():
+                        edited_at = datetime.datetime.now()
+                        updated_fields = {
+                            'last_edited_at': edited_at,
+                            'last_edited_by': request.user,
+                            'html': html,
+                        }
+                        Answer.objects.filter(id=answer.id).update(**updated_fields)
+                        
+                        revision = AnswerRevision(
+                            answer     = answer,
+                            author     = request.user,
+                            revised_at = edited_at,
+                            text       = form.cleaned_data['text']
+                        )
+                        
+                        if form.cleaned_data['summary']:
+                            revision.summary = form.cleaned_data['summary']
+                        else:
+                            revision.summary = 'No.%s Revision' % latest_revision.revision
+                        revision.save()
+                        # TODO 5 body edits by the author = automatic wiki mode
+                        # TODO 4 individual editors = automatic wiki mode
+                        # TODO Badges related to Tag usage
+                        # TODO Badges related to editing Questions
+                    return HttpResponseRedirect(answer.get_absolute_url())
+        else:
+            revision_form = RevisionForm(answer, latest_revision)
+            form = EditAnswerForm(answer, latest_revision)
+        return render_to_response('answer_edit.html', {
+        'answer': answer,
+        'revision_form': revision_form,
+        'form' : form,
+    }, context_instance=RequestContext(request))    
+    
+QUESTION_REVISION_TEMPLATE = ('<h1>%(title)s</h1>\n'
+    '<div class="text">%(html)s</div>\n'
+    '<div class="tags">%(tags)s</div>')
+def question_revisions(request, id):
+    post = get_object_or_404(Question, id=id)
+    revisions = list(post.revisions.all())
+    for i, revision in enumerate(revisions):
+        revision.html = QUESTION_REVISION_TEMPLATE % {
+            'title': revision.title,
+            'html': sanitize_html(markdowner.convert(revision.text)),
+            'tags': ' '.join(['<a class="post-tag">%s</a>' % tag
+                              for tag in revision.tagnames.split(' ')]),
+        }
+        if i > 0:
+            revisions[i - 1].diff = htmldiff(revision.html,
+                                             revisions[i - 1].html)
+        else:
+            revisions[i - 1].diff = revision.html
+            revisions[i - 1].summary = None
+    return render_to_response('revisions_question.html', {
+        'post': post,
+        'revisions': revisions,
+    }, context_instance=RequestContext(request))
+    
+ANSWER_REVISION_TEMPLATE = ('<div class="text">%(html)s</div>')
+def answer_revisions(request, id):
+    post = get_object_or_404(Answer, id=id)
+    revisions = list(post.revisions.all())
+    for i, revision in enumerate(revisions):
+        revision.html = ANSWER_REVISION_TEMPLATE % {
+            'html': sanitize_html(markdowner.convert(revision.text))
+        }
+        if i > 0:
+            revisions[i - 1].diff = htmldiff(revision.html,
+                                             revisions[i - 1].html)
+        else:
+            revisions[i - 1].diff = revision.html
+            revisions[i - 1].summary = None
+    return render_to_response('revisions_answer.html', {
+        'post': post,
+        'revisions': revisions,
+    }, context_instance=RequestContext(request))
+    
+def _post_revisions(request, post):
+    revisions = list(post.revisions.all())
+
+    for i, revision in enumerate(revisions):
+        revision.html = POST_REVISION_TEMPLATE % {
+            'title': revision.title,
+            'html': sanitize_html(markdowner.convert(revision.text)),
+            'tags': ' '.join(['<a class="post-tag">%s</a>' % tag
+                              for tag in revision.tagnames.split(' ')]),
+        }
+        if i > 0:
+            revisions[i - 1].diff = htmldiff(revision.html,
+                                             revisions[i - 1].html)
+        else:
+            revisions[i - 1].diff = revision.html
+            revisions[i - 1].summary = None
+    return render_to_response('revisions.html', {
+        'post': post,
+        'revisions': revisions,
+    }, context_instance=RequestContext(request))
+    
 #TODO: allow anynomus
 @login_required 
 def answer(request, id):
@@ -283,24 +580,30 @@ def answer(request, id):
     if request.method == "POST":
         form = AnswerForm(request.POST)
         if form.is_valid():
-            try:
-                update_time = datetime.datetime.now()
-                answer = Answer(
-                    question = question,
-                    author = request.user,
-                    added_at = update_time,
-                    html = sanitize_html(form.cleaned_data['text']),
-                )
-                answer.save()
-                Question.objects.update_answer_count(question)
-                
-                question = get_object_or_404(Question, id=id)
-                question.last_activity_at = update_time 
-                question.last_activity_by = request.user
-                question.save()
-            except Exception,e:
-                logging.error(e)
-                
+            update_time = datetime.datetime.now()
+            answer = Answer(
+                question = question,
+                author = request.user,
+                added_at = update_time,
+                html = sanitize_html(markdowner.convert(form.cleaned_data['text'])),
+            )
+            answer.save()
+            Question.objects.update_answer_count(question)
+            
+            question = get_object_or_404(Question, id=id)
+            question.last_activity_at = update_time 
+            question.last_activity_by = request.user
+            question.save()
+            
+            AnswerRevision.objects.create(
+                answer     = answer,
+                revision   = 1,
+                author     = request.user,
+                revised_at = update_time,
+                summary    = CONST['default_version'],
+                text       = form.cleaned_data['text']
+            )
+
     return HttpResponseRedirect(question.get_absolute_url())
 
 def tags(request):
@@ -512,7 +815,20 @@ def vote(request, id):
                     onFlaggedItem(item, post, request.user)
                     response_data['count'] = post.offensive_flag_count
                     
-                print 2    
+            elif vote_type in ['9', '10']:
+                post = question
+                post_id = id
+                if vote_type == '10':
+                    post_id = request.POST.get('postId')
+                    post = get_object_or_404(Answer, id=post_id)
+                    
+                if not can_delete_post(request.user, post):
+                    response_data['allowed'] = -2
+                elif post.deleted:
+                    onDeleteCanceled(post, request.user)
+                    response_data['status'] = 1
+                else:
+                    onDeleted(post, request.user)
         else:
             response_data['success'] = 0
             response_data['message'] = u'Request mode is not supported. Please try again.'
@@ -755,3 +1071,9 @@ def __comments(request, obj, user):
             obj.comment_count = obj.comment_count + 1
             obj.save()
             return generate_comments_json()
+            
+def logout(request):
+    url = request.GET.get('next')
+    return render_to_response('logout.html', {
+        'next' : url,
+    }, context_instance=RequestContext(request))

@@ -11,7 +11,7 @@ All rights reserved. 2008 CNPROG.COM
 @import url(/content/style/openid.css);
 @import url(/content/style/prettify.css);
 
-html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, form, label, table, caption, tbody, tfoot, thead, tr, th, td
 {
 	margin: 0;
 	padding: 0;
@@ -119,7 +119,10 @@ a:visited{color:#3E6D8E;text-decoration: none;}
 a:hover{text-decoration: underline;}
 a:active{text-decoration: none;}
 
-h1 {font-weight: 160%;}
+h1 {
+    font-family:Trebuchet MS,Helvetica,sans-serif;
+    font-size: 160%;
+}
 h2 {
     font-family:Trebuchet MS,Helvetica,sans-serif;
     font-size:140%;
@@ -356,7 +359,11 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
 
 .link-separator{
     color:#ccc;
-    padding:5px;
+    padding:3px;
+}
+
+.action-link-separator{
+    color:#ccc;
 }
 
 .nav
@@ -808,6 +815,12 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
     cursor:pointer;
 }
 
+.edit-content-html{
+    border-top:1px dotted #D8D2A9; 
+    border-bottom:1px dotted #D8D2A9; 
+    margin:5px 0 5px 0;
+}
+
 /* 2 textarea resizer styles */
 div.grippie {
     background:#EEEEEE url(/content/images/grippie.png) no-repeat scroll center 2px;
@@ -935,6 +948,14 @@ div.grippie {
     text-align:left;
     font-size:90%;
     padding:5px;
+    overflow:hidden;
+}
+
+.question-edit{
+    text-align:left;
+    font-size:90%;
+    padding:5px;
+    overflow:hidden;
 }
 
 .question-status{
@@ -1041,6 +1062,73 @@ form .errorlist li{
 	text-decoration:underline;
 }
 
+.center-container{
+    width:950px;
+}
+
+#revisions{
+    width:950px;
+}
+
+.revision{
+    margin:10px 0 10px 0;
+    width:100%;
+}
+
+.revision .header{
+    background-color:#eee;
+    padding:5px;
+    cursor:pointer;
+}
+
+.revision .author{
+    background-color:#E0EAF1;
+}
+
+.revision .summary{
+    padding: 5px 0 10px 0;
+}
+
+.revision .summary span{
+    background-color:yellow;
+    display:inline;
+}
+.revision h1{
+    font-size:130%;
+    font-weight:600;
+    padding:15px 0 15px 0;
+}
+
+.revision-mark{
+    width:200px;
+    text-align:left;
+    font-size:90%;
+    overflow:hidden;
+}
+
+.revision-number{
+    font-size:300%;
+    font-weight:bold;
+    font-family:arial;
+}
+
+.revision .body{
+    padding-left:10px;
+    margin-bottom:50px;
+}
+.revision .answerbody{
+    padding:10px 0 5px 10px;
+}
+
+/* Revision pages */
+del { color: #FF5F5F; }
+del .post-tag{ 
+color: #FF5F5F;
+}; 
+ins { background-color: #97ff97;}
+ins .post-tag{ 
+background-color: #97ff97;
+}; 
 
 /** PAGINATOR **/
 .paginator { 
@@ -1170,11 +1258,20 @@ table.user-details td {
 }
 
 .summarycount {
+    font-family:arial;
     color:#808185;
     font-size:350%;
     font-weight:bold;
     text-align:center;
 }
+.summarysubcount {
+    font-family:arial;
+    color:#808185;
+    font-size:250%;
+    font-weight:bold;
+    text-align:center;
+}
+
 
 #user-about-me {
     background-color:#EEEEEE;
@@ -1357,6 +1454,10 @@ div.started .reputation-score {
 
 .answer-link a {
     font-weight:bold;
+}
+
+.deleted{
+    background:#F4E7E7 none repeat scroll 0 0;
 }
 
 #mainbar-footer {

@@ -14,9 +14,9 @@
                                             <td style="width:500px; vertical-align:top; padding-top:5px;">
                                                 <div id="header-links">
                                                     {% if user.is_authenticated %}
-                                                        <a href="/users/{{ user.id }}/{{ user.username }}/">{{ user.username }}</a> {% get_score_badge user %} <span class="link-separator">|</span><a href="/account/signout/">注销</a>
+                                                        <a href="/users/{{ user.id }}/{{ user.username }}/">{{ user.username }}</a> {% get_score_badge user %} <span class="link-separator">|</span><a href="/logout/">退出登录</a>
                                                     {% else %}
-                                                        <a href="/account/">登录</a>
+                                                        <a href="/account/signin">登录</a>
                                                     {% endif %}
                                                     <span class="link-separator">|</span>
                                                     <a href="/about">关于本站</a>

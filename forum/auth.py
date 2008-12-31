@@ -14,6 +14,7 @@ LEAVE_COMMENTS            = 50
 VOTE_DOWN                 = 100
 CLOSE_OWN_QUESTIONS       = 250
 RETAG_OTHER_QUESTIONS     = 500
+REOPEN_OWN_QUESTIONS      = 500
 EDIT_COMMUNITY_WIKI_POSTS = 750
 EDIT_OTHER_POSTS          = 2000
 DELETE_COMMENTS           = 2000
@@ -76,7 +77,8 @@ def can_vote_down(user):
 def can_retag_questions(user):
     """Determines if a User can retag Questions."""
     return user.is_authenticated() and (
-        RETAG_OTHER_QUESTIONS <= user.reputation < EDIT_OTHER_POSTS)
+        RETAG_OTHER_QUESTIONS <= user.reputation < EDIT_OTHER_POSTS or
+        user.is_superuser)
 
 def can_edit_post(user, post):
     """Determines if a User can edit the given Question or Answer."""
@@ -121,8 +123,20 @@ def can_accept_answer(user, question, answer):
     return (user.is_authenticated() and 
         question.author != answer.author and
         question.author == user) or user.is_superuser
-    
-    
+
+# now only support to reopen own question except superuser
+def can_reopen_question(user, question):
+    return (user.is_authenticated() and 
+        user.id == question.author_id and 
+        user.reputation >= REOPEN_OWN_QUESTIONS) or user.is_superuser
+
+def can_delete_post(user, post):
+    return (user.is_authenticated() and
+        user.id == post.author_id) or user.is_superuser
+        
+def can_view_deleted_post(user, post):
+    return user.is_superuser
+        
 ###########################################
 ## actions and reputation changes event
 ###########################################
@@ -233,5 +247,15 @@ def onDownVotedCanceled(vote, post, user):
     user.reputation = calculate_reputation(user.reputation, int(REPUTATION_RULES['gain_by_canceling_downvote']))
     user.save()
     
-
+def onDeleteCanceled(post, user):
+    post.deleted = False
+    post.deleted_by = None
+    post.deleted_at = None
+    post.save()
+    
+def onDeleted(post, user):
+    post.deleted = True
+    post.deleted_by = user
+    post.deleted_at = datetime.datetime.now()
+    post.save()
     

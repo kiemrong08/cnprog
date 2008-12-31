@@ -1,12 +1,15 @@
-{% extends "base.html" %}
+{% extends "base_content.html" %}
 {% load i18n %}
 
 
 
 
 {% block content %}
-<h4 class="headblue">{% trans "Account: change email" %}</h4>
-
+<div id="main-bar" class="">
+    <h3>
+        {% trans "Account: change email" %}
+    </h3>
+</div>
 <p class="settings-descr">{% blocktrans %}This is where you can change the email address associated with your account. Please keep this email address up to date so we can send you a password-reset email if you request one.{% endblocktrans %}</p>
 {% if form.errors %}
 <p class="errors">{% trans "Please correct errors below:" %}<br />

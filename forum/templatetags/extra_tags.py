@@ -143,10 +143,6 @@ def get_user_vote_image(dic, key, arrow):
         if int(dic[key]) == int(arrow):
             return '-on'
     return ''
-
-@register.simple_tag
-def get_close_reason(key):
-    return CLOSE_REASONS[key-1][1] if key > 0 else None
         
 @register.simple_tag
 def get_age(birthday):

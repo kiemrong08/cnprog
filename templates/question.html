@@ -41,22 +41,8 @@
                 $('#pre-collapse').text(txt);
             });
             
-            //form validation
-            $("#fmanswer").validate({
-                rules: {
-        			text: {
-        				required: true,
-        				minlength: 30
-        			}
-        		},
-                messages: {
-        			text: {
-        				required: " 内容不能为空。",
-        				minlength: jQuery.format(" 请输入至少 {0} 字符。")
-        			}
-                }
-            });
-            
+            setupFormValidation("#fmanswer", CPValidator.getQuestionFormRules(), CPValidator.getQuestionFormMessages());
+            $('#btLogin').bind('click', function(){window.location.href='/account/signin/'; } )
             lanai.highlightSyntax();
         }
          
@@ -73,7 +59,7 @@
 <div id="main-body" class="">
     <div id="askform">
         <form id="fmanswer" action="{% url answer question.id %}" method="post">
-            <table style="width:100%;" id="question-table">
+            <table style="width:100%;" id="question-table" {% if question.deleted %}class="deleted"{%endif%}>
                 <tr>
                     <td style="width:50px;vertical-align:top">
                         <div class="vote-buttons">
@@ -110,11 +96,27 @@
                             </div>
                             <div id="question-controls" style="clear:both;">
                                 <table width="585px">
-            	                    <tr>
-                                        <td width="300px" style="vertical-align:top">
+                                    <tr>
+                                        <td width="200px" style="vertical-align:top">
+                                            
+                                            {% if user|can_edit_post:question %}
+                                            <span class="action-link"><a href="{% url edit_question question.id %}">编辑</a></span>
+                                            <span class="action-link-separator">|</span>
+                                            {% endif %}
+                                            {% if user|can_delete_post:question %}
+                                            <span class="action-link"><a id="question-delete-link-{{question.id}}">删除</a></span>
+                                            <span class="action-link-separator">|</span>
+                                            {% endif %}
+                                            {% if question.closed %}
+                                            {% if user|can_reopen_question:question %}
+                                            <span class="action-link"><a href="{% url reopen question.id %}">打开</a></span>
+                                            <span class="action-link-separator">|</span>
+                                            {% endif %}
+                                            {% else %}
                                             {% if user|can_close_question:question %}
-                                            <span class="action-link"><a href="{% url close question.id %}">关闭问题</a></span>
-                                            <span class="link-separator">|</span>
+                                            <span class="action-link"><a href="{% url close question.id %}">关闭</a></span>
+                                            <span class="action-link-separator">|</span>
+                                            {% endif %}
                                             {% endif %}
                                             
                                             <span id="question-offensive-flag-{{ question.id }}" class="offensive-flag" title="检举该帖为垃“水帖”（含广告、人身攻击、恶意言论等）"><a>垃圾帖？</a><span class="darkred">{% if user|can_view_offensive_flags %} {% if question.offensive_flag_count %}({{ question.offensive_flag_count }}){% endif %}{% endif %}</span>
@@ -122,34 +124,64 @@
                                             </span>
                                             
                                         </td>
-            	                    	<td width="100px"></td>
-                                     <td >
-                                        <div  class="question-mark">
-                                            <table width="100%">
-                	                            <tr>
-                    	                            	<td colspan="2"> 
-                                                        &nbsp;提问于<strong title="{{ question.added_at }}">{% diff_date question.added_at %}</strong>
-                                                    </td>
-                	                            	
-                	                            </tr>
-                	                            <tr>
-                                                    <td style="width:40px; vertical-align:bottom">
-                                                    {% gravatar question.author 32 %}
-                                                    </td>
-                                                    <td style="width:120px; vertical-align:top">
-                                                        <div><a href="/users/{{ question.author.id }}/{{ question.author }}">{{ question.author }}</a></div>
-                                                        <div>
-                                                        {% get_score_badge question.author %}
-                                                        </div>
-                                                    </td>
-                	                            </tr>
-                                            </table>
-                                        </div>
+                                        <td width="200px" style="vertical-align:top">
+                                            {% if question.last_edited_by %}
+                                            <div class="question-edit" >
+                                                <table width="100%" >
+                                                    <tr>
+                                                        <td colspan="2"> 
+                                                         更新于<a href="{% url question_revisions question.id %}"><strong title="{{question.last_edited_at }}">{% diff_date question.last_edited_at  %}</strong></a>
+                                                        </td>
+                                                        
+                                                    </tr>
+                                                    {% ifequal question.last_edited_by question.author %}
+                                                    <tr>
+                                                        <td> </td>
+                                                        <td> </td>
+                                                    </tr>
+                                                    {% else %}
+                                                    <tr>
+                                                        <td width="40px" style="vertical-align:bottom">
+                                                        {% gravatar question.last_edited_by 32 %}
+                                                        </td>
+                                                        <td style="width:120px; vertical-align:top">
+                                                            <div><a href="/users/{{ question.last_edited_by.id }}/{{ question.last_edited_by.username }}">{{ question.last_edited_by.username }}</a></div>
+                                                            <div>
+                                                            {% get_score_badge question.last_edited_by %}
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    {% endifequal %}
+                                                </table>
+                                            </div>
+                                            {% endif %}
+                                            
+                                        </td>
+                                        <td >
+                                            <div  class="question-mark">
+                                                <table width="100%">
+                                                    <tr>
+                                                        <td colspan="2"> 
+                                                        提问于<strong title="{{ question.added_at }}">{% diff_date question.added_at %}</strong>
+                                                        </td>
+                                                        
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="width:40px; vertical-align:bottom">
+                                                        {% gravatar question.author 32 %}
+                                                        </td>
+                                                        <td style="width:120px; vertical-align:top">
+                                                            <div><a href="/users/{{ question.author.id }}/{{ question.author }}">{{ question.author }}</a></div>
+                                                            <div>
+                                                            {% get_score_badge question.author %}
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
                                         
-                                        
-                                     </td>
-            	                    </tr>
-            	                    
+                                        </td>
+                                    </tr>
                                 </table>
                                 
                             </div>
@@ -168,7 +200,7 @@
             </table>
             {% if question.closed %}
             <div class="question-status">
-            <h3>问题以“{% get_close_reason question.close_reason %}”的原因被 <a href="{{ question.closed_by.get_profile_url }}">{{ question.closed_by.username }}</a> 于{% diff_date question.closed_at %}<font class="darkred">关闭</font></h3>
+            <h3>问题以“{{ question.get_close_reason_display }}”的原因被 <a href="{{ question.closed_by.get_profile_url }}">{{ question.closed_by.username }}</a> 于{% diff_date question.closed_at %}<font class="darkred">关闭</font></h3>
             </div>
             {% endif %}
             
@@ -186,7 +218,7 @@
   
                 {% for answer in answers %}
                     <a name="{{ answer.id }}"></a>
-                    <div id="answer-container-{{ answer.id }}" class="answer {% if answer.accepted %}accepted-answer{% endif %}">
+                    <div id="answer-container-{{ answer.id }}" class="answer {% if answer.accepted %}accepted-answer{% endif %}{% if answer.deleted %}deleted{% endif %}">
                         <table style="width:100%;">
                             <tr>
                                 <td style="width:50px;vertical-align:top">
@@ -208,25 +240,65 @@
                                         <div style="min-height:80px">
                                             {{ answer.html|safe }}
                                         </div>
-                                        <div id="question-controls" style="clear:both;">
+                                        <div class="answer-controls" style="clear:both;">
                                             <table width="585px">
                         	                    <tr>
-                                                    <td width="300px" style="vertical-align:top">
+                                                    <td width="200px" style="vertical-align:top">
+                                                        {% if user|can_edit_post:answer %}
+                                                        <span class="action-link"><a href="{% url edit_answer answer.id %}">编辑</a></span>
+                                                        <span class="action-link-separator">|</span>
+                                                        {% endif %}
+                                                        {% if user|can_delete_post:answer %}
+                                                        <span class="action-link"><a id="answer-delete-link-{{answer.id}}">删除</a></span>
+                                                        <span class="action-link-separator">|</span>
+                                                        {% endif %}
                                                         <span class="linksopt">
                                                             <a href="#{{ answer.id }}" title="该回答的链接地址">
                                                             链接
                                                             </a>
                                                         </span>
-                                                        <span class="link-separator">|</span>
+                                                        <span class="action-link-separator">|</span>
                                                         <span id="answer-offensive-flag-{{ answer.id }}" class="offensive-flag" title="检举该帖为垃“水帖”（含广告、人身攻击、恶意言论等）"><a>垃圾帖？</a><span class="darkred">{% if can_view_offensive_flags %} {% if answer.offensive_flag_count %}({{ answer.offensive_flag_count }}){% endif %}{% endif %}</span></span>
                                                     </td>
-                        	                    	<td width="100px"></td>
+                        	                    	<td width="200px" style="vertical-align:top">
+                                                    {% if answer.last_edited_by %}
+                                                    <div class="question-edit" >
+                                                        <table width="100%" >
+                                                            <tr>
+                                                                <td colspan="2"> 
+                                                                 更新于<a href="{% url answer_revisions answer.id %}"><strong title="{{answer.last_edited_at }}">{% diff_date answer.last_edited_at  %}</strong></a>
+                                                                </td>
+                                                                
+                                                            </tr>
+                                                            {% ifequal answer.last_edited_by answer.author %}
+                                                            <tr>
+                                                                <td> </td>
+                                                                <td> </td>
+                                                            </tr>
+                                                            {% else %}
+                                                            <tr>
+                                                                <td width="40px" style="vertical-align:bottom">
+                                                                {% gravatar answer.last_edited_by 32 %}
+                                                                </td>
+                                                                <td style="width:120px; vertical-align:top">
+                                                                    <div><a href="/users/{{ answer.last_edited_by.id }}/{{ answer.last_edited_by.username }}">{{ answer.last_edited_by.username }}</a></div>
+                                                                    <div>
+                                                                    {% get_score_badge answer.last_edited_by %}
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            {% endifequal %}
+                                                        </table>
+                                                    </div>
+                                                    {% endif %}
+                                                    
+                                                </td>
                                                  <td >
                                                     <div  class="answer-mark">
                                                         <table width="100%">
                             	                            <tr>
                                 	                            	<td colspan="2"> 
-                                                                    &nbsp;回答于<strong title="{{answer.added_at}}">{% diff_date answer.added_at %}</strong>
+                                                                回答于<strong title="{{answer.added_at}}">{% diff_date answer.added_at %}</strong>
                                                                 </td>
                             	                            	
                             	                            </tr>
@@ -275,18 +347,24 @@
             </div>
             
             {% if not question.closed %}
+            {% if user.is_authenticated %}
             <div style="padding:10px 0 0 0;">
                 <h3>您的回答：</h3>
             </div>
+
             <div id="description" class="" >
                 {{ answer.text }}
                 <div class="preview-toggle"><span id="pre-collapse" title="打开或者关闭Markdown编辑器的实时预览">预览开关</span></div>
                 <div id="previewer" class="wmd-preview"></div>
+                {{ answer.text.errors }}
                 
             </div>
-            {{ answer.text.errors }}
-            <input type="submit" value="回答该问题" class="submit">
+            <input type="submit" value="回答该问题" class="submit"><span class="form-error"></span>
+            {% else %}
+            <h3><input id="btLogin" type="button" value="登录并回答该问题"></h3>
             {% endif %}
+            {% endif %}
+            
             <br><br>
             <div><h3>没有找到您需要的答案？查看更多标识为
                 {% for tag in question.tagname_list %}

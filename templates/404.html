@@ -1,5 +1,5 @@
 {% extends "base_content.html" %}
-{% block title %}{% spaceless %}500 Error{% endspaceless %}{% endblock %}
+{% block title %}{% spaceless %}404 Error{% endspaceless %}{% endblock %}
 {% block forejs %}
         <script type="text/javascript">
         $().ready(function(){
@@ -11,17 +11,21 @@
 {% block content %}
 <div id="main-bar" class="">
     <h3>
-        500 Server Error
+        404 Not Found
     </h3>
 
 </div>
 <div id="main-body" class="">
-    <div style="padding:5px 0px 10px 0;line-height:25px">
-        <h3>对不起，系统发生了错误，不能响应您的请求！</h3>
-        <br>
-        系统已经记录错误日志，我们会尽快解决此问题。<br>
-        如果这个问题长时间没有被修复，请<span class="darkred"><a title="cnprog.uservoice.com" href="http://cnprog.uservoice.com/" >搜索查看当前问题的状态，或者报告新的bug</a></span>。感谢您的支持！
+    <div style="padding:5px 0px 10px 0;line-height:25px;">
+        <h3>对不起，没有找到您请求的页面！</h3>
+        The page you are looking for doesn't exist.
+        <br><br>
         
+        <script type="text/javascript">
+            var GOOG_FIXURL_LANG = 'zh-cn';
+            var GOOG_FIXURL_SITE = 'http://cnprog.com/';
+        </script>
+        <script type="text/javascript" src="http://linkhelp.clients.google.com/tbproxy/lh/wm/fixurl.js"></script>
         <ul>
             <li><a href="#" id="linkPrevious">返回前页</li>
             <li><a href="/questions">查看最新问题</a></li>

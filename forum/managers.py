@@ -14,6 +14,7 @@ class QuestionManager(models.Manager):
         Returns ``True`` if tag usage counts were updated as a result,
         ``False`` otherwise.
         """
+        from forum.models import Tag
         current_tags = list(question.tags.all())
         current_tagnames = set(t.name for t in current_tags)
         updated_tagnames = set(t for t in tagnames.split(' ') if t)

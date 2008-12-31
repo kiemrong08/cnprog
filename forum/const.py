@@ -16,6 +16,9 @@ CLOSE_REASONS = (
 
 
 CONST = {
-    'closed': u' [已关闭]',
+    'closed'            : u' [已关闭]',
+    'default_version'   : u'初始版本',
+    'retagged'          : u'更新了标签',
+    
 }
     

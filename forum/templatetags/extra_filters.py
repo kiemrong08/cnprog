@@ -46,3 +46,11 @@ def can_lock_posts(user):
 @register.filter
 def can_accept_answer(user, question, answer):
     return auth.can_accept_answer(user, question, answer)
+    
+@register.filter
+def can_reopen_question(user, question):
+    return auth.can_reopen_question(user, question)
+
+@register.filter
+def can_delete_post(user, post):
+    return auth.can_delete_post(user, post)

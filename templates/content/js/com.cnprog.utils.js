@@ -17,14 +17,15 @@ function removeLoader() {
     $("img.ajax-loader").remove();
 }
 
-function setupFormValidation(formSelector, validationRules, onSubmitCallback) {
+function setupFormValidation(formSelector, validationRules, validationMessages, onSubmitCallback) {
     enableSubmitButton(formSelector);
     $(formSelector).validate({
         rules: (validationRules ? validationRules : {}),
+        messages: (validationMessages ? validationMessages : {}),
         errorElement: "span",
         errorClass: "form-error",
         errorPlacement: function(error, element) {
-            var span = element.prev().find("span.form-error");
+            var span = element.next().find("span.form-error");
             if (span.length == 0) {
                 span = element.parent().find("span.form-error");
             }
@@ -51,3 +52,39 @@ function setSubmitButtonDisabled(formSelector, isDisabled) {
     $(formSelector).find("input[type='submit']").attr("disabled", isDisabled ? "true" : "");    
 }
 
+var CPValidator = function(){
+    return {
+        getQuestionFormRules : function(){
+            return {
+                tags: {
+                    required: true,
+                    maxlength: 105
+                },  
+                text: {
+                    required: true,
+                    minlength: 10
+                },
+                title: {
+                    required: true,
+                    minlength: 10
+                }
+            };
+        },
+        getQuestionFormMessages: function(){
+            return {
+                tags: {
+                    required: " 标签不能为空。",
+                    maxlength: " 最多5个标签，每个标签长度小于20个字符。"
+                },
+                text: {
+                    required: " 内容不能为空。",
+                    minlength: jQuery.format(" 请输入至少 {0} 字符。")
+                },
+                title: {
+                    required: " 请输入标题。<br>",
+                    minlength: jQuery.format(" 请输入至少 {0} 字符。")
+                }
+            };
+        }
+    };
+}();
