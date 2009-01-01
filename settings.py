@@ -49,6 +49,18 @@ DATABASE_NAME = 'twogeekt_lanai'             # Or path to database file if using
 DATABASE_USER = 'twogeekt_lanai'             # Not used with sqlite3.
 DATABASE_PASSWORD = 'sysadm'         # Not used with sqlite3.
 
+
+DEFAULT_FROM_EMAIL = 'webmaster@cnprog.com'
+#EMAIL_HOST_USER = ''
+#EMAIL_HOST_PASSWORD = ''
+EMAIL_SUBJECT_PREFIX = '[cnprog.com]'
+#EMAIL_HOST
+#EMAIL_PORT
+#EMAIL_USE_TLS
+
+
+
+
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.

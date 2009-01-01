@@ -58,12 +58,15 @@ def index(request):
     questions = questions.select_related();
     tags = Tag.objects.all().order_by("-id")[:INDEX_TAGS_SIZE]
     #print datetime.datetime.now()
-    min = max = tags[0].used_count
-    for tag in tags:
-        if tag.used_count < min:
-            min = tag.used_count
-        if tag.used_count > max:
-            max = tag.used_count
+    min = 1
+    max = 100
+    if len(tags) > 0:
+        min = max = tags[0].used_count
+        for tag in tags:
+            if tag.used_count < min:
+                min = tag.used_count
+            if tag.used_count > max:
+                max = tag.used_count
 
     #print datetime.datetime.now()
     
@@ -71,8 +74,8 @@ def index(request):
         "questions" : questions,
         "tab_id" : view_id,
         "tags" : tags,
-        "max" : 100,
-        "min" : 1,
+        "max" : max,
+        "min" : min,
         }, context_instance=RequestContext(request))
 
 def about(request):
