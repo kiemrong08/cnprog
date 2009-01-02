@@ -49,7 +49,7 @@ DATABASE_NAME = 'twogeekt_lanai'             # Or path to database file if using
 DATABASE_USER = 'twogeekt_lanai'             # Not used with sqlite3.
 DATABASE_PASSWORD = 'sysadm'         # Not used with sqlite3.
 
-
+SERVER_EMAIL = 'webmaster@cnprog.com'
 DEFAULT_FROM_EMAIL = 'webmaster@cnprog.com'
 #EMAIL_HOST_USER = ''
 #EMAIL_HOST_PASSWORD = ''
