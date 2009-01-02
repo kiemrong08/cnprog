@@ -4,7 +4,7 @@
 {% load humanize %}
 {% block title %}{% spaceless %}{{ question.get_question_title }}{% endspaceless %}{% endblock %}
 {% block forejs %}
-        {% if not question.closed %}
+        {% if not question.closed and user.is_authenticated %}
         <script type='text/javascript' src='/content/js/com.cnprog.editor.js'></script>
         {% endif %}
         <script type='text/javascript' src='/content/js/com.cnprog.utils.js'></script>
@@ -21,8 +21,10 @@
             
             Vote.init({{ question.id }}, '{{ question.author.id }}','{{ user.id }}');
             
-            {% if not question.closed %}initEditor();{% endif %}
-
+            {% if not question.closed and user.is_authenticated %}initEditor();{% endif %}
+            
+            lanai.highlightSyntax();
+            $('#btLogin').bind('click', function(){window.location.href='/account/signin/'; } )
         });
         
         function initEditor(){
@@ -42,8 +44,8 @@
             });
             
             setupFormValidation("#fmanswer", CPValidator.getQuestionFormRules(), CPValidator.getQuestionFormMessages());
-            $('#btLogin').bind('click', function(){window.location.href='/account/signin/'; } )
-            lanai.highlightSyntax();
+            
+            
         }
          
         </script>
