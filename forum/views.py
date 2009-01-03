@@ -14,8 +14,8 @@ from django.db import transaction
 
 from utils.html import sanitize_html
 from markdown2 import Markdown
-from lxml.html.diff import htmldiff
-
+#from lxml.html.diff import htmldiff
+from forum.diff import textDiff as htmldiff
 from forum.forms import *
 from forum.models import *
 from forum.auth import *
