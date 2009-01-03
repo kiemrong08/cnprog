@@ -64,10 +64,12 @@
             </div>
            
             
-            <strong>标签:</strong> <br>
-            {{ form.tags }}  {{ form.tags.errors }}
-            <div class="title-desc">
-                多个标签请用空格间隔-最多5个标签。（优先使用自动匹配的英文标签。）
+            <div class="form-item">
+                <strong>{{ form.tags.label_tag }}:</strong> <span class="form-error"></span><br>
+                {{ form.tags }}  {{ form.tags.errors }}
+                <div class="title-desc">
+                    {{ form.tags.help_text }}
+                </div>
             </div>
             <br>
             

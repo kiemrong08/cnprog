@@ -53,8 +53,10 @@ input, select, button, textarea
 
 input
 {
+    /*
 	margin: 5px 0px 5px 0px;
 	padding:3px;
+    */
 }
 
 pre
@@ -785,30 +787,27 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
 #editor{
     
     font-size:100%;
-    width:600px;
     min-height:200px;
     line-height: 18px;
 }
 
 .wmd-preview{
-
     margin-top:10px;
-    padding:5px;
+    padding:6px;
     width:590px;
-    background-color:#E7F1F8;
-    border:dashed 1px #ccc;
+    background-color:#F5F5F5;
     min-height:20px;
-
 }
+
 /*adjustment for editor preview*/
 .wmd-preview pre{
-    background-color:rgb(214, 228, 238);
+    background-color:#E7F1F8;
 
 }
 
 .wmd-preview blockquote
 {
-	background-color: rgb(214, 228, 238);
+	background-color: #eee;
 }
 
 .preview-toggle{
@@ -816,8 +815,9 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
     font-weight:600;
     margin-bottom:-10px;
     width:600px;
-    color:#07c;
+    color:#aaa;
     letter-spacing:1px;
+
 }
 
 .preview-toggle span:hover{

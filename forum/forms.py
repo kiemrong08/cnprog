@@ -2,26 +2,51 @@
 from django import forms
 from models import *
 from const import *
-class AskForm(forms.Form):
-    title  = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'size' : 70, 'autocomplete' : 'off'}))
-    text   = forms.CharField(widget=forms.Textarea(attrs={'id':'editor'}))
-    tags   = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'size' : 50, 'autocomplete' : 'off'}))
-    openid = forms.CharField(required=False, max_length=255, widget=forms.TextInput(attrs={'size' : 40, 'class':'openid-input'}))
-    user   = forms.CharField(required=False, max_length=255, widget=forms.TextInput(attrs={'size' : 35}))
-    email  = forms.CharField(required=False, max_length=255, widget=forms.TextInput(attrs={'size' : 35}))
-    
-    def clean_title(self):
-        data = self.cleaned_data["title"]
-        if len(data) < 10:
+
+class TitleField(forms.CharField):
+    def __init__(self, *args, **kwargs):
+        super(TitleField, self).__init__(*args, **kwargs)
+        self.required = True
+        self.widget = forms.TextInput(attrs={'size' : 70, 'autocomplete' : 'off'})
+        self.max_length = 255
+        self.label  = u'标题'
+        self.help_text = u'请输入对问题具有描述性质的标题 - “帮忙！紧急求助！”不是建议的提问方式。'
+        self.initial = ''
+        
+    def clean(self, value):
+        if len(value) < 10:
             raise forms.ValidationError(u"标题的长度必须大于10")
 
-        return data
-    
-    
-    def clean_tags(self):
-        #tagname_re = re.compile(r'^[\u4e00-\u9fa5-a-z0-9+#.]+$')
-        data = self.cleaned_data['tags']
-        data = data.strip()
+        return value
+        
+class EditorField(forms.CharField):
+    def __init__(self, *args, **kwargs):
+        super(EditorField, self).__init__(*args, **kwargs)
+        self.required = True
+        self.widget = forms.Textarea(attrs={'id':'editor'})
+        self.label  = u'内容'
+        self.help_text = u''
+        self.initial = ''
+        
+    def clean(self, value):
+        if len(value) < 10:
+            raise forms.ValidationError(u"内容至少要10个字符")
+
+        return value    
+        
+class TagNamesField(forms.CharField):
+    def __init__(self, *args, **kwargs):
+        super(TagNamesField, self).__init__(*args, **kwargs)
+        self.required = True
+        self.widget = forms.TextInput(attrs={'size' : 50, 'autocomplete' : 'off'})
+        self.max_length = 255
+        self.label  = u'标签'
+        self.help_text = u'多个标签请用空格间隔-最多5个标签。（优先使用自动匹配的英文标签。）'
+        self.initial = ''
+        
+    def clean(self, value):
+        value = super(TagNamesField, self).clean(value)
+        data = value.strip()
         if len(data) < 1:
             raise forms.ValidationError(u'标签不能为空')
         list = data.split(' ')
@@ -41,55 +66,52 @@ class AskForm(forms.Form):
             if tag not in list_temp:
                 list_temp.append(tag)
         return u' '.join(list_temp)
+    
+class WikiField(forms.BooleanField):
+    def __init__(self, *args, **kwargs):
+        super(WikiField, self).__init__(*args, **kwargs)
+        self.required = False
+        self.label  = u'社区wiki模式'
+        self.help_text = u'选择社区wiki模式，问答不计算积分，签名也不显示作者信息'
         
-class AnswerForm(forms.Form):
-    text   = forms.CharField(widget=forms.Textarea(attrs={'id':'editor'}))
+
+class SummaryField(forms.CharField):
+    def __init__(self, *args, **kwargs):
+        super(SummaryField, self).__init__(*args, **kwargs)
+        self.required = False
+        self.widget = forms.TextInput(attrs={'size' : 50, 'autocomplete' : 'off'})
+        self.max_length = 300
+        self.label  = u'更新概要：'
+        self.help_text = u'输入本次修改的简单概述（如：修改了别字，修正了语法，改进了样式等。非必填项。）'
+        
+class AskForm(forms.Form):
+    title  = TitleField()
+    text   = EditorField()
+    tags   = TagNamesField() 
+    wiki = WikiField()
+
     openid = forms.CharField(required=False, max_length=255, widget=forms.TextInput(attrs={'size' : 40, 'class':'openid-input'}))
     user   = forms.CharField(required=False, max_length=255, widget=forms.TextInput(attrs={'size' : 35}))
     email  = forms.CharField(required=False, max_length=255, widget=forms.TextInput(attrs={'size' : 35}))
-    
-    def clean(self):
-        data = self.cleaned_data
-        text = data.get('text')
-        if text is None or len(text.strip()) == 0:
-            raise forms.ValidationError(u'内容不能为空')
-        elif len(text.strip()) < 30:    
-            raise forms.ValidationError(u'内容至少要30个字符')
-        return data
+
+
+        
+class AnswerForm(forms.Form):
+    text   = EditorField()
+    openid = forms.CharField(required=False, max_length=255, widget=forms.TextInput(attrs={'size' : 40, 'class':'openid-input'}))
+    user   = forms.CharField(required=False, max_length=255, widget=forms.TextInput(attrs={'size' : 35}))
+    email  = forms.CharField(required=False, max_length=255, widget=forms.TextInput(attrs={'size' : 35}))
+
         
 class CloseForm(forms.Form):
     reason = forms.ChoiceField(choices=CLOSE_REASONS)
 
 class RetagQuestionForm(forms.Form):
-    tags   = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'size' : 50, 'autocomplete' : 'off'}))
+    tags   = TagNamesField()
     # initialize the default values
     def __init__(self, question, *args, **kwargs):
         super(RetagQuestionForm, self).__init__(*args, **kwargs)
         self.fields['tags'].initial = question.tagnames
-        
-    def clean_tags(self):
-        #tagname_re = re.compile(r'^[\u4e00-\u9fa5-a-z0-9+#.]+$')
-        data = self.cleaned_data['tags']
-        data = data.strip()
-        if len(data) < 1:
-            raise forms.ValidationError(u'标签不能为空')
-        list = data.split(' ')
-        list_temp = []
-        if len(list) > 5:
-            raise forms.ValidationError(u'最多只能有5个标签')
-        for tag in list:
-            if len(tag) > 20:
-                raise forms.ValidationError(u'每个标签的长度不超过20')
-            
-            #TODO: regex match not allowed characters here
-            
-            if tag.find('/') > -1 or tag.find('\\') > -1 or tag.find('<') > -1 or tag.find('>') > -1 or tag.find('&') > -1 or tag.find('\'') > -1 or tag.find('"') > -1:
-            #if not tagname_re.match(tag):
-                raise forms.ValidationError(u'标签请使用英文字母，中文或者数字字符串（. - _ # 也可以）')
-            # only keep one same tag
-            if tag not in list_temp:
-                list_temp.append(tag)
-        return u' '.join(list_temp)
 
 class RevisionForm(forms.Form):
     """
@@ -108,10 +130,10 @@ class RevisionForm(forms.Form):
         self.fields['revision'].initial = latest_revision.revision
         
 class EditQuestionForm(forms.Form):
-    title  = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'size' : 70, 'autocomplete' : 'off'}))
-    text   = forms.CharField(widget=forms.Textarea(attrs={'id':'editor'}))
-    tags   = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'size' : 50, 'autocomplete' : 'off'}))
-    summary = forms.CharField(max_length=300, required=False, label=u'更新概要：', widget=forms.TextInput(attrs={'size' : 50, 'autocomplete' : 'off'}))
+    title  = TitleField()
+    text   = EditorField()
+    tags   = TagNamesField()
+    summary = SummaryField()
 
     def __init__(self, question, revision, *args, **kwargs):
         super(EditQuestionForm, self).__init__(*args, **kwargs)
@@ -119,55 +141,13 @@ class EditQuestionForm(forms.Form):
         self.fields['text'].initial = revision.text
         self.fields['tags'].initial = revision.tagnames
         # Once wiki mode is enabled, it can't be disabled
-        #if not question.wiki:
-        #    self.fields['wiki'] = forms.BooleanField(required=False,
-        #                                             label=u'社区wiki模式')
-
-    def clean_title(self):
-        data = self.cleaned_data["title"]
-        if len(data) < 10:
-            raise forms.ValidationError(u"标题的长度必须大于10")
-
-        return data
-    
-    
-    def clean_tags(self):
-        #tagname_re = re.compile(r'^[\u4e00-\u9fa5-a-z0-9+#.]+$')
-        data = self.cleaned_data['tags']
-        data = data.strip()
-        if len(data) < 1:
-            raise forms.ValidationError(u'标签不能为空')
-        list = data.split(' ')
-        list_temp = []
-        if len(list) > 5:
-            raise forms.ValidationError(u'最多只能有5个标签')
-        for tag in list:
-            if len(tag) > 20:
-                raise forms.ValidationError(u'每个标签的长度不超过20')
-            
-            #TODO: regex match not allowed characters here
-            
-            if tag.find('/') > -1 or tag.find('\\') > -1 or tag.find('<') > -1 or tag.find('>') > -1 or tag.find('&') > -1 or tag.find('\'') > -1 or tag.find('"') > -1:
-            #if not tagname_re.match(tag):
-                raise forms.ValidationError(u'标签请使用英文字母，中文或者数字字符串（. - _ # 也可以）')
-            # only keep one same tag
-            if tag not in list_temp:
-                list_temp.append(tag)
-        return u' '.join(list_temp)      
-        
+        if not question.wiki:
+            self.fields['wiki'] = WikiField()
         
 class EditAnswerForm(forms.Form):
-    text = forms.CharField(widget=forms.Textarea(attrs={'id':'editor'}))
-    summary = forms.CharField(max_length=300, required=False, label=u'更新概要：', widget=forms.TextInput(attrs={'size' : 50, 'autocomplete' : 'off'}))
+    text = EditorField()
+    summary = SummaryField()
+    
     def __init__(self, answer, revision, *args, **kwargs):
         super(EditAnswerForm, self).__init__(*args, **kwargs)
         self.fields['text'].initial = revision.text
-        
-    def clean(self):
-        data = self.cleaned_data
-        text = data.get('text')
-        if text is None or len(text.strip()) == 0:
-            raise forms.ValidationError(u'内容不能为空')
-        elif len(text.strip()) < 30:    
-            raise forms.ValidationError(u'内容至少要30个字符')
-        return data

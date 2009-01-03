@@ -529,7 +529,12 @@ def question_revisions(request, id):
             revisions[i - 1].diff = htmldiff(revision.html,
                                              revisions[i - 1].html)
         else:
-            revisions[i - 1].diff = revision.html
+            revisions[i - 1].diff = QUESTION_REVISION_TEMPLATE % {
+                'title': revisions[0].title,
+                'html': sanitize_html(markdowner.convert(revisions[0].text)),
+                'tags': ' '.join(['<a class="post-tag">%s</a>' % tag
+                                  for tag in revisions[0].tagnames.split(' ')]),
+            }
             revisions[i - 1].summary = None
     return render_to_response('revisions_question.html', {
         'post': post,
@@ -548,30 +553,9 @@ def answer_revisions(request, id):
             revisions[i - 1].diff = htmldiff(revision.html,
                                              revisions[i - 1].html)
         else:
-            revisions[i - 1].diff = revision.html
+            revisions[i - 1].diff = revisions[i-1].text
             revisions[i - 1].summary = None
     return render_to_response('revisions_answer.html', {
-        'post': post,
-        'revisions': revisions,
-    }, context_instance=RequestContext(request))
-    
-def _post_revisions(request, post):
-    revisions = list(post.revisions.all())
-
-    for i, revision in enumerate(revisions):
-        revision.html = POST_REVISION_TEMPLATE % {
-            'title': revision.title,
-            'html': sanitize_html(markdowner.convert(revision.text)),
-            'tags': ' '.join(['<a class="post-tag">%s</a>' % tag
-                              for tag in revision.tagnames.split(' ')]),
-        }
-        if i > 0:
-            revisions[i - 1].diff = htmldiff(revision.html,
-                                             revisions[i - 1].html)
-        else:
-            revisions[i - 1].diff = revision.html
-            revisions[i - 1].summary = None
-    return render_to_response('revisions.html', {
         'post': post,
         'revisions': revisions,
     }, context_instance=RequestContext(request))

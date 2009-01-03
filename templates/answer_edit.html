@@ -58,13 +58,13 @@
                 <span class="form-error"></span>
                 <div class="preview-toggle"><span id="pre-collapse" title="打开或者关闭Markdown编辑器的实时预览">预览开关</span></div>
                 <div id="previewer" class="wmd-preview"></div>
-                
+                <br>
             </div>
             
             <strong>{{ form.summary.label_tag }}</strong> <br>
             {{ form.summary }}  {{ form.summary.errors }}
             <div class="title-desc">
-                输入本次修改的简单概述（如：修改了别字，修正了语法，改进了样式等。非必填项。）
+                {{ form.summary.help_text }}
             </div>
             <br>
             <input type="submit" value="现在修改" class="submit" />

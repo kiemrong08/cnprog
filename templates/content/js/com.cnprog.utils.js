@@ -81,7 +81,7 @@ var CPValidator = function(){
                     minlength: jQuery.format(" 请输入至少 {0} 字符。")
                 },
                 title: {
-                    required: " 请输入标题。<br>",
+                    required: " 请输入标题。",
                     minlength: jQuery.format(" 请输入至少 {0} 字符。")
                 }
             };
