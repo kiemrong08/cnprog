@@ -1034,6 +1034,7 @@ def __comments(request, obj, user):
             comment_user = comment.user
             delete_url = ""
             if user != None and user.id == comment_user.id:
+                #/posts/392845/comments/219852/delete
                 delete_url = "/posts/392845/comments/219852/delete"
             json_comments.append({"id" : comment.id,
                 "object_id" : obj.id,
