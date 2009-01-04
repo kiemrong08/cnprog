@@ -136,6 +136,16 @@
                                                         </td>
                                                         
                                                     </tr>
+                                                    {% if question.wiki %}
+                                                    <tr>
+                                                        <td style="width:40px;vertical-align:bottom">
+                                                        {% gravatar question.last_edited_by 32 %}
+                                                        </td>
+                                                        <td style="width:160px; vertical-align:top">
+                                                            <a href="/users/{{ question.last_edited_by.id }}/{{ question.last_edited_by.username }}">{{ question.last_edited_by.username }}</a>
+                                                        </td>
+                                                    </tr>
+                                                    {% else %}
                                                     {% ifequal question.last_edited_by question.author %}
                                                     <tr>
                                                         <td> </td>
@@ -143,23 +153,30 @@
                                                     </tr>
                                                     {% else %}
                                                     <tr>
-                                                        <td width="40px" style="vertical-align:bottom">
+                                                        <td style="width:40px;vertical-align:bottom">
                                                         {% gravatar question.last_edited_by 32 %}
                                                         </td>
                                                         <td style="width:120px; vertical-align:top">
                                                             <div><a href="/users/{{ question.last_edited_by.id }}/{{ question.last_edited_by.username }}">{{ question.last_edited_by.username }}</a></div>
+                                
                                                             <div>
                                                             {% get_score_badge question.last_edited_by %}
                                                             </div>
+                                                          
                                                         </td>
                                                     </tr>
                                                     {% endifequal %}
+                                                    {% endif %}
                                                 </table>
                                             </div>
                                             {% endif %}
                                             
                                         </td>
-                                        <td >
+                                        <td style="vertical-align:top">
+                                            {% if question.wiki %}
+                                            <span class="wiki-category">社区Wiki</span>
+                                            <div style="margin-bottom:10px"></div>
+                                            {% else %}
                                             <div  class="question-mark">
                                                 <table width="100%">
                                                     <tr>
@@ -168,6 +185,7 @@
                                                         </td>
                                                         
                                                     </tr>
+                                                    
                                                     <tr>
                                                         <td style="width:40px; vertical-align:bottom">
                                                         {% gravatar question.author 32 %}
@@ -179,8 +197,10 @@
                                                             </div>
                                                         </td>
                                                     </tr>
+                                                    
                                                 </table>
                                             </div>
+                                            {% endif %}
                                         
                                         </td>
                                     </tr>
@@ -189,7 +209,7 @@
                             </div>
                             
                             <div class="post-comments" style="margin-bottom:20px">
-                                <input id="can-post-comments-question-{{question.id}}" type="hidden" value="true"/>
+                                <input id="can-post-comments-question-{{question.id}}" type="hidden" value="{{ user|can_add_comments }}"/>
                                 <a id="comments-link-question-{{question.id}}" class="comments-link">{% if question.comment_count %}评论 <strong>({{question.comment_count}})</strong>{% else %}添加评论{% endif %}</a>
                                 <div id="comments-question-{{question.id}}" class="comments-container">
                                 <div class="comments"/></div>
@@ -220,7 +240,7 @@
   
                 {% for answer in answers %}
                     <a name="{{ answer.id }}"></a>
-                    <div id="answer-container-{{ answer.id }}" class="answer {% if answer.accepted %}accepted-answer{% endif %}{% if answer.deleted %}deleted{% endif %}">
+                    <div id="answer-container-{{ answer.id }}" class="answer {% if answer.accepted %}accepted-answer{% endif %}{% if answer.deleted %}deleted{% endif %} {% ifequal answer.author_id question.author_id %} answered-by-owner{% endifequal %}">
                         <table style="width:100%;">
                             <tr>
                                 <td style="width:50px;vertical-align:top">
@@ -272,6 +292,17 @@
                                                                 </td>
                                                                 
                                                             </tr>
+                                                            {% if answer.wiki %}
+                                                            <tr>
+                                                                <td width="40px" style="vertical-align:bottom">
+                                                                {% gravatar answer.last_edited_by 32 %}
+                                                                </td>
+                                                                <td style="width:160px; vertical-align:top">
+                                                                    <div><a href="/users/{{ answer.last_edited_by.id }}/{{ answer.last_edited_by.username }}">{{ answer.last_edited_by.username }}</a></div>
+                                                               
+                                                                </td>
+                                                            </tr>
+                                                            {% else %}
                                                             {% ifequal answer.last_edited_by answer.author %}
                                                             <tr>
                                                                 <td> </td>
@@ -290,12 +321,17 @@
                                                                 </td>
                                                             </tr>
                                                             {% endifequal %}
+                                                            {% endif %}
                                                         </table>
                                                     </div>
                                                     {% endif %}
                                                     
                                                 </td>
-                                                 <td >
+                                                 <td style="vertical-align:top">
+                                                    {% if answer.wiki %}
+                                                    <span class="wiki-category">社区Wiki</span>
+                                                    <div style="margin-bottom:10px"></div>
+                                                    {% else %}
                                                     <div  class="answer-mark">
                                                         <table width="100%">
                             	                            <tr>
@@ -317,7 +353,7 @@
                             	                            </tr>
                                                         </table>
                                                     </div>
-                                                    
+                                                    {% endif %}
                                                     
                                                  </td>
                         	                    </tr>
@@ -326,8 +362,8 @@
                                             
                                         </div>
                                         <div id="comment-{{ answer.id }}" class="post-comments {% if answer.accepted %}comment-link-accepted{% endif %}" >
-                                            <input id="can-post-comments-answer-{{answer.id}}" type="hidden" value="true"/>
-                                            <a id="comments-link-answer-{{answer.id}}" class="comments-link">{% if answer.comment_count %}评论({{answer.comment_count}}){% else %}添加评论{% endif %}</a>
+                                            <input id="can-post-comments-answer-{{answer.id}}" type="hidden" value="{{ user|can_add_comments }}"/>
+                                            <a id="comments-link-answer-{{answer.id}}" class="comments-link">{% if answer.comment_count %}评论 <strong>({{question.comment_count}})</strong>{% else %}添加评论{% endif %}</a>
                                             <div id="comments-answer-{{answer.id}}" class="comments-container">
                                             <div class="comments"/></div>
                                         </div>
@@ -356,7 +392,19 @@
 
             <div id="description" class="" >
                 {{ answer.text }}
-                <div class="preview-toggle"><span id="pre-collapse" title="打开或者关闭Markdown编辑器的实时预览">预览开关</span></div>
+                <div class="preview-toggle">
+                    <table width="100%">
+                        <tr>
+                            <td>
+                                <span id="pre-collapse" title="打开或者关闭Markdown编辑器的实时预览">预览开关</span>
+                            </td>
+                            <td style="text-align:right;">
+                                {{ answer.wiki }} <span style="font-weight:normal;cursor:help" title="{{answer.wiki.help_text}}">{{ answer.wiki.label_tag }} </span>
+                            </td>
+                        </tr>
+                    
+                    </table>  
+                </div>
                 <div id="previewer" class="wmd-preview"></div>
                 {{ answer.text.errors }}
                 

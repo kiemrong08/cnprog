@@ -49,7 +49,7 @@
         <tr>    
             <td class="taglist-td">
             {% for tag in tags.object_list %}
-                <a href="{% url forum.views.tag tag %}" class="post-tag" title="查看有关'{{ tag }}'的问题" rel="tag">
+                <a href="{% url forum.views.tag tag|urlencode %}" class="post-tag" title="查看有关'{{ tag }}'的问题" rel="tag">
                     {{ tag }}
                 </a> 
                 <span class="tag-number">× {{ tag.used_count|intcomma }}</span>

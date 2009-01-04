@@ -583,6 +583,7 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
     padding-bottom:20px;
     padding-top:20px;
     width: 100%;
+    margin-bottom:10px;
 }
 
 .accepted-answer{
@@ -600,6 +601,11 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
 {
 	background: #75845C;
 	color: #E1E818;
+}
+
+.answered-by-owner
+{
+	background: #E0EAF1;
 }
 
 .answered-accepted strong
@@ -785,7 +791,6 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
 }
 
 #editor{
-    
     font-size:100%;
     min-height:200px;
     line-height: 18px;
@@ -963,7 +968,7 @@ div.grippie {
 .question-edit{
     text-align:left;
     font-size:90%;
-    padding:5px;
+    
     overflow:hidden;
 }
 
@@ -978,6 +983,12 @@ div.grippie {
     text-align:left;
     font-size:90%;
     padding:5px;
+}
+
+.wiki-category{
+    margin-left:5px;
+    color:#999;
+    font-size:90%;
 }
 
 .offensive-flag a{

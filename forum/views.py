@@ -187,6 +187,8 @@ def ask(request):
                 added_at         = added_at,
                 last_activity_at = added_at,
                 last_activity_by = request.user,
+                wiki             = form.cleaned_data['wiki'],
+                wikified_at      = added_at,
                 tagnames         = form.cleaned_data['tags'].strip(),
                 html             = html,
                 summary          = strip_tags(html)[:120]
@@ -204,7 +206,6 @@ def ask(request):
                 summary    = CONST['default_version'],
                 text       = form.cleaned_data['text']
             )
-            #TODO:add wiki support
             #TODO:add badge support
             
             return HttpResponseRedirect(question.get_absolute_url())
@@ -572,6 +573,7 @@ def answer(request, id):
                 question = question,
                 author = request.user,
                 added_at = update_time,
+                wiki = form.cleaned_data['wiki'],
                 html = sanitize_html(markdowner.convert(form.cleaned_data['text'])),
             )
             answer.save()
@@ -1066,6 +1068,8 @@ def delete_question_comment(request, question_id, comment_id):
         comment = get_object_or_404(Comment, id=comment_id)
         
         question.comments.remove(comment)
+        question.comment_count = question.comment_count - 1
+        question.save()
         user = request.user
         return __generate_comments_json(question, 'question', user)
 
@@ -1075,6 +1079,8 @@ def delete_answer_comment(request, answer_id, comment_id):
         comment = get_object_or_404(Comment, id=comment_id)
         
         answer.comments.remove(comment)
+        answer.comment_count = answer.comment_count - 1
+        answer.save()
         user = request.user
         return __generate_comments_json(answer, 'answer', user)
 

@@ -416,13 +416,11 @@ function createComments(type) {
 
     var canPostComments = function(id, jDiv) {
         var jHidden = jDiv.siblings("#can-post-comments-" + objectType + '-' + id);
-        return jHidden.val() == "true";
+        return jHidden.val().toLowerCase() == "true";
     };
 
     var renderForm = function(id, jDiv) {
         var formId = "form-comments-" + objectType + "-" + id;
-
-        // Only add form once to dom..
         if (canPostComments(id, jDiv)) {
             if (jDiv.find("#" + formId).length == 0) {
                 var form = '<form id="' + formId + '" class="post-comments"><div>';
@@ -438,10 +436,10 @@ function createComments(type) {
                     function() { postComment(id, formId); });
             }
         }
-        else { // Let users know how to post comments.. 
+        else {
             var divId = "comments-rep-needed-" + objectType + '-' + id;
             if (jDiv.find("#" + divId).length == 0) {
-                jDiv.append('<div id="' + divId + '" style="color:red">commenting requires ' + repNeededForComments + ' reputation -- <a href="/faq" class="comment-user">see faq</a></span>');
+                jDiv.append('<div id="' + divId + '" style="color:red">评论需要 ' + repNeededForComments + ' 社区积分 - <a href="/faq" class="comment-user">查看faq</a></span>');
             }
         }
     };

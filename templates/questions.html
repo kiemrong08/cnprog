@@ -93,6 +93,9 @@
                     </tr>
                 </table>
                 {% else %}
+                {% if question.wiki %}
+                <span class="gray">社区Wiki</span>
+                {% else %}
                 <table width="100%">
                     <tr>
                         <td colspan="2" class="gray"> 
@@ -111,6 +114,7 @@
                         </td>
                     </tr>
                 </table>
+                {% endif %}
                 {% endifequal %}
             </div>
             
