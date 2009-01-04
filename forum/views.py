@@ -20,7 +20,7 @@ from forum.forms import *
 from forum.models import *
 from forum.auth import *
 from forum.const import *
-
+from forum import auth
 
 # used in index page
 INDEX_PAGE_SIZE = 30
@@ -1018,48 +1018,66 @@ def users_favorites(request, user_id):
 def question_comments(request, id):
     question = get_object_or_404(Question, id=id)
     user = request.user
-    return __comments(request, question, user)
+    return __comments(request, question, 'question', user)
 
 def answer_comments(request, id):
     answer = get_object_or_404(Answer, id=id)
     user = request.user
-    return __comments(request, answer, user)
+    return __comments(request, answer, 'answer', user)
 
-def __comments(request, obj, user):
-    def generate_comments_json():
-        comments = obj.comments.all().order_by('-id')
-        # {"Id":6,"PostId":38589,"CreationDate":"an hour ago","Text":"hello there!","UserDisplayName":"Jarrod Dixon","UserUrl":"/users/3/jarrod-dixon","DeleteUrl":null}
-        json_comments = []
-        for comment in comments:
-            comment_user = comment.user
-            delete_url = ""
-            if user != None and user.id == comment_user.id:
-                #/posts/392845/comments/219852/delete
-                delete_url = "/posts/392845/comments/219852/delete"
-            json_comments.append({"id" : comment.id,
-                "object_id" : obj.id,
-                "add_date" : comment.added_at.strftime('%Y-%m-%d'),
-                "text" : comment.comment,
-                "user_display_name" : comment_user.username,
-                "user_url" : "/users/%s/%s" % (comment_user.id, comment_user.username),
-                "delete_url" : delete_url
-            })
-    
-        data = simplejson.dumps(json_comments)
-        return HttpResponse(data, mimetype="application/json")
-        
+def __comments(request, obj, type, user):
     # only support get comments by ajax now
     if request.is_ajax():
         if request.method == "GET":
-            return generate_comments_json()
+            return __generate_comments_json(obj, type, user)
         elif request.method == "POST":
             comment_data = request.POST.get('comment')
             comment = Comment(content_object=obj, comment=comment_data, user=request.user)
             comment.save()
             obj.comment_count = obj.comment_count + 1
             obj.save()
-            return generate_comments_json()
-            
+            return __generate_comments_json(obj, type, user)
+
+def __generate_comments_json(obj, type, user):
+    comments = obj.comments.all().order_by('-id')
+    # {"Id":6,"PostId":38589,"CreationDate":"an hour ago","Text":"hello there!","UserDisplayName":"Jarrod Dixon","UserUrl":"/users/3/jarrod-dixon","DeleteUrl":null}
+    json_comments = []
+    for comment in comments:
+        comment_user = comment.user
+        delete_url = ""
+        if user != None and auth.can_delete_comment(user, comment):
+            #/posts/392845/comments/219852/delete
+            delete_url = "/" + type + "s/%s/comments/%s/delete/" % (obj.id, comment.id)
+        json_comments.append({"id" : comment.id,
+            "object_id" : obj.id,
+            "add_date" : comment.added_at.strftime('%Y-%m-%d'),
+            "text" : comment.comment,
+            "user_display_name" : comment_user.username,
+            "user_url" : "/users/%s/%s" % (comment_user.id, comment_user.username),
+            "delete_url" : delete_url
+        })
+
+    data = simplejson.dumps(json_comments)
+    return HttpResponse(data, mimetype="application/json")
+
+def delete_question_comment(request, question_id, comment_id):
+    if request.is_ajax():
+        question = get_object_or_404(Question, id=question_id)
+        comment = get_object_or_404(Comment, id=comment_id)
+        
+        question.comments.remove(comment)
+        user = request.user
+        return __generate_comments_json(question, 'question', user)
+
+def delete_answer_comment(request, answer_id, comment_id):
+    if request.is_ajax():
+        answer = get_object_or_404(Answer, id=answer_id)
+        comment = get_object_or_404(Comment, id=comment_id)
+        
+        answer.comments.remove(comment)
+        user = request.user
+        return __generate_comments_json(answer, 'answer', user)
+
 def logout(request):
     url = request.GET.get('next')
     return render_to_response('logout.html', {
