@@ -1,22 +1,21 @@
-{% extends "base_content.html" %}
+{% extends "user.html" %}
 {% load extra_tags %}
 {% load humanize %}
-{% block forestyle%}
-    <style type="text/css">
-	    h1 { font-size: 200%; }
- 		.history-table td { padding: 5px; }
- 		.user-stats-table { margin-left:50px; }
-	</style>
-{% endblock %}
-{% block forejs %}
-    {% include "user_js.html" %}
-{% endblock %}
-{% block content %}
-    <div id="mainbar-full">
-        <div style="margin-top: 20px;"></div>
-        {% include "user_info.html" %}
-		{% include "user_tabs.html" %}
-		
-        {% include "user_footer.html" %}
-	</div>
+
+{% block usercontent %}
+        <div style="padding-top:5px;">
+        {% for response in responses %}
+            <div style="clear:both;line-height:18px">
+                <div style="width:150px;float:left">{% diff_date response.time 3 %}</div>
+                <div style="width:100px;float:left"><a href="{{ response.userlink }}">{{ response.username }}</a></div>
+                <div style="float:left;overflow:hidden;width:680px">
+                    <strong {% ifequal response.type "回答问题："%}class="user-action-2"{% endifequal %}>{{ response.type }}</strong>
+                    <a href="{{ response.titlelink }}">{{ response.title }}</a><br>
+                    {{ response.content|safe }}
+                    <div style="height:10px"></div>
+                </div>
+                
+            </div>
+        {% endfor %}
+        </div>
 {% endblock %}

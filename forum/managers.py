@@ -116,6 +116,7 @@ class TagManager(models.Manager):
         transaction.commit_unless_managed()
 
 class AnswerManager(models.Manager):
+    GET_ANSWERS_FROM_USER_QUESTIONS = u'SELECT answer.* FROM answer INNER JOIN question ON answer.question_id = question.id WHERE question.author_id =%s AND answer.author_id <> %s'
     def get_answers_from_question(self, question, user=None):
         """
         Retrieves visibile answers for the given question. Delete answers
@@ -127,6 +128,14 @@ class AnswerManager(models.Manager):
         else:
             return self.filter(Q(question=question),
                                Q(deleted=False) | Q(deleted_by=user))
+                               
+    def get_answers_from_questions(self, user_id):
+        """
+        Retrieves visibile answers for the given question. Which are not included own answers
+        """
+        cursor = connection.cursor()
+        cursor.execute(self.GET_ANSWERS_FROM_USER_QUESTIONS, [user_id, user_id])
+        return cursor.fetchall()
 
 class VoteManager(models.Manager):
     COUNT_UP_VOTE_BY_USER = "SELECT count(*) FROM vote WHERE user_id = %s AND vote = 1"
@@ -171,4 +180,20 @@ class FlaggedItemManager(models.Manager):
 
         else:
             return 0
-        
+
+class ReputeManager(models.Manager):
+    COUNT_REPUTATION_PER_DAY_BY_USER = "SELECT SUM(positive)+SUM(negative) FROM repute WHERE user_id = %s AND (reputation_type=1 OR reputation_type=-8) AND DATE(reputed_at) = DATE(NOW())"
+    def get_reputation_by_upvoted_today(self, user):
+        """
+        For one user in one day, he can only earn rep till certain score (ep. +200) 
+        by upvoted(also substracted from upvoted canceled). This is because we need
+        to prohibit gaming system by upvoting/cancel again and again.
+        """
+        if user is not None:
+            cursor = connection.cursor()
+            cursor.execute(self.COUNT_REPUTATION_PER_DAY_BY_USER, [user.id])
+            row = cursor.fetchone()
+            return row[0]
+
+        else:
+            return 0    

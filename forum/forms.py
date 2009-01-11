@@ -1,4 +1,5 @@
 ﻿import re
+from datetime import date
 from django import forms
 from models import *
 from const import *
@@ -152,3 +153,24 @@ class EditAnswerForm(forms.Form):
     def __init__(self, answer, revision, *args, **kwargs):
         super(EditAnswerForm, self).__init__(*args, **kwargs)
         self.fields['text'].initial = revision.text
+
+class EditUserForm(forms.Form):
+    email = forms.EmailField(label=u'Email', help_text=u'不会公开，用于头像显示服务', required=False, max_length=255, widget=forms.TextInput(attrs={'size' : 35}))
+    realname = forms.CharField(label=u'真实姓名', required=False, max_length=255, widget=forms.TextInput(attrs={'size' : 35}))
+    website = forms.URLField(label=u'个人网站', required=False, max_length=255, widget=forms.TextInput(attrs={'size' : 35}))
+    city = forms.CharField(label=u'城市', required=False, max_length=255, widget=forms.TextInput(attrs={'size' : 35}))
+    birthday = forms.DateField(label=u'生日', help_text=u'不会公开，只会显示您的年龄，格式为：YYYY-MM-DD', required=True, widget=forms.TextInput(attrs={'size' : 35}))
+    about = forms.CharField(label=u'个人简介', required=False, widget=forms.Textarea(attrs={'cols' : 60}))
+    
+    def __init__(self, user, *args, **kwargs):
+        super(EditUserForm, self).__init__(*args, **kwargs)
+        self.fields['email'].initial = user.email
+        self.fields['realname'].initial = user.real_name
+        self.fields['website'].initial = user.website
+        self.fields['city'].initial = user.location
+        if user.date_of_birth is not None:
+            self.fields['birthday'].initial = user.date_of_birth.date()
+        else:
+            self.fields['birthday'].initial = '1990-01-01'
+        self.fields['about'].initial = user.about
+    

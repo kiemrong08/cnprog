@@ -190,6 +190,12 @@ class QuestionRevision(models.Model):
         db_table = u'question_revision'
         ordering = ('-revision',)
 
+    def get_question_title(self):
+        return self.question.title
+        
+    def get_absolute_url(self):
+        return '/questions/%s/revisions' % (self.question.id)
+        
     def save(self, **kwargs):
         """Looks up the next available revision number."""
         if not self.revision:
@@ -239,6 +245,9 @@ class Answer(models.Model):
     def get_latest_revision(self):
         return self.revisions.all()[0]  
         
+    def get_question_title(self):
+        return self.question.title
+        
     def get_absolute_url(self):
         return '%s%s#%s' % (reverse('question', args=[self.question.id]), self.question.title, self.id)
         
@@ -257,6 +266,12 @@ class AnswerRevision(models.Model):
     summary    = models.CharField(max_length=300, blank=True)
     text       = models.TextField()
 
+    def get_absolute_url(self):
+        return '/answers/%s/revisions' % (self.answer.id)
+        
+    def get_question_title(self):
+        return self.answer.question.title
+        
     class Meta:
         db_table = u'answer_revision'
         ordering = ('-revision',)
@@ -323,6 +338,34 @@ class Award(models.Model):
     
     class Meta:
         db_table = u'award'
+
+class Repute(models.Model):
+    """The reputation histories for user"""
+    user     = models.ForeignKey(User)
+    positive = models.SmallIntegerField(default=0)
+    negative = models.SmallIntegerField(default=0)
+    question = models.ForeignKey(Question)
+    reputed_at = models.DateTimeField(default=datetime.datetime.now)
+    reputation_type = models.SmallIntegerField(choices=TYPE_REPUTATION)
+    reputation = models.IntegerField(default=1)
+    objects = ReputeManager()
+    
+    class Meta:
+        db_table = u'repute'
+
+class Activity(models.Model):
+    """
+    We keep some history data for user activities
+    """
+    user = models.ForeignKey(User)
+    activity_type = models.SmallIntegerField(choices=TYPE_ACTIVITY)
+    active_at = models.DateTimeField(default=datetime.datetime.now)
+    content_type   = models.ForeignKey(ContentType)
+    object_id      = models.PositiveIntegerField()
+    content_object = generic.GenericForeignKey('content_type', 'object_id')
+    
+    class Meta:
+        db_table = u'activity'
     
 # User extend properties
 QUESTIONS_PER_PAGE_CHOICES = (
@@ -361,5 +404,49 @@ def calculate_gravatar_hash(instance, **kwargs):
     if kwargs.get('raw', False):
         return
     instance.gravatar = hashlib.md5(instance.email).hexdigest()
+
+def record_ask_event(instance, created, **kwargs):
+    if created:
+        activity = Activity(user=instance.author, active_at=instance.added_at, content_object=instance, activity_type=1)
+        activity.save()
+def record_answer_event(instance, created, **kwargs):
+    if created:
+        activity = Activity(user=instance.author, active_at=instance.added_at, content_object=instance, activity_type=2)
+        activity.save()    
+def record_comment_event(instance, created, **kwargs):
+    if created:
+        from django.contrib.contenttypes.models import ContentType
+        question_type = ContentType.objects.get_for_model(Question)
+        question_type_id = question_type.id
+        type = 3 if instance.content_type_id == question_type_id else 4
+        activity = Activity(user=instance.user, active_at=instance.added_at, content_object=instance, activity_type=type)
+        activity.save() 
+def record_revision_question_event(instance, created, **kwargs):
+    if created and instance.revision <> 1:
+        activity = Activity(user=instance.author, active_at=instance.revised_at, content_object=instance, activity_type=5)
+        activity.save()   
+def record_revision_answer_event(instance, created, **kwargs):
+    if created and instance.revision <> 1:
+        activity = Activity(user=instance.author, active_at=instance.revised_at, content_object=instance, activity_type=6)
+        activity.save()         
+def record_award_event(instance, created, **kwargs):
+    if created:
+        activity = Activity(user=instance.user, active_at=instance.awarded_at, content_object=instance, activity_type=7)
+        activity.save()  
+def record_answer_accepted(instance, created, **kwargs):
+    """
+    when answer is accepted, we record it from data of reputation
+    """
+    if instance.reputation_type == 2:
+        activity = Activity(user=instance.user, active_at=instance.reputed_at, content_object=instance, activity_type=8)
+        activity.save() 
+        
 #signal for User modle save changes
-pre_save.connect(calculate_gravatar_hash, sender=User)
+pre_save.connect(calculate_gravatar_hash, sender=User)        
+post_save.connect(record_ask_event, sender=Question)
+post_save.connect(record_answer_event, sender=Answer)
+post_save.connect(record_comment_event, sender=Comment)
+post_save.connect(record_revision_question_event, sender=QuestionRevision)
+post_save.connect(record_revision_answer_event, sender=AnswerRevision)
+post_save.connect(record_award_event, sender=Award)
+post_save.connect(record_answer_accepted, sender=Repute)

@@ -54,3 +54,15 @@ def can_reopen_question(user, question):
 @register.filter
 def can_delete_post(user, post):
     return auth.can_delete_post(user, post)
+    
+@register.filter
+def can_view_user_edit(request_user, target_user):
+    return auth.can_view_user_edit(request_user, target_user)
+    
+@register.filter
+def can_view_user_votes(request_user, target_user):
+    return auth.can_view_user_votes(request_user, target_user)
+    
+@register.filter
+def can_view_user_preferences(request_user, target_user):
+    return auth.can_view_user_preferences(request_user, target_user)

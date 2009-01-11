@@ -38,14 +38,9 @@ urlpatterns = patterns('',
     (r'^tags/$', app.tags),
     (r'^tags/(?P<tag>[^/]+)/$', app.tag),
     (r'^users/$',app.users),
-    (r'^users/(?P<user_id>\d+)/recent//*', app.user_recent),
-    (r'^users/(?P<user_id>\d+)/responses//*', app.user_responses),
-    (r'^users/(?P<user_id>\d+)/reputation//*', app.user_reputation_history),
-    (r'^users/(?P<user_id>\d+)/favorites//*', app.users_favorites),
-    url(r'^users/(?P<user_id>\d+)//*', app.user_stats, name='user'),
-    # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
-    # to INSTALLED_APPS to enable admin documentation:
-    # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
+    url(r'^users/(?P<id>\d+)/edit/$', app.edit_user, name='edit_user'),
+    url(r'^users/(?P<id>\d+)//*', app.user, name='user'),
 
+    # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^nimda/(.*)', admin.site.root),
 )

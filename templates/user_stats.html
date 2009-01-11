@@ -1,21 +1,7 @@
-{% extends "base_content.html" %}
+{% extends "user.html" %}
 {% load extra_tags %}
 {% load humanize %}
-{% block title %}{% spaceless %}用户资料{% endspaceless %}{% endblock %}
-{% block forestyle%}
-    <style type="text/css">
- 		.history-table td { padding: 5px; }
- 		.user-stats-table { margin-left:50px; }
-	</style>
-{% endblock %}
-{% block forejs %}
-    {% include "user_js.html" %}
-{% endblock %}
-{% block content %}
-    <div id="mainbar-full">
-        <div style="margin-top: 20px;"></div>
-        {% include "user_info.html" %}
-		{% include "user_tabs.html" %}
+		{% block usercontent %}
 		<div style="margin-top: 10px;"></div>
         <a name="questions"></a>
         <table>
@@ -129,6 +115,5 @@
         <div class="user-stats-table">
             
         </div>
-        {% include "user_footer.html" %}
-	</div>
+
 {% endblock %}

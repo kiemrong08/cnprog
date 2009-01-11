@@ -2,8 +2,9 @@
 <html>
     <head>
         <title>{% block title %}{% endblock %} - CNProg.com 程序员问答社区</title>
-        {% block meta %}
-        {% endblock %}
+        {% spaceless %}
+        {% block meta %}{% endblock %}
+        {% endspaceless %}
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="verify-v1" content="55uGNnQVJW8p1bbXeF/Xbh9I7nZBM/wLhRz6N/I1kkA=" />
         <link rel="shortcut icon" href="/content/images/favicon.ico" >

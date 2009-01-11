@@ -31,8 +31,8 @@
         <form action="/users/" method="post">
             <table>
     	        <tr>
-    	        	<td><h3>输入需要查找的用户：</h3></td>
-    	        	<td width="320px"><input id="name" name="name" autocomplete="off" size="40"></td>
+    	        	<td>输入需要查找的用户：</td>
+    	        	<td width="310px"><input id="name" name="name" autocomplete="off" size="40"></td>
                   <td><input id="btSearchTag" type="submit" class="submit" value="搜 索" /></td>
     	        </tr>
     	        
@@ -46,22 +46,23 @@
         <span >没有找到相关数据。</span>
     {% endif %}
 		<div id="user-list">
-        	<table style="width: 940px; margin-left: 20px; margin-top: -10px;">
+        	<table class="list-table">
     	        <tr>    
-    	            <td>
+    	            <td class="list-td">
     	            	{% for user in users.object_list %}
-    		                <div class="user-info">
-    										    <div class="user-action-time"><br /></div>
-    										    <div class="user-gravatar32"><a href="/users/{{user.id}}/{{user.username}}">{% gravatar user 32 %}</a></div>
-    										    <div class="user-details">
-                                                <a href="/users/{{user.id}}/{{user.username}}">{{user.username}}</a><br>{% get_score_badge user %}
-                                                
-                                           </div>
-    										</div>
-    		                {% if forloop.counter|divisibleby:"7" %}
-    		                    </td>
-    		                    <td>
-    		                {% endif %}
+                        
+                        <div class="user-info">
+                            <div class="user-gravatar32"><a href="/users/{{user.id}}/{{user.username}}">{% gravatar user 32 %}</a></div>
+                            <div class="user-details">
+                                <a href="/users/{{user.id}}/{{user.username}}">{{user.username}}</a><br>{% get_score_badge user %}
+                            
+                            </div>
+                        </div>
+                        
+                {% if forloop.counter|divisibleby:"7" %}
+                    </td>
+                    <td>
+                {% endif %}
 
     		            {% endfor %}
     	            </td>

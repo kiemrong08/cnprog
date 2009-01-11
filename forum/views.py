@@ -1,5 +1,5 @@
-# encoding:utf-8
-import datetime
+﻿# encoding:utf-8
+import datetime, calendar
 import logging
 from urllib import quote, unquote
 from django.shortcuts import render_to_response, get_object_or_404
@@ -11,6 +11,7 @@ from django.utils.html import *
 from django.utils import simplejson
 from django.core import serializers 
 from django.db import transaction
+from django.contrib.contenttypes.models import ContentType
 
 from utils.html import sanitize_html
 from markdown2 import Markdown
@@ -20,6 +21,7 @@ from forum.forms import *
 from forum.models import *
 from forum.auth import *
 from forum.const import *
+from forum.user import *
 from forum import auth
 
 # used in index page
@@ -34,7 +36,18 @@ USERS_PAGE_SIZE = 35
 # used in answers
 ANSWERS_PAGE_SIZE = 10 
 markdowner = Markdown(html4tags=True)
-
+question_type = ContentType.objects.get_for_model(Question)
+answer_type = ContentType.objects.get_for_model(Answer)
+comment_type = ContentType.objects.get_for_model(Comment)
+question_revision_type = ContentType.objects.get_for_model(QuestionRevision)
+answer_revision_type = ContentType.objects.get_for_model(AnswerRevision)
+repute_type =ContentType.objects.get_for_model(Repute)
+question_type_id = question_type.id
+answer_type_id = answer_type.id
+comment_type_id = comment_type.id
+question_revision_type_id = question_revision_type.id
+answer_revision_type_id = answer_revision_type.id
+repute_type_id = repute_type.id
 def _get_tags_cache_json():
     tags = Tag.objects.all()
     tags_list = []
@@ -58,24 +71,22 @@ def index(request):
     questions = questions.select_related();
     tags = Tag.objects.all().order_by("-id")[:INDEX_TAGS_SIZE]
     #print datetime.datetime.now()
-    min = 1
-    max = 100
+    MIN = 1
+    MAX = 100
     if len(tags) > 0:
-        min = max = tags[0].used_count
-        for tag in tags:
-            if tag.used_count < min:
-                min = tag.used_count
-            if tag.used_count > max:
-                max = tag.used_count
-
+        sorted_tags = list(tag.used_count for tag in tags)
+        begin = min(sorted_tags)
+        end = max(sorted_tags)
+    mi = MIN if begin < MIN else begin
+    ma = MAX if end > MAX else end
     #print datetime.datetime.now()
     
     return render_to_response('index.html', {
         "questions" : questions,
         "tab_id" : view_id,
         "tags" : tags,
-        "max" : max,
-        "min" : min,
+        "max" : ma,
+        "min" : mi,
         }, context_instance=RequestContext(request))
 
 def about(request):
@@ -576,6 +587,8 @@ def answer(request, id):
                 question = question,
                 author = request.user,
                 added_at = update_time,
+                last_edited_at  = update_time,
+                last_edited_by = request.user,
                 wiki = form.cleaned_data['wiki'],
                 html = sanitize_html(markdowner.convert(form.cleaned_data['text'])),
             )
@@ -878,7 +891,39 @@ def users(request):
         
         }, context_instance=RequestContext(request))
 
-def user_stats(request, user_id):
+def user(request, id):
+    sort = request.GET.get('sort', 'stats')
+    user_view = dict((v.id, v) for v in USER_TEMPLATE_VIEWS).get(sort, USER_TEMPLATE_VIEWS[0])
+    from forum import views
+    func = getattr(views, user_view.view_name)
+    return func(request, id, user_view)
+
+@login_required
+def edit_user(request, id):
+    user = get_object_or_404(User, id=id)
+    if request.user != user:
+        raise Http404
+    if request.method == "POST":
+        form = EditUserForm(user, request.POST)
+        if form.is_valid():
+            user.email = sanitize_html(form.cleaned_data['email'])
+            user.real_name = sanitize_html(form.cleaned_data['realname'])
+            user.website = sanitize_html(form.cleaned_data['website'])
+            user.location = sanitize_html(form.cleaned_data['city'])
+            user.date_of_birth = sanitize_html(form.cleaned_data['birthday'])
+            if len(user.date_of_birth) == 0:
+                user.date_of_birth = '1900-01-01'
+            user.about = sanitize_html(form.cleaned_data['about'])
+            
+            user.save()
+            return HttpResponseRedirect(user.get_profile_url())
+    else:
+        form = EditUserForm(user)
+    return render_to_response('user_edit.html', {
+        'form' : form,
+    }, context_instance=RequestContext(request))
+    
+def user_stats(request, user_id, user_view):
     user = get_object_or_404(User, id=user_id)
     questions = Question.objects.extra(
         select={
@@ -942,8 +987,10 @@ def user_stats(request, user_id):
     tags = user.created_tags.all().order_by('-used_count')[:50]
     # TODO: Badges
     
-    return render_to_response('user_stats.html',{
-        "tab_name" : "stats",
+    return render_to_response(user_view.template_file,{
+        "tab_name" : user_view.id,
+        "tab_description" : user_view.tab_description,
+        "page_title" : user_view.page_title,
         "view_user" : user,
         "questions" : questions,
         "answered_questions" : answered_questions,
@@ -953,28 +1000,403 @@ def user_stats(request, user_id):
         "tags" : tags
     }, context_instance=RequestContext(request))
 
-def user_recent(request, user_id):
+def user_recent(request, user_id, user_view):
     user = get_object_or_404(User, id=user_id)
-    return render_to_response('user_recent.html',{
-        "tab_name" : "recent",
-        "view_user" : user
+    def get_type_name(type_id):
+        for item in TYPE_ACTIVITY:
+            if type_id in item:
+                return item[1]
+                
+    class Event:
+        def __init__(self, time, type, title, summary, answer_id, question_id):
+            self.time = time
+            self.type = get_type_name(type)
+            self.type_id = type
+            self.title = title
+            self.summary = summary
+            self.title_link = u'/questions/%s/%s#%s' %(question_id, title, answer_id) if int(answer_id) > 0 else u'/questions/%s/%s' %(question_id, title) 
+            
+    activities = []
+    # ask questions
+    questions = Activity.objects.extra(
+        select={
+            'title' : 'question.title',
+            'question_id' : 'question.id',
+            'active_at' : 'activity.active_at',
+            'activity_type' : 'activity.activity_type'
+            },
+        tables=['activity', 'question'],
+        where=['activity.content_type_id = %s AND activity.object_id = question.id AND activity.user_id = %s'],
+        params=[question_type_id, user_id],
+        order_by=['-activity.active_at']
+    ).values(
+            'title',
+            'question_id',
+            'active_at',
+            'activity_type'
+            )
+    if len(questions) > 0:
+        questions = [(Event(q['active_at'], q['activity_type'], q['title'], '', '0', q['question_id'])) for q in questions]  
+        activities.extend(questions)
+
+    # answers
+    answers = Activity.objects.extra(
+        select={
+            'title' : 'question.title',
+            'question_id' : 'question.id',
+            'answer_id' : 'answer.id',
+            'active_at' : 'activity.active_at',
+            'activity_type' : 'activity.activity_type'
+            },
+        tables=['activity', 'answer', 'question'],
+        where=['activity.content_type_id = %s AND activity.object_id = answer.id AND answer.question_id = question.id AND  activity.user_id = %s'],
+        params=[answer_type_id, user_id],
+        order_by=['-activity.active_at']
+    ).values(
+            'title',
+            'question_id',
+            'answer_id',
+            'active_at',
+            'activity_type'
+            )
+    if len(answers) > 0:
+        answers = [(Event(q['active_at'], q['activity_type'], q['title'], '', q['answer_id'], q['question_id'])) for q in answers]  
+        activities.extend(answers)
+
+    # question comments
+    comments = Activity.objects.extra(
+        select={
+            'title' : 'question.title',
+            'question_id' : 'comment.object_id',
+            'added_at' : 'comment.added_at',
+            'activity_type' : 'activity.activity_type'
+            },
+        tables=['activity', 'question', 'comment'],
+        where=['activity.content_type_id = %s AND activity.object_id = comment.id AND activity.user_id = comment.user_id AND comment.object_id=question.id AND comment.content_type_id=%s AND activity.user_id = %s'],
+        params=[comment_type_id, question_type_id, user_id],
+        order_by=['-comment.added_at']
+    ).values(
+            'title',
+            'question_id',
+            'added_at',
+            'activity_type'
+            )
+    
+    if len(comments) > 0:
+        comments = [(Event(q['added_at'], q['activity_type'], q['title'], '', '0', q['question_id'])) for q in comments]  
+        activities.extend(comments)
+        
+    # answer comments
+    comments = Activity.objects.extra(
+        select={
+            'title' : 'question.title',
+            'question_id' : 'question.id',
+            'answer_id' : 'answer.id',
+            'added_at' : 'comment.added_at',
+            'activity_type' : 'activity.activity_type'
+            },
+        tables=['activity', 'question', 'answer', 'comment'],
+        where=['activity.content_type_id = %s AND activity.object_id = comment.id AND activity.user_id = comment.user_id AND comment.object_id=answer.id AND comment.content_type_id=%s AND question.id = answer.question_id AND activity.user_id = %s'],
+        params=[comment_type_id, answer_type_id, user_id],
+        order_by=['-comment.added_at']
+    ).values(
+            'title',
+            'question_id',
+            'answer_id',
+            'added_at',
+            'activity_type'
+            )
+    
+    if len(comments) > 0:
+        comments = [(Event(q['added_at'], q['activity_type'], q['title'], '', q['answer_id'], q['question_id'])) for q in comments]  
+        activities.extend(comments)
+    
+    # question revisions
+    revisions = Activity.objects.extra(
+        select={
+            'title' : 'question_revision.title',
+            'question_id' : 'question_revision.question_id',
+            'added_at' : 'activity.active_at',
+            'activity_type' : 'activity.activity_type',
+            'summary' : 'question_revision.summary'
+            },
+        tables=['activity', 'question_revision'],
+        where=['activity.content_type_id = %s AND activity.object_id = question_revision.id AND activity.user_id = question_revision.author_id AND activity.user_id = %s'],
+        params=[question_revision_type_id, user_id],
+        order_by=['-activity.active_at']
+    ).values(
+            'title',
+            'question_id',
+            'added_at',
+            'activity_type',
+            'summary' 
+            )
+    
+    if len(revisions) > 0:
+        revisions = [(Event(q['added_at'], q['activity_type'], q['title'], q['summary'], '0', q['question_id'])) for q in revisions]  
+        activities.extend(revisions)
+        
+    # answer revisions
+    revisions = Activity.objects.extra(
+        select={
+            'title' : 'question.title',
+            'question_id' : 'question.id',
+            'answer_id' : 'answer.id',
+            'added_at' : 'activity.active_at',
+            'activity_type' : 'activity.activity_type',
+            'summary' : 'answer_revision.summary'
+            },
+        tables=['activity', 'answer_revision', 'question', 'answer'],
+        where=['activity.content_type_id = %s AND activity.object_id = answer_revision.id AND activity.user_id = answer_revision.author_id AND activity.user_id = %s AND answer_revision.answer_id=answer.id AND answer.question_id = question.id'],
+        params=[answer_revision_type_id, user_id],
+        order_by=['-activity.active_at']
+    ).values(
+            'title',
+            'question_id',
+            'added_at',
+            'answer_id',
+            'activity_type',
+            'summary' 
+            )
+    
+    if len(revisions) > 0:
+        revisions = [(Event(q['added_at'], q['activity_type'], q['title'], q['summary'], q['answer_id'], q['question_id'])) for q in revisions]  
+        activities.extend(revisions)
+        
+    # accepted answers
+    accept_answers = Activity.objects.extra(
+        select={
+            'title' : 'question.title',
+            'question_id' : 'question.id',
+            'added_at' : 'activity.active_at',
+            'activity_type' : 'activity.activity_type',
+            },
+        tables=['activity', 'repute', 'question'],
+        where=['activity.content_type_id = %s AND activity.object_id = repute.id AND activity.user_id = repute.user_id AND activity.user_id = %s AND repute.question_id=question.id'],
+        params=[repute_type_id, user_id],
+        order_by=['-activity.active_at']
+    ).values(
+            'title',
+            'question_id',
+            'added_at',
+            'activity_type',
+            )
+    if len(accept_answers) > 0:
+        accept_answers = [(Event(q['added_at'], q['activity_type'], q['title'], '', '0', q['question_id'])) for q in accept_answers]  
+        activities.extend(accept_answers)
+    #TODO: award history
+    
+    activities.sort(lambda x,y: cmp(y.time, x.time))        
+        
+    return render_to_response(user_view.template_file,{
+        "tab_name" : user_view.id,
+        "tab_description" : user_view.tab_description,
+        "page_title" : user_view.page_title,
+        "view_user" : user,
+        "activities" : activities[:user_view.data_size]
     }, context_instance=RequestContext(request))
     
-def user_responses(request, user_id):
+def user_responses(request, user_id, user_view):
+    class Response:
+        def __init__(self, type, title, question_id, answer_id, time, username, user_id, content):
+            self.type = type
+            self.title = title
+            self.titlelink = u'/questions/%s/%s#%s' % (question_id, title, answer_id)
+            self.time = time
+            self.userlink = u'/users/%s/%s/' % (user_id, username)
+            self.username = username
+            self.content = u'%s ...' % strip_tags(content)[:300] 
+            
+        def __unicode__(self):
+            return u'%s %s' % (self.type, self.titlelink)
+            
     user = get_object_or_404(User, id=user_id)
-    return render_to_response('user_responses.html',{
-        "tab_name" : "responses",
-        "view_user" : user
+    responses = []
+    answers = Answer.objects.extra(
+        select={
+            'title' : 'question.title',
+            'question_id' : 'question.id',
+            'answer_id' : 'answer.id',
+            'last_edited_at' : 'answer.last_edited_at',
+            'html' : 'answer.html',
+            'username' : 'auth_user.username',
+            'user_id' : 'auth_user.id'
+            },
+        select_params=[user_id],
+        tables=['answer', 'question', 'auth_user'],
+        where=['answer.question_id = question.id AND answer.deleted=0 AND question.deleted = 0 AND question.author_id = %s AND answer.last_edited_by_id <> %s AND answer.last_edited_by_id=auth_user.id'],
+        params=[user_id, user_id],
+        order_by=['-answer.id']
+    ).values(
+            'title',
+            'question_id',
+            'answer_id',
+            'last_edited_at',
+            'html',
+            'username',
+            'user_id'
+            )
+    if len(answers) > 0:
+        answers = [(Response(u'回答问题：', a['title'], a['question_id'], a['answer_id'], a['last_edited_at'], a['username'], a['user_id'], a['html'])) for a in answers]        
+        responses.extend(answers)
+        
+    
+    # question comments
+    comments = Comment.objects.extra(
+        select={
+            'title' : 'question.title',
+            'question_id' : 'comment.object_id',
+            'added_at' : 'comment.added_at',
+            'comment' : 'comment.comment',
+            'username' : 'auth_user.username',
+            'user_id' : 'auth_user.id'
+            },
+        tables=['question', 'auth_user', 'comment'],
+        where=['question.deleted = 0 AND question.author_id = %s AND comment.object_id=question.id AND comment.content_type_id=%s AND comment.user_id <> %s AND comment.user_id = auth_user.id'],
+        params=[user_id, question_type_id, user_id],
+        order_by=['-comment.added_at']
+    ).values(
+            'title',
+            'question_id',
+            'added_at',
+            'comment',
+            'username',
+            'user_id'
+            )
+    
+    if len(comments) > 0:
+        comments = [(Response(u'评论问题：', c['title'], c['question_id'], '', c['added_at'], c['username'], c['user_id'], c['comment'])) for c in comments]  
+        responses.extend(comments)
+
+    # answer comments
+    comments = Comment.objects.extra(
+        select={
+            'title' : 'question.title',
+            'question_id' : 'question.id',
+            'answer_id' : 'answer.id',
+            'added_at' : 'comment.added_at',
+            'comment' : 'comment.comment',
+            'username' : 'auth_user.username',
+            'user_id' : 'auth_user.id'
+            },
+        tables=['answer', 'auth_user', 'comment', 'question'],
+        where=['answer.deleted = 0 AND answer.author_id = %s AND comment.object_id=answer.id AND comment.content_type_id=%s AND comment.user_id <> %s AND comment.user_id = auth_user.id AND question.id = answer.question_id'],
+        params=[user_id, answer_type_id, user_id],
+        order_by=['-comment.added_at']
+    ).values(
+            'title',
+            'question_id',
+            'answer_id',
+            'added_at',
+            'comment',
+            'username',
+            'user_id'
+            )
+            
+    if len(comments) > 0:
+        comments = [(Response(u'评论回答：', c['title'], c['question_id'], c['answer_id'], c['added_at'], c['username'], c['user_id'], c['comment'])) for c in comments]        
+        responses.extend(comments)
+    # sort posts by time
+    responses.sort(lambda x,y: cmp(y.time, x.time))    
+    
+    return render_to_response(user_view.template_file,{
+        "tab_name" : user_view.id,
+        "tab_description" : user_view.tab_description,
+        "page_title" : user_view.page_title,
+        "view_user" : user,
+        "responses" : responses[:user_view.data_size],
+        
     }, context_instance=RequestContext(request))
 
-def user_reputation_history(request, user_id):
+def user_votes(request, user_id, user_view):
     user = get_object_or_404(User, id=user_id)
-    return render_to_response('user_reputation_history.html',{
-        "tab_name" : "reputation_history",
-        "view_user" : user
+    if not can_view_user_votes(request.user, user):
+        raise Http404
+    votes = []
+    question_votes = Vote.objects.extra(
+        select={
+            'title' : 'question.title',
+            'question_id' : 'question.id',
+            'answer_id' : 0,
+            'voted_at' : 'vote.voted_at',
+            'vote' : 'vote',
+            },
+        select_params=[user_id],
+        tables=['vote', 'question', 'auth_user'],
+        where=['vote.content_type_id = %s AND vote.user_id = %s AND vote.object_id = question.id AND vote.user_id=auth_user.id'],
+        params=[question_type_id, user_id],
+        order_by=['-vote.id']
+    ).values(
+            'title',
+            'question_id',
+            'answer_id',
+            'voted_at',
+            'vote',
+            )
+    if(len(question_votes) > 0):
+        votes.extend(question_votes)
+        
+    answer_votes = Vote.objects.extra(
+        select={
+            'title' : 'question.title',
+            'question_id' : 'question.id',
+            'answer_id' : 'answer.id',
+            'voted_at' : 'vote.voted_at',
+            'vote' : 'vote',
+            },
+        select_params=[user_id],
+        tables=['vote', 'answer', 'question', 'auth_user'],
+        where=['vote.content_type_id = %s AND vote.user_id = %s AND vote.object_id = answer.id AND answer.question_id = question.id AND vote.user_id=auth_user.id'],
+        params=[answer_type_id, user_id],
+        order_by=['-vote.id']
+    ).values(
+            'title',
+            'question_id',
+            'answer_id',
+            'voted_at',
+            'vote',
+            )
+    if(len(answer_votes) > 0):
+        votes.extend(answer_votes)
+    votes.sort(lambda x,y: cmp(y['voted_at'], x['voted_at']))    
+    return render_to_response(user_view.template_file,{
+        "tab_name" : user_view.id,
+        "tab_description" : user_view.tab_description,
+        "page_title" : user_view.page_title,
+        "view_user" : user,
+        "votes" : votes[:user_view.data_size]
+        
+    }, context_instance=RequestContext(request))
+    
+def user_reputation(request, user_id, user_view):
+    user = get_object_or_404(User, id=user_id)
+    reputation = Repute.objects.extra(
+        select={'positive': 'sum(positive)', 'negative': 'sum(negative)', 'question_id':'question_id', 'title': 'question.title'}, 
+        tables=['repute', 'question'],
+        order_by=['-reputed_at'],
+        where=['user_id=%s AND question_id=question.id'], 
+        params=[user.id]
+    ).values('positive', 'negative', 'question_id', 'title', 'reputed_at', 'reputation')  
+
+    reputation.query.group_by = ['question_id']
+    
+    rep_list = []
+    for rep in Repute.objects.filter(user=user).order_by('reputed_at'):
+        dic = '[%s,%s]' % (calendar.timegm(rep.reputed_at.timetuple()) * 1000, rep.reputation)
+        rep_list.append(dic)
+    reps = ','.join(rep_list)
+    reps = '[%s]' % reps
+    
+    return render_to_response(user_view.template_file,{
+        "tab_name" : user_view.id,
+        "tab_description" : user_view.tab_description,
+        "page_title" : user_view.page_title,
+        "view_user" : user,
+        "reputation" : reputation,
+        "reps" : reps
     }, context_instance=RequestContext(request))
 
-def users_favorites(request, user_id):
+def user_favorites(request, user_id, user_view):
     user = get_object_or_404(User, id=user_id)
     questions = Question.objects.extra(
         select={
@@ -1014,12 +1436,24 @@ def users_favorites(request, user_id):
              'la_user_silver',
              'la_user_bronze',
              'la_user_reputation')
-    return render_to_response('users_favorites.html',{
-        "tab_name" : "favorites",
-        "questions" : questions,
+    return render_to_response(user_view.template_file,{
+        "tab_name" : user_view.id,
+        "tab_description" : user_view.tab_description,
+        "page_title" : user_view.page_title,
+        "questions" : questions[:user_view.data_size],
         "view_user" : user
     }, context_instance=RequestContext(request))
 
+
+def user_preferences(request, user_id, user_view):
+    user = get_object_or_404(User, id=user_id)
+    return render_to_response(user_view.template_file,{
+        "tab_name" : user_view.id,
+        "tab_description" : user_view.tab_description,
+        "page_title" : user_view.page_title,
+        "view_user" : user,
+    }, context_instance=RequestContext(request))
+    
 def question_comments(request, id):
     question = get_object_or_404(Question, id=id)
     user = request.user

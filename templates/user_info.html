@@ -1,4 +1,5 @@
 {% load extra_tags %}
+{% load extra_filters %}
 {% load humanize %}
 <div id="subheader">
     <h1>{{view_user.username}}</h1>
@@ -25,31 +26,40 @@
         </td>
         <!--cell-->
         <td width="350" style="vertical-align: top;">
-            <div style="float: right; margin-top: 19px; margin-right: 4px;"></div>
+            <div style="float: right; margin-top: 19px; margin-right: 10px;">
+                {% if user|can_view_user_edit:view_user %}
+                <a href="/users/{{ view_user.id }}/edit/">更新我的资料</a>
+                {% endif %}
+            </div>
             <h2 style="margin-top: 20px;">注册用户</h2>
             <table class="user-details">
                 <tr>
-                    <td width="120">用户名</td>
-                    <td width="230"><b>{{view_user.username}}</b></td>
+                    <th width="120" ></th>
+                    <th width="230" ></th>
                 </tr>
+                {% if view_user.real_name %}
+                <tr>
+                    <td >姓名</td>
+                    <td ><b>{{view_user.real_name}}</b></td>
+                </tr>
+                {% endif %}
                 <tr>
                     <td>已加入</td>
                     <td>{{ view_user.date_joined|timesince }}</td>
                 </tr>
                 <tr>
                     <td>上次登录时间</td>
-                    <td><span class="relativetime" title="12/23/2008 1:51:03 AM UTC">{{ view_user.last_login|timesince }}前</span></td>
+                    <td><span class="relativetime" title="{{ view_user.last_login }}">{{ view_user.last_login|timesince }}前</span></td>
                 </tr>
                 {% if view_user.website %}
                 <tr>
                     <td>个人网站</td>
-                    <!--nofollow means prevent search engine follow-->
-                    <td><a rel="nofollow" href="{{view_user.website}}">{{view_user.website}}</a></td>
+                    <td><a rel="nofollow" target="_blank" href="{{view_user.website}}">{{view_user.website}}</a></td>
                 </tr>
                 {% endif  %}
                 {% if view_user.location %}
                 <tr>
-                    <td>位置</td>
+                    <td>城市</td>
                     <td>{{view_user.location}}</td>
                 </tr>
                 {% endif %}
@@ -65,7 +75,7 @@
         <td width="380">
             <div id="user-about-me">
             {% if view_user.about %}
-                {{view_user.about|escape|linebreaks}}
+                {{view_user.about|safe|linebreaks}}
             {% endif %}
             </div>
         </td>
