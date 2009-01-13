@@ -81,12 +81,14 @@ def index(request):
     ma = MAX if end > MAX else end
     #print datetime.datetime.now()
     
+    awards = Award.objects.select_related(depth=1).all()[:10]
     return render_to_response('index.html', {
         "questions" : questions,
         "tab_id" : view_id,
         "tags" : tags,
         "max" : ma,
         "min" : mi,
+        "awards" : awards,
         }, context_instance=RequestContext(request))
 
 def about(request):
@@ -1526,3 +1528,25 @@ def logout(request):
     return render_to_response('logout.html', {
         'next' : url,
     }, context_instance=RequestContext(request))
+    
+def badges(request):
+    badges = Badge.objects.all().order_by('type')
+    my_badges = []
+    if request.user.is_authenticated():
+        my_badges = Award.objects.filter(user=request.user)
+        my_badges.query.group_by = ['badge_id']
+        
+    return render_to_response('badges.html', {
+        'badges' : badges,
+        'mybadges' : my_badges,
+    }, context_instance=RequestContext(request))
+
+def badge(request, id):
+    badge = get_object_or_404(Badge, id=id)
+    awards = Award.objects.filter(badge=badge)
+    
+    return render_to_response('badge.html', {
+        'awards' : awards,
+        'badge' : badge,
+    }, context_instance=RequestContext(request))
+    

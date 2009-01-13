@@ -40,7 +40,8 @@ urlpatterns = patterns('',
     (r'^users/$',app.users),
     url(r'^users/(?P<id>\d+)/edit/$', app.edit_user, name='edit_user'),
     url(r'^users/(?P<id>\d+)//*', app.user, name='user'),
-
+    url(r'^badges/$',app.badges, name='badges'),
+    url(r'^badges/(?P<id>\d+)//*', app.badge, name='badge'),
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^nimda/(.*)', admin.site.root),
 )

@@ -1,4 +1,4 @@
-# encoding:utf-8
+﻿# encoding:utf-8
 import datetime
 import hashlib
 from urllib import quote_plus, urlencode
@@ -300,9 +300,9 @@ class Badge(models.Model):
     SILVER = 2
     BRONZE = 3
     TYPE_CHOICES = (
-        (GOLD,   u'Gold'),
-        (SILVER, u'Silver'),
-        (BRONZE, u'Broze'),
+        (GOLD,   u'金牌'),
+        (SILVER, u'银牌'),
+        (BRONZE, u'铜牌'),
     )
 
     name        = models.CharField(max_length=50)
@@ -323,7 +323,7 @@ class Badge(models.Model):
 
     def save(self, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name)
+            self.slug = self.name#slugify(self.name)
         super(Badge, self).save(**kwargs)
 
     def get_absolute_url(self):

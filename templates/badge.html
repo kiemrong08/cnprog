@@ -1,0 +1,40 @@
+{% extends "base_content.html" %}
+{% load extra_tags %}
+{% load humanize %}
+{% block title %}{% spaceless %}{{ badge.name }}-奖牌{% endspaceless %}{% endblock %}
+{% block forejs %}
+       <script type="text/javascript">
+        $().ready(function(){
+            $("#nav_badges").attr('className',"youarehere");
+        });
+         
+        </script>
+{% endblock %}
+{% block content %}
+<div id="main-bar" class="">
+    <h3>
+        奖牌
+    </h3>
+</div>
+<div id="main-body" style="width:100%;margin-bottom:20px">
+    <div style="" class="paragraph">
+        <a href="{{badge.get_absolute_url}}" title="{{ badge.get_type_display }} : {{ badge.description }}" class="badge"><span class="badge{{ badge.type }}">&#9679;</span>&nbsp;{{ badge.name }}</a> {{ badge.description }}
+    </div>
+    <div>
+        {% if badge.awarded_count %}
+        <div style="float:left"><span class="summarycount">{{ badge.awarded_count|intcomma }}</span></div>
+        <div style="float:left;padding:12px 0px 0px 5px"><h2>用户已被授予该奖牌。最近被授予的用户有：</h2></div>
+        {% endif %}
+    </div>
+    <div id="award-list" style="clear:both;margin-left:20px;line-height:25px;">
+        {% for award in awards %}
+        <div style="width:185px;float:left"><a href="{{ award.user.get_profile_url }}">{{ award.user.username }}</a> {% get_score_badge award.user %}</div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}
+
+
+
+

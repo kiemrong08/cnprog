@@ -152,13 +152,16 @@
          <br>
     </div>
 </div>
-<!--
 <div class="gray-box">
     <h3>最新奖牌</h3>
-    
+    {% for award in awards %}
+    <div style="clear:both;line-height:35px">
+    <a href="{{award.badge.get_absolute_url}}" title="{{ award.badge.get_type_display }} : {{ award.badge.description }}" class="badge"><span class="badge{{ award.badge.type }}">&#9679;</span>&nbsp;{{ award.badge.name }}</a> 授予 <a href="{{ award.user.get_profile_url }}">{{ award.user.username }}</a>
+    </div>
+    {% endfor %}
+    <a href="{% url badges %}" style="float:right;position:relative">所有奖牌 »</a>
+    <br>
 </div>
-
--->
 {% endblock %}
 {% block endjs %}
 
