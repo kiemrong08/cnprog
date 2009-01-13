@@ -363,6 +363,7 @@ class Activity(models.Model):
     content_type   = models.ForeignKey(ContentType)
     object_id      = models.PositiveIntegerField()
     content_object = generic.GenericForeignKey('content_type', 'object_id')
+    is_auditted    = models.BooleanField(default=False)
     
     class Meta:
         db_table = u'activity'
