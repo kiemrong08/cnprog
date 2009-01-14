@@ -4,10 +4,9 @@
 {% load humanize %}
 {% block title %}{% spaceless %}{{ question.get_question_title }}{% endspaceless %}{% endblock %}
 {% block forejs %}
-        {% if not question.closed and user.is_authenticated %}
+        {% if not question.closed and request.user.is_authenticated %}
         <script type='text/javascript' src='/content/js/com.cnprog.editor.js'></script>
         {% endif %}
-        <script type='text/javascript' src='/content/js/com.cnprog.utils.js'></script>
         <script type='text/javascript' src='/content/js/com.cnprog.post.js'></script>
         <script type='text/javascript' src='/content/js/jquery.validate.pack.js'></script>
         <script type="text/javascript">
@@ -19,9 +18,9 @@
             var answer_sort_tab = "{{ tab_id }}";
             $("#" + answer_sort_tab).attr('className',"youarehere");
             
-            Vote.init({{ question.id }}, '{{ question.author.id }}','{{ user.id }}');
+            Vote.init({{ question.id }}, '{{ question.author.id }}','{{ request.user.id }}');
             
-            {% if not question.closed and user.is_authenticated %}initEditor();{% endif %}
+            {% if not question.closed and request.user.is_authenticated %}initEditor();{% endif %}
             
             lanai.highlightSyntax();
             $('#btLogin').bind('click', function(){window.location.href='/account/signin/'; } )
@@ -101,27 +100,27 @@
                                     <tr>
                                         <td width="200px" style="vertical-align:top">
                                             
-                                            {% if user|can_edit_post:question %}
+                                            {% if request.user|can_edit_post:question %}
                                             <span class="action-link"><a href="{% url edit_question question.id %}">编辑</a></span>
                                             <span class="action-link-separator">|</span>
                                             {% endif %}
-                                            {% if user|can_delete_post:question %}
+                                            {% if request.user|can_delete_post:question %}
                                             <span class="action-link"><a id="question-delete-link-{{question.id}}">删除</a></span>
                                             <span class="action-link-separator">|</span>
                                             {% endif %}
                                             {% if question.closed %}
-                                            {% if user|can_reopen_question:question %}
+                                            {% if request.user|can_reopen_question:question %}
                                             <span class="action-link"><a href="{% url reopen question.id %}">打开</a></span>
                                             <span class="action-link-separator">|</span>
                                             {% endif %}
                                             {% else %}
-                                            {% if user|can_close_question:question %}
+                                            {% if request.user|can_close_question:question %}
                                             <span class="action-link"><a href="{% url close question.id %}">关闭</a></span>
                                             <span class="action-link-separator">|</span>
                                             {% endif %}
                                             {% endif %}
                                             
-                                            <span id="question-offensive-flag-{{ question.id }}" class="offensive-flag" title="检举该帖为垃“水帖”（含广告、人身攻击、恶意言论等）"><a>垃圾帖？</a><span class="darkred">{% if user|can_view_offensive_flags %} {% if question.offensive_flag_count %}({{ question.offensive_flag_count }}){% endif %}{% endif %}</span>
+                                            <span id="question-offensive-flag-{{ question.id }}" class="offensive-flag" title="检举该帖为垃“水帖”（含广告、人身攻击、恶意言论等）"><a>垃圾帖？</a><span class="darkred">{% if request.user|can_view_offensive_flags %} {% if question.offensive_flag_count %}({{ question.offensive_flag_count }}){% endif %}{% endif %}</span>
                                                              
                                             </span>
                                             
@@ -209,7 +208,7 @@
                             </div>
                             
                             <div class="post-comments" style="margin-bottom:20px">
-                                <input id="can-post-comments-question-{{question.id}}" type="hidden" value="{{ user|can_add_comments }}"/>
+                                <input id="can-post-comments-question-{{question.id}}" type="hidden" value="{{ request.user|can_add_comments }}"/>
                                 <a id="comments-link-question-{{question.id}}" class="comments-link">{% if question.comment_count %}评论 <strong>({{question.comment_count}})</strong>{% else %}添加评论{% endif %}</a>
                                 <div id="comments-question-{{question.id}}" class="comments-container">
                                 <div class="comments"/></div>
@@ -266,11 +265,11 @@
                                             <table width="585px">
                         	                    <tr>
                                                     <td width="200px" style="vertical-align:top">
-                                                        {% if user|can_edit_post:answer %}
+                                                        {% if request.user|can_edit_post:answer %}
                                                         <span class="action-link"><a href="{% url edit_answer answer.id %}">编辑</a></span>
                                                         <span class="action-link-separator">|</span>
                                                         {% endif %}
-                                                        {% if user|can_delete_post:answer %}
+                                                        {% if request.user|can_delete_post:answer %}
                                                         <span class="action-link"><a id="answer-delete-link-{{answer.id}}">删除</a></span>
                                                         <span class="action-link-separator">|</span>
                                                         {% endif %}
@@ -362,7 +361,7 @@
                                             
                                         </div>
                                         <div id="comment-{{ answer.id }}" class="post-comments {% if answer.accepted %}comment-link-accepted{% endif %}" >
-                                            <input id="can-post-comments-answer-{{answer.id}}" type="hidden" value="{{ user|can_add_comments }}"/>
+                                            <input id="can-post-comments-answer-{{answer.id}}" type="hidden" value="{{ request.user|can_add_comments }}"/>
                                             <a id="comments-link-answer-{{answer.id}}" class="comments-link">{% if answer.comment_count %}评论 <strong>({{question.comment_count}})</strong>{% else %}添加评论{% endif %}</a>
                                             <div id="comments-answer-{{answer.id}}" class="comments-container">
                                             <div class="comments"/></div>
@@ -385,7 +384,7 @@
             </div>
             
             {% if not question.closed %}
-            {% if user.is_authenticated %}
+            {% if request.user.is_authenticated %}
             <div style="padding:10px 0 0 0;">
                 <h3>您的回答：</h3>
             </div>

@@ -27,7 +27,7 @@
         <!--cell-->
         <td width="350" style="vertical-align: top;">
             <div style="float: right; margin-top: 19px; margin-right: 10px;">
-                {% if user|can_view_user_edit:view_user %}
+                {% if request.user|can_view_user_edit:view_user %}
                 <a href="/users/{{ view_user.id }}/edit/">更新我的资料</a>
                 {% endif %}
             </div>

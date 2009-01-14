@@ -1,4 +1,5 @@
-﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+﻿{% load extra_filters %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
     <head>
         <title>{% block title %}{% endblock %} - CNProg.com 程序员问答社区</title>
@@ -9,12 +10,29 @@
         <meta name="verify-v1" content="55uGNnQVJW8p1bbXeF/Xbh9I7nZBM/wLhRz6N/I1kkA=" />
         <link rel="shortcut icon" href="/content/images/favicon.ico" >
         <link href="/content/style/default.css" rel="stylesheet" type="text/css" />
+        <script type='text/javascript' src='/content/js/com.cnprog.utils.js'></script>
         <script src="http://www.google.com/jsapi"></script>
         <script>google.load("jquery", "1.2.6");</script>
+
+        {% if request.user.is_anonymous %}
+        <style type="text/css"> 
+            body { margin-top:2.4em; }
+        </style> 
+        <script type="text/javascript"> 
+            $().ready(function() {
+                notify.show();
+            });
+         </script>
+        {% endif %}
+
         {% block forejs %}
         {% endblock %}
     </head>
     <body>
+        <div class="notify" style="display:none"> 
+            <span>{% block message %}{% if request.user.is_anonymous %}第一次来CNProg吧？别忘记瞅瞅<a href="/faq/">FAQ</a>哦！{% endif %}{% endblock %}</span> 
+            <a class="close-notify" onclick="notify.close(true)">&times;</a> 
+        </div> 
         <div id="container">
             <div id="header">
                 {% include "header.html" %}

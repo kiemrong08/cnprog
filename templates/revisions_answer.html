@@ -49,7 +49,7 @@
                         {% if revision.summary %}
                         <div class="summary"><span>{{ revision.summary }}<span></div>
                         {% endif %}
-                        {% if user|can_edit_post:post %}
+                        {% if request.user|can_edit_post:post %}
                         <a href="{% url edit_answer post.id %}?revision={{ revision.revision }}">编辑</a>
                         {% endif %}
   

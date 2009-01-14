@@ -1550,3 +1550,8 @@ def badge(request, id):
         'badge' : badge,
     }, context_instance=RequestContext(request))
     
+def read_message(request):
+    if request.method == "POST":
+        if request.POST['formdata'] == 'required':
+            request.session['message_silent'] = 1
+    return HttpResponse('')

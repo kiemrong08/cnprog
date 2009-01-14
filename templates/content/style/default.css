@@ -327,7 +327,40 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
     letter-spacing:1px;
     background-color:#D4D0C8;
 }
+.notify
+{
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	z-index: 100;
+	padding: 7px 0 5px 0;
+	text-align: center;
+	font-size: 130%;
+	font-weight: Bold;
+	color: #444;
+	background-color: #F4A83D;
+}
 
+.notify span
+{
+	float: left;
+	width: 95%;
+	text-align: center;
+}
+
+.close-notify
+{
+	float: right;
+	margin-right: 20px;
+	color: #735005;
+	text-decoration: none;
+	background-color: #FAD163;
+	border: 2px #735005 solid;
+	padding-left: 3px;
+	padding-right: 3px;
+    cursor:pointer;
+}
 .small{
     font-size:90%;
     color:#777;

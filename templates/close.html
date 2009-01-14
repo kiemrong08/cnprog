@@ -15,7 +15,7 @@
         关闭问题
     </h3>
 </div>
-<div id="main-body" style="width:100%">
+<div id="main-body" style="width:100%;margin-bottom:10px">
     <div class="paragraph">由于以下原因，你要关闭这个问题： <a href="{{ question.get_absolute_url }}"><span class="big">{{ question.get_question_title }}</span></a></div>   
     
     <form id="fmclose" action="{% url close question.id %}" method="post" >

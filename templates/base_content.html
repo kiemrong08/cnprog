@@ -9,12 +9,17 @@
 		 {% spaceless %}
         {% block forestyle %}{% endblock %}
         {% endspaceless %}
+        <script type='text/javascript' src='/content/js/com.cnprog.utils.js'></script>
         <script src="http://www.google.com/jsapi"></script>
         <script>google.load("jquery", "1.2.6");</script>
         {% block forejs %}
         {% endblock %}
     </head>
     <body>
+        <div class="notify" style="display:none"> 
+            <span>{% block message %}{% endblock %}</span> 
+            <a class="close-notify" onclick="notify.close(true)">&times;</a> 
+        </div> 
         <div id="container">
             {% include "header.html" %}
             <div id="content">
