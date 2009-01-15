@@ -125,6 +125,7 @@
 {% endblock %}
 
 {% block sidebar %}
+{% if not request.user.is_authenticated %}
 <div class="yellow-box">
     <h3 class="darkred">CNPROG.COM 欢迎您 !</h3>
     <div class="highlight-box">
@@ -141,6 +142,7 @@
         </div>
     </div>
 </div>
+{% endif %}
 <div class="gray-box">
     <h3>最新标签</h3>
     <div id="recent-tags">

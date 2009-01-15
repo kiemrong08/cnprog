@@ -81,7 +81,7 @@ def index(request):
     ma = MAX if end > MAX else end
     #print datetime.datetime.now()
     
-    awards = Award.objects.select_related(depth=1).all()[:10]
+    awards = Award.objects.select_related(depth=1).all().order_by('-awarded_at')[:10]
     return render_to_response('index.html', {
         "questions" : questions,
         "tab_id" : view_id,
@@ -589,8 +589,6 @@ def answer(request, id):
                 question = question,
                 author = request.user,
                 added_at = update_time,
-                last_edited_at  = update_time,
-                last_edited_by = request.user,
                 wiki = form.cleaned_data['wiki'],
                 html = sanitize_html(markdowner.convert(form.cleaned_data['text'])),
             )
@@ -929,7 +927,7 @@ def user_stats(request, user_id, user_view):
     user = get_object_or_404(User, id=user_id)
     questions = Question.objects.extra(
         select={
-            'vote_count' : 'question.vote_up_count + question.vote_down_count',
+            'vote_count' : 'question.score',
             'favorited_myself' : 'SELECT count(*) FROM favorite_question f WHERE f.user_id = %s AND f.question_id = question.id',
             'la_user_id' : 'auth_user.id',
             'la_username' : 'auth_user.username',
@@ -940,9 +938,9 @@ def user_stats(request, user_id, user_view):
             },
         select_params=[user_id],
         tables=['question', 'auth_user'],
-        where=['question.deleted = 0 AND question.author_id=%s AND question.last_activity_by_id = auth_user.id'],
+        where=['question.deleted = 0 AND question.author_id=%s AND question.author_id = auth_user.id'],
         params=[user_id],
-        order_by=['-vote_count', '-question.id']
+        order_by=['-vote_count', '-added_at']
     ).values('vote_count',
              'favorited_myself',
              'id',
@@ -964,30 +962,43 @@ def user_stats(request, user_id, user_view):
              'la_user_gold',
              'la_user_silver',
              'la_user_bronze',
-             'la_user_reputation')
+             'la_user_reputation')[:100]
     
     answered_questions = Question.objects.extra(
         select={
-            'vote_count' : 'question.vote_up_count + question.vote_down_count',
-            'user_answered_count' : 'SELECT count(*) FROM answer a2 WHERE a2.author_id = %s AND a2.question_id=question.id' 
+            'vote_up_count' : 'answer.vote_up_count',
+            'vote_down_count' : 'answer.vote_down_count',
+            'answer_id' : 'answer.id',
+            'accepted' : 'answer.accepted',
+            'vote_count' : 'answer.score',
+            'comment_count' : 'answer.comment_count' 
             },
         tables=['question', 'answer'],
         where=['answer.deleted=0 AND answer.author_id=%s AND answer.question_id=question.id'],
         params=[user_id],
-        order_by=['-vote_count', '-answer.id'],
+        order_by=['-vote_count', '-answer_id'],
         select_params=[user_id]
-    ).distinct().values('user_answered_count', 
+    ).distinct().values('comment_count', 
                         'id', 
+                        'answer_id',
                         'title', 
                         'author_id', 
-                        'answer_accepted',
+                        'accepted',
                         'answer_count',
                         'vote_up_count',
-                        'vote_down_count')
+                        'vote_down_count')[:100]
     up_votes = Vote.objects.get_up_vote_count_from_user(user)
     down_votes = Vote.objects.get_down_vote_count_from_user(user)
     tags = user.created_tags.all().order_by('-used_count')[:50]
-    # TODO: Badges
+    awards = Award.objects.extra(
+        select={'id': 'badge.id', 'count': 'count(badge_id)', 'name':'badge.name', 'description': 'badge.description', 'type': 'badge.type'}, 
+        tables=['award', 'badge'],
+        order_by=['-awarded_at'],
+        where=['user_id=%s AND badge_id=badge.id'], 
+        params=[user.id]
+    ).values('id', 'count', 'name', 'description', 'type') 
+    total_awards = awards.count()
+    awards.query.group_by = ['badge_id']
     
     return render_to_response(user_view.template_file,{
         "tab_name" : user_view.id,
@@ -999,7 +1010,9 @@ def user_stats(request, user_id, user_view):
         "up_votes" : up_votes,
         "down_votes" : down_votes,
         "total_votes": up_votes + down_votes,
-        "tags" : tags
+        "tags" : tags,
+        "awards": awards,
+        "total_awards" : total_awards,
     }, context_instance=RequestContext(request))
 
 def user_recent(request, user_id, user_view):
@@ -1543,7 +1556,12 @@ def badges(request):
 
 def badge(request, id):
     badge = get_object_or_404(Badge, id=id)
-    awards = Award.objects.filter(badge=badge)
+    awards = Award.objects.extra(
+        select={'id': 'auth_user.id', 'name': 'auth_user.username', 'rep':'auth_user.reputation', 'gold': 'auth_user.gold', 'silver': 'auth_user.silver', 'bronze': 'auth_user.bronze'}, 
+        tables=['award', 'auth_user'],
+        where=['badge_id=%s AND user_id=auth_user.id'], 
+        params=[id]
+    ).values('id').distinct()
     
     return render_to_response('badge.html', {
         'awards' : awards,

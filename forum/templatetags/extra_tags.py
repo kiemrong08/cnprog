@@ -115,17 +115,17 @@ def cnprog_pagesize(context):
 def get_score_badge(user):
     BADGE_TEMPLATE = '<span class="reputation-score" title="%(reputation)s用户积分">%(reputation)s</span>'
     if user.gold > 0 :
-        BADGE_TEMPLATE = '%s%s' % (BADGE_TEMPLATE, '<span title="%(gold)s金牌">'
+        BADGE_TEMPLATE = '%s%s' % (BADGE_TEMPLATE, '<span title="%(gold)s枚金牌">'
         '<span class="badge1">●</span>'
         '<span class="badgecount">%(gold)s</span>'
         '</span>')
     if user.silver > 0:
-        BADGE_TEMPLATE = '%s%s' % (BADGE_TEMPLATE, '<span title="%(silver)s银牌">'
+        BADGE_TEMPLATE = '%s%s' % (BADGE_TEMPLATE, '<span title="%(silver)s枚银牌">'
         '<span class="badge2">●</span>'
         '<span class="badgecount">%(silver)s</span>'
         '</span>')
     if user.bronze > 0:
-        BADGE_TEMPLATE = '%s%s' % (BADGE_TEMPLATE, '<span title="%(bronze)s铜牌">'
+        BADGE_TEMPLATE = '%s%s' % (BADGE_TEMPLATE, '<span title="%(bronze)s枚铜牌">'
         '<span class="badge3">●</span>'
         '<span class="badgecount">%(bronze)s</span>'
         '</span>')
@@ -136,7 +136,33 @@ def get_score_badge(user):
         'silver' : user.silver,
         'bronze' : user.bronze,
     })
-        
+    
+@register.simple_tag
+def get_score_badge_by_details(rep, gold, silver, bronze):
+    BADGE_TEMPLATE = '<span class="reputation-score" title="%(reputation)s用户积分">%(reputation)s</span>'
+    if gold > 0 :
+        BADGE_TEMPLATE = '%s%s' % (BADGE_TEMPLATE, '<span title="%(gold)s枚金牌">'
+        '<span class="badge1">●</span>'
+        '<span class="badgecount">%(gold)s</span>'
+        '</span>')
+    if silver > 0:
+        BADGE_TEMPLATE = '%s%s' % (BADGE_TEMPLATE, '<span title="%(silver)s枚银牌">'
+        '<span class="badge2">●</span>'
+        '<span class="badgecount">%(silver)s</span>'
+        '</span>')
+    if bronze > 0:
+        BADGE_TEMPLATE = '%s%s' % (BADGE_TEMPLATE, '<span title="%(bronze)s枚铜牌">'
+        '<span class="badge3">●</span>'
+        '<span class="badgecount">%(bronze)s</span>'
+        '</span>')
+    BADGE_TEMPLATE = smart_unicode(BADGE_TEMPLATE, encoding='utf-8', strings_only=False, errors='strict')
+    return mark_safe(BADGE_TEMPLATE % {
+        'reputation' : rep,
+        'gold' : gold,
+        'silver' : silver,
+        'bronze' : bronze,
+    })      
+    
 @register.simple_tag
 def get_user_vote_image(dic, key, arrow):
     if dic.has_key(key):
@@ -185,3 +211,22 @@ def diff_date(date, limen=2):
         return date
     else:
         return timesince(date) + u'前'
+        
+@register.simple_tag
+def get_latest_changed_timestamp():
+    try:
+        from time import localtime, strftime
+        from os import path
+        from django.conf import settings
+        root = settings.SITE_SRC_ROOT
+        dir = (
+            root,
+            '%s/forum' % root,
+            '%s/templates' % root,
+        )
+        stamp = (path.getmtime(d) for d in dir)
+        latest = max(stamp)
+        timestr = strftime("%H:%M %b-%d-%Y %Z", localtime(latest))
+    except:
+        timestr = ''
+    return timestr

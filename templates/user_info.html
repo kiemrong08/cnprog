@@ -47,10 +47,12 @@
                     <td>已加入</td>
                     <td>{{ view_user.date_joined|timesince }}</td>
                 </tr>
+                {% if view_user.last_seen %}
                 <tr>
-                    <td>上次登录时间</td>
-                    <td><span class="relativetime" title="{{ view_user.last_login }}">{{ view_user.last_login|timesince }}前</span></td>
+                    <td>上次活动时间</td>
+                    <td><span class="relativetime" title="{{ view_user.last_seen }}">{{ view_user.last_seen|timesince }}前</span></td>
                 </tr>
+                {% endif %}
                 {% if view_user.website %}
                 <tr>
                     <td>个人网站</td>

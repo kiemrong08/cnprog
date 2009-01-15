@@ -23,10 +23,10 @@
                         <table width="100%">
                             <tr>
                                 <td height="25" style="vertical-align: middle;">
-                                    <span class="vote-count-post"><strong style="font-size: 190%;">{{question.vote_count|intcomma}}</strong></span> 
+                                    <span class="vote-count-post"><strong style="font-size: 190%;color:#555">{{question.vote_count|intcomma}}</strong></span> 
                                 </td>
                             </tr>
-                            <tr><td class="box-unit">票</td></tr>
+                            <tr><td class="box-unit" style="color:#555">票</td></tr>
                         </table>               
                     </div>
                 </div>
@@ -65,13 +65,7 @@
             <div class="started">
                 <span class="relativetime" title="{{question.last_activity_at}}">{% diff_date question.last_activity_at %}</span>
                 {% if question.la_username %}
-                    <a href="/users/{{question.la_user_id}}/{{question.la_username}}">{{question.la_username}}</a> <span title="reputation score" class="reputation-score">{{question.la_user_reputation|intcomma}}</span>
-                    {% if question.la_user_gold %}<span title="{{question.la_user_gold}} 枚金牌"><span class="badge1">●</span><span class="badgecount">{{question.la_user_gold}}</span></span>
-                    {% endif %}
-                    {% if question.la_user_silver %}<span title="{{question.la_user_silver}} 枚银牌"><span class="badge2">●</span><span class="badgecount">{{question.la_user_silver}}</span></span>
-                    {% endif %}
-                    {% if question.la_user_bronze %}<span title="{{question.la_user_bronze}}枚铜牌"><span class="badge3">●</span><span class="badgecount">{{question.la_user_bronze}}</span></span>
-                    {% endif %}
+                    <a href="/users/{{question.la_user_id}}/{{question.la_username}}">{{question.la_username}}</a> {% get_score_badge_by_details question.la_user_reputation question.la_user_gold question.la_user_silver question.la_user_bronze%}
                 {% endif %}
             </div>
         </div>

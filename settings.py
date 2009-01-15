@@ -4,6 +4,7 @@ import os.path
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
+SITE_SRC_ROOT = 'c:/Projects/Lanai/src'
 #David Cramer debug toolbar
 INTERNAL_IPS = ('127.0.0.1',)
 DEBUG_TOOLBAR_PANELS = (
@@ -104,6 +105,7 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'django.middleware.gzip.GZipMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',

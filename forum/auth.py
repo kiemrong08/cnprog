@@ -258,6 +258,8 @@ def onUpVotedCanceled(vote, post, user):
     vote.delete()
     
     post.vote_up_count = int(post.vote_up_count) - 1
+    if post.vote_up_count < 0:
+        post.vote_up_count  = 0
     post.score = int(post.score) - 1
     post.save() 
     
@@ -302,6 +304,8 @@ def onDownVotedCanceled(vote, post, user):
     vote.delete()
     
     post.vote_down_count = int(post.vote_down_count) - 1
+    if post.vote_down_count < 0:
+        post.vote_down_count  = 0
     post.score = post.score + 1
     post.save()
     

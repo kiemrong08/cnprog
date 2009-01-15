@@ -441,7 +441,14 @@ def record_answer_accepted(instance, created, **kwargs):
     if instance.reputation_type == 2:
         activity = Activity(user=instance.user, active_at=instance.reputed_at, content_object=instance, activity_type=8)
         activity.save() 
-        
+def update_last_seen(instance, created, **kwargs):
+    """
+    when user has activities, we update 'last_seen' time stamp for him
+    """
+    user = instance.user
+    user.last_seen = datetime.datetime.now()
+    user.save()
+    
 #signal for User modle save changes
 pre_save.connect(calculate_gravatar_hash, sender=User)        
 post_save.connect(record_ask_event, sender=Question)
@@ -451,3 +458,4 @@ post_save.connect(record_revision_question_event, sender=QuestionRevision)
 post_save.connect(record_revision_answer_event, sender=AnswerRevision)
 post_save.connect(record_award_event, sender=Award)
 post_save.connect(record_answer_accepted, sender=Repute)
+post_save.connect(update_last_seen, sender=Activity)

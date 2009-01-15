@@ -496,6 +496,7 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
     margin-bottom:20px;
     line-height:20px;
     padding:10px 10px 5px;
+    overflow:hidden;
 }
 
 .gray-box ul{
@@ -910,6 +911,7 @@ div.grippie {
     cursor:pointer;
     font-weight:bold;
     font-size:120%;
+    background-color:#D4D0C8;
 }
 
 .openid-samples{
@@ -1101,6 +1103,7 @@ div.grippie {
     cursor:pointer;
     #padding-bottom:0px;
     #padding-top:0px
+    background-color:#D4D0C8;
 }
 
 form .error{

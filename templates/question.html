@@ -120,7 +120,7 @@
                                             {% endif %}
                                             {% endif %}
                                             
-                                            <span id="question-offensive-flag-{{ question.id }}" class="offensive-flag" title="检举该帖为垃“水帖”（含广告、人身攻击、恶意言论等）"><a>垃圾帖？</a><span class="darkred">{% if request.user|can_view_offensive_flags %} {% if question.offensive_flag_count %}({{ question.offensive_flag_count }}){% endif %}{% endif %}</span>
+                                            <span id="question-offensive-flag-{{ question.id }}" class="offensive-flag" title="检举该帖为垃“水帖”（含广告、人身攻击、恶意言论等）"><a>垃圾帖？</a><span class="darkred">{% if request.user|can_view_offensive_flags %}{% if question.offensive_flag_count %}({{ question.offensive_flag_count }}){% endif %}{% endif %}</span>
                                                              
                                             </span>
                                             
@@ -220,7 +220,7 @@
                 </tr>
             </table>
             {% if question.closed %}
-            <div class="question-status">
+            <div class="question-status" style="margin-bottom:15px">
             <h3>问题以“{{ question.get_close_reason_display }}”的原因被 <a href="{{ question.closed_by.get_profile_url }}">{{ question.closed_by.username }}</a> 于{% diff_date question.closed_at %}<font class="darkred">关闭</font></h3>
             </div>
             {% endif %}
@@ -279,7 +279,7 @@
                                                             </a>
                                                         </span>
                                                         <span class="action-link-separator">|</span>
-                                                        <span id="answer-offensive-flag-{{ answer.id }}" class="offensive-flag" title="检举该帖为垃“水帖”（含广告、人身攻击、恶意言论等）"><a>垃圾帖？</a><span class="darkred">{% if can_view_offensive_flags %} {% if answer.offensive_flag_count %}({{ answer.offensive_flag_count }}){% endif %}{% endif %}</span></span>
+                                                        <span id="answer-offensive-flag-{{ answer.id }}" class="offensive-flag" title="检举该帖为垃“水帖”（含广告、人身攻击、恶意言论等）"><a>垃圾帖？</a><span class="darkred">{% if request.user|can_view_offensive_flags %}{% if answer.offensive_flag_count %}({{ answer.offensive_flag_count }}){% endif %}{% endif %}</span></span>
                                                     </td>
                         	                    	<td width="200px" style="vertical-align:top">
                                                     {% if answer.last_edited_by %}

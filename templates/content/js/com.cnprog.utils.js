@@ -11,38 +11,14 @@ var showMessage = function(object, msg) {
 
 var notify = function() {
     var visible = false;
-    var cookie_name = 'message_silent';
-    var setCookie= function (value) {
-		var date = new Date();
-		date.setTime(date.getTime()+(24*60*60*1000));
-		var expires = "; expires="+date.toGMTString();
-		document.cookie = cookie_name+"="+value+expires+"; path=/";
-    };
-        
-    var readCookie= function () {
-		var nameEQ = cookie_name + "=";
-		var ca = document.cookie.split(';');
-		for(var i=0;i < ca.length;i++) {
-			var c = ca[i];
-			while (c.charAt(0)==' ') c = c.substring(1,c.length);
-			if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-		}
-		return null;
-    };
-    
     return {
         show: function(html) {
-            var k = readCookie();
-            if(k != 11){
-                if (html) {
-                    $("body").css("margin-top", "2.2em");
-                    $(".notify span").html(html);        
-                }          
-                $(".notify").fadeIn("slow");
-                visible = true;
-            }
-            else
-                $("body").css("margin-top", "0");
+            if (html) {
+                $("body").css("margin-top", "2.2em");
+                $(".notify span").html(html);        
+            }          
+            $(".notify").fadeIn("slow");
+            visible = true;
         },       
         close: function(doPostback) {
             if (doPostback) {
@@ -51,7 +27,6 @@ var notify = function() {
             $(".notify").fadeOut("fast");
             $("body").css("margin-top", "0");
             visible = false;
-            setCookie(1);
         },     
         isVisible: function() { return visible; }     
     };
