@@ -18,26 +18,51 @@
 </div>
 <div class="login">
     <form name="openid_form" action="{% url user_signin %}" method="post">
-    {{ form2.next }}
-    <div class="message">使用CNProg<strong class="darkred">无需注册</strong>，使用OpenID登录后绑定系统用户即可。</div>
-    <div id="openid_choice">
-        <div style="padding:10px 0 10px 0"><strong>请选择您的帐号类型并完成正确的OpenID地址（如：替换{username}为您的对应帐号）：</strong> </div>
-        <div id="openid_btns"></div>
-    </div>
-    <br>
-    
-	<div style="margin-top:30px">
+        {{ form2.next }}
+        <div class="paragraph" style="display:none">CNProg支持<b>两种</b>登录模式。您可以使用帐号、密码登录，或者使用OpenID登录。</div>
         {% if msg %}
-        	<p class="warning">{{ msg }}</p>
+            <div class="paragraph warning">{{ msg }}</div>
         {% endif %}
-        {{ form2.openid_url }} <input id="bsignin" name="bsignin" type="submit" value="登录" class="openid-login-submit" />
-	</div>
-    
-    <div style="margin:20px 0 20px 0">
-        <span class="darkred">登录前请确认您的OpenID帐号已经在服务提供商被激活或启用。</span>
-    </div
-
-</form>
+        <fieldset class="fieldset">
+    		<legend class="big">使用OpenID登录</legend>
+            <div id="openid_choice">
+                <div style="padding:10px 0 10px 0">请选择您的帐号类型并完成正确的OpenID地址（如：替换“{username}”为您的对应帐号）：</div>
+                <div id="openid_btns"></div>
+            </div>
+            <br>
+            
+        	<div style="margin:30px 0 10px 0">
+                {{ form2.openid_url }} <input id="bsignin" name="bsignin" type="submit" value="登录" class="openid-login-submit" />
+        	</div>
+        </fieldset>	
+    </form>
+    <div style="display:none">
+        <br>
+        {% if form1.errors %}
+        <p class="errors">
+            <span class="big">请注意以下错误：</span><br>
+            <ul class="error-list">
+                {% if form1.username.errors %} 
+                <li><span class="error">{{ form1.username.errors|join:", " }}</span></li>
+                {% endif %}
+                {% if form1.password.errors %} 
+                <li><span class="error">{{ form1.password.errors|join:", " }}</span></li>
+                {% endif %}
+            </ul>
+        </p>
+        {% endif %}
+        <br>
+        <form name="fauth" action="{% url user_signin %}" method="post">
+            {{ form1.next }}
+        	<fieldset class="fieldset" >
+        		<legend class="big">使用帐号密码登录</legend>
+        		<div class="form-row"><label for="id_username">用户名：</label><br />{{ form1.username }}</div>
+        		<div class="form-row"><label for="id_password">密码：</label><br />{{ form1.password }}</div>
+               <div class="submit-row"><input type="submit" class="submit" name="blogin" value="登录"> <a href="">忘记密码？</a> <a href="">注册新帐号</a></div>
+           
+        	</fieldset>	
+        </form>
+    </div>
 </div>	
 {% endblock %}
 

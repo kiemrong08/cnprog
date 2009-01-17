@@ -247,7 +247,7 @@
                                         <img id="answer-img-upvote-{{ answer.id }}" class="answer-img-upvote" src="/content/images/vote-arrow-up{% get_user_vote_image user_answer_votes answer.id 1 %}.png" title="这篇帖子有价值（再次点击取消操作）" >
                                         <div id="answer-vote-number-{{ answer.id }}" class="vote-number">{{ answer.score }}</div>
                                         <img id="answer-img-downvote-{{ answer.id }}" class="answer-img-downvote" src="/content/images/vote-arrow-down{% get_user_vote_image user_answer_votes answer.id -1 %}.png" title="这篇帖子没有价值（再次点击取消操作）" >
-                                        {% ifequal user question.author  %}
+                                        {% ifequal request.user question.author  %}
                                         <img id="answer-img-accept-{{ answer.id }}" class="answer-img-accept" src="/content/images/vote-accepted{% if answer.accepted %}-on{% endif %}.png" title="最佳答案（再次点击取消操作）" >
                                         {% else %}
                                             {% if answer.accepted %}
@@ -360,9 +360,9 @@
                                             </table>
                                             
                                         </div>
-                                        <div id="comment-{{ answer.id }}" class="post-comments {% if answer.accepted %}comment-link-accepted{% endif %}" >
+                                        <div id="comment-{{ answer.id }}" class="post-comments" >
                                             <input id="can-post-comments-answer-{{answer.id}}" type="hidden" value="{{ request.user|can_add_comments }}"/>
-                                            <a id="comments-link-answer-{{answer.id}}" class="comments-link">{% if answer.comment_count %}评论 <strong>({{question.comment_count}})</strong>{% else %}添加评论{% endif %}</a>
+                                            <a id="comments-link-answer-{{answer.id}}" class="comments-link">{% if answer.comment_count %}评论 <strong>({{answer.comment_count}})</strong>{% else %}添加评论{% endif %}</a>
                                             <div id="comments-answer-{{answer.id}}" class="comments-container">
                                             <div class="comments"/></div>
                                         </div>

@@ -14,6 +14,7 @@ urlpatterns = patterns('',
         {'document_root': os.path.join(os.path.dirname(__file__), 'templates/content').replace('\\','/')}
     ),
     (r'^account/', include('django_authopenid.urls')),
+    (r'^signin/$', 'django_authopenid.views.signin'),
     url(r'^about/$', app.about, name='about'),
     url(r'^faq/$', app.faq, name='faq'),
     url(r'^privacy/$', app.privacy, name='privacy'),

@@ -76,6 +76,8 @@ class OpenidSigninForm(forms.Form):
 
 attrs_dict = { 'class': 'required login' }
 username_re = re.compile(r'^\w+$')
+RESERVED_NAMES = (u'fuck', u'shit', u'ass', u'sex', u'add',
+                   u'edit', u'save', u'delete', u'manage', u'update', 'remove', 'new')
 
 class OpenidAuthForm(forms.Form):
     """ legacy account signin form """
@@ -153,8 +155,11 @@ class OpenidRegisterForm(forms.Form):
         """ test if username is valid and exist in database """
         if 'username' in self.cleaned_data:
             if not username_re.search(self.cleaned_data['username']):
-                raise forms.ValidationError(_("Usernames can only contain \
-                    letters, numbers and underscores"))
+                raise forms.ValidationError(u"用户名只能包含英文字母、数字和下划线")
+            if self.cleaned_data['username'] in RESERVED_NAMES:
+                raise forms.ValidationError(u'对不起，您不能注册该用户名，请换一个试试')
+            if len(self.cleaned_data['username']) < 3:
+                raise forms.ValidationError(u'用户名太短，请使用三个或三个以上字符')
             try:
                 user = User.objects.get(
                         username__exact = self.cleaned_data['username']
@@ -162,11 +167,8 @@ class OpenidRegisterForm(forms.Form):
             except User.DoesNotExist:
                 return self.cleaned_data['username']
             except User.MultipleObjectsReturned:
-                raise forms.ValidationError(u'There is already more than one \
-                    account registered with that username. Please try \
-                    another.')
-            raise forms.ValidationError(_("This username is already \
-                taken. Please choose another."))
+                raise forms.ValidationError(u'该用户名已被注册，请换一个试试')
+            raise forms.ValidationError(u'该用户名已被注册，请换个试试')
             
     def clean_email(self):
         """For security reason one unique email in database"""

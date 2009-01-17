@@ -103,7 +103,10 @@ class AnswerForm(forms.Form):
     openid = forms.CharField(required=False, max_length=255, widget=forms.TextInput(attrs={'size' : 40, 'class':'openid-input'}))
     user   = forms.CharField(required=False, max_length=255, widget=forms.TextInput(attrs={'size' : 35}))
     email  = forms.CharField(required=False, max_length=255, widget=forms.TextInput(attrs={'size' : 35}))
-
+    def __init__(self, question, *args, **kwargs):
+        super(AnswerForm, self).__init__(*args, **kwargs)
+        if question.wiki:
+            self.fields['wiki'].initial = True
         
 class CloseForm(forms.Form):
     reason = forms.ChoiceField(choices=CLOSE_REASONS)
@@ -168,9 +171,24 @@ class EditUserForm(forms.Form):
         self.fields['realname'].initial = user.real_name
         self.fields['website'].initial = user.website
         self.fields['city'].initial = user.location
+        
         if user.date_of_birth is not None:
             self.fields['birthday'].initial = user.date_of_birth.date()
         else:
             self.fields['birthday'].initial = '1990-01-01'
         self.fields['about'].initial = user.about
-    
+        self.user = user
+        
+    def clean_email(self):
+        """For security reason one unique email in database"""
+        if self.user.email != self.cleaned_data['email']:
+            if 'email' in self.cleaned_data:
+                try:
+                    user = User.objects.get(email = self.cleaned_data['email'])
+                except User.DoesNotExist:
+                    return self.cleaned_data['email']
+                except User.MultipleObjectsReturned:
+                    raise forms.ValidationError(u'该电子邮件已被注册，请选择另一个再试。')
+                raise forms.ValidationError("该电子邮件帐号已被注册，请选择另一个再试。")
+        else:
+            return self.cleaned_data['email']

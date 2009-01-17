@@ -204,11 +204,15 @@ def ask(request):
                 last_activity_at = added_at,
                 last_activity_by = request.user,
                 wiki             = form.cleaned_data['wiki'],
-                wikified_at      = added_at,
                 tagnames         = form.cleaned_data['tags'].strip(),
                 html             = html,
                 summary          = strip_tags(html)[:120]
             )
+            if question.wiki:
+                question.last_edited_by = question.author
+                question.last_edited_at = added_at
+                question.wikified_at = added_at
+                
             question.save()
             
             # create the first revision
@@ -240,18 +244,18 @@ def question(request, id):
         page = int(request.GET.get('page', '1'))        
     except ValueError:
         page = 1
-    view_id = request.GET.get('sort', 'latest')
+    view_id = request.GET.get('sort', 'votes')
     view_dic = {"latest":"-added_at", "oldest":"added_at", "votes":"-score" }
     try:
         orderby = view_dic[view_id]
     except KeyError:
-        view_id = "latest"
-        orderby = "-added_at"
+        view_id = "votes"
+        orderby = "-score"
         
     question = get_object_or_404(Question, id=id)
     if question.deleted and not can_view_deleted_post(request.user, question):
         raise Http404
-    answer_form = AnswerForm()
+    answer_form = AnswerForm(question)
     answers = Answer.objects.get_answers_from_question(question, request.user)
     answers = answers.select_related(depth=1)
     
@@ -582,7 +586,7 @@ def answer_revisions(request, id):
 def answer(request, id):
     question = get_object_or_404(Question, id=id)
     if request.method == "POST":
-        form = AnswerForm(request.POST)
+        form = AnswerForm(question, request.POST)
         if form.is_valid():
             update_time = datetime.datetime.now()
             answer = Answer(
@@ -592,6 +596,11 @@ def answer(request, id):
                 wiki = form.cleaned_data['wiki'],
                 html = sanitize_html(markdowner.convert(form.cleaned_data['text'])),
             )
+            if answer.wiki:
+                answer.last_edited_by = answer.author
+                answer.last_edited_at = update_time
+                answer.wikified_at = update_time
+                
             answer.save()
             Question.objects.update_answer_count(question)
             
