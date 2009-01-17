@@ -52,8 +52,8 @@ DATABASE_PASSWORD = 'sysadm'         # Not used with sqlite3.
 
 SERVER_EMAIL = 'webmaster@cnprog.com'
 DEFAULT_FROM_EMAIL = 'webmaster@cnprog.com'
-EMAIL_HOST_USER = 'chagel'
-EMAIL_HOST_PASSWORD = 'crazyboy12'
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
 EMAIL_SUBJECT_PREFIX = '[cnprog.com]'
 EMAIL_HOST='smtp.gmail.com'
 EMAIL_PORT='587'
