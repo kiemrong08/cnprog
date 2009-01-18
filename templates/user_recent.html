@@ -11,10 +11,14 @@
                 <span class="user-action-{{ act.type_id }}">{{ act.type }}</span>
                 </div>
                 <div style="float:left;overflow:hidden;width:680px">
+                    {% ifequal act.type_id 7 %}
+                    <a href="{{act.badge.get_absolute_url}}" title="{{ act.badge.get_type_display }} : {{ act.badge.description }}" class="badge"><span class="badge{{ act.badge.type }}">&#9679;</span>&nbsp;{{ act.badge.name }}</a>
+                    {% else %}
                     <span class="post-type-{{ act.type_id }}"><a href="{{ act.title_link }}">{{ act.title }}</a></span>
                     {% if act.summary %}<span class="revision-summary">{{ act.summary }}</span>{% endif %}
+                    {% endifequal %}
                     <div style="height:5px"></div>
-                </div>   
+                </div>
             </div>
         {% endfor %}
         </div>

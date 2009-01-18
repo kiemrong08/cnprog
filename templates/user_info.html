@@ -3,7 +3,7 @@
 {% load humanize %}
 <div id="subheader">
     <h1>{{view_user.username}}</h1>
-    <div id="tabs"></div>
+    
 </div>
 
 <table width="950">
@@ -69,6 +69,12 @@
                 <tr>
                     <td>年龄</td>
                     <td>{% get_age view_user.date_of_birth %} 岁</td>
+                </tr>
+                {% endif %}
+                {% if votes_today_left %}
+                <tr>
+                    <td>今日剩余投票数</td>
+                    <td><span class="big darkred">{{ votes_today_left }}</span> 票</td>
                 </tr>
                 {% endif %}
             </table>
