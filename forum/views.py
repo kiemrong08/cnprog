@@ -382,7 +382,7 @@ def _retag_question(request, question):
                     text       = latest_revision.text
                 )
                 # send tags updated singal
-                tags_updated.send(sender=question, question=question)
+                tags_updated.send(sender=question。__class__, question=question)
                 
                 # TODO Badges related to retagging / Tag usage
                 # TODO Badges related to editing Questions
@@ -461,7 +461,7 @@ def _edit_question(request, question):
                         revision.summary = 'No.%s Revision' % latest_revision.revision
                     revision.save()
                     # send the question has updated signal
-                    edit_question_or_answer.send(sender=question, modified_by=request.user)
+                    edit_question_or_answer.send(sender=question.__class__, instance=question, modified_by=request.user)
                     
                     # TODO 5 body edits by the author = automatic wiki mode
                     # TODO 4 individual editors = automatic wiki mode
@@ -527,7 +527,7 @@ def edit_answer(request, id):
                         revision.save()
                         
                         # send the answer has updated signal
-                        edit_question_or_answer.send(sender=answer, modified_by=request.user)
+                        edit_question_or_answer.send(sender=answer.__class__, instance=answer, modified_by=request.user)
                         
                         # TODO 5 body edits by the author = automatic wiki mode
                         # TODO 4 individual editors = automatic wiki mode
@@ -715,7 +715,7 @@ def vote(request, id):
             return can_vote_up(request.user)
         else:
             return can_vote_down(request.user)
-        
+   
     try:
         if not request.user.is_authenticated():
             response_data['allowed'] = 0
@@ -749,7 +749,7 @@ def vote(request, id):
                         answer = get_object_or_404(Answer, id=answer_id)
                         onAnswerAccept(answer, request.user)
                         # send the answer be accepted signal
-                        answer_accepted.send(question, question=question, answer=answer)
+                        answer_accepted.send(sender=question.__class__, question=question, answer=answer)
                 else:
                     response_data['allowed'] = 0
                     response_data['success'] = 0
@@ -854,14 +854,16 @@ def vote(request, id):
                     response_data['status'] = 1
                 else:
                     onDeleted(post, request.user)
+                    delete_post_or_answer.send(sender=post.__class__, instance=post)
         else:
             response_data['success'] = 0
             response_data['message'] = u'Request mode is not supported. Please try again.'
 
         data = simplejson.dumps(response_data)
     
-    except Excecption, e:
-        response_data['message'] = e    
+    except Exception, e:
+        response_data['message'] = str(e)
+        data = simplejson.dumps(response_data)  
     return HttpResponse(data, mimetype="application/json")
     
 def users(request):

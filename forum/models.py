@@ -401,6 +401,7 @@ User.add_to_class('about', models.TextField(blank=True))
 tags_updated = django.dispatch.Signal(providing_args=["question"])
 answer_accepted = django.dispatch.Signal(providing_args=["question", "answer"])
 edit_question_or_answer = django.dispatch.Signal(providing_args=["instance", "modified_by"])
+delete_post_or_answer = django.dispatch.Signal(providing_args=["instance", "deleted_by"])
 
 def get_profile_url(self):
     """Returns the URL for this User's profile."""
@@ -484,17 +485,11 @@ def record_cancel_vote(instance, **kwargs):
     activity.save()
 
 def record_delete_question(instance, **kwargs):
+    print "this is sailing."
     """
     when user deleted the question
     """
     activity = Activity(user=instance.author, active_at=datetime.datetime.now(), content_object=instance, activity_type=12)
-    activity.save()
-
-def record_delete_answer(instance, **kwargs):
-    """
-    when user deleted the answer
-    """
-    activity = Activity(user=instance.author, active_at=datetime.datetime.now(), content_object=instance, activity_type=13)
     activity.save()
 
 def record_mark_rubbish(instance, **kwargs):
@@ -543,8 +538,8 @@ post_save.connect(record_answer_accepted, sender=Repute)
 post_save.connect(update_last_seen, sender=Activity)
 post_save.connect(record_vote, sender=Vote)
 post_delete.connect(record_cancel_vote, sender=Vote)
-post_delete.connect(record_delete_question, sender=Question)
-post_delete.connect(record_delete_answer, sender=Answer)
+delete_post_or_answer.connect(record_delete_question, sender=Question)
+delete_post_or_answer.connect(record_delete_question, sender=Answer)
 tags_updated.connect(record_update_tags, sender=Question)
 answer_accepted.connect(record_accept_answer, sender=Question)
 post_save.connect(record_favorite_question, sender=FavoriteQuestion)
