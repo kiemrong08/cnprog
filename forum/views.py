@@ -381,6 +381,9 @@ def _retag_question(request, question):
                     summary    = CONST['retagged'],
                     text       = latest_revision.text
                 )
+                # send tags updated singal
+                tags_updated.send(sender=question, question=question)
+                
                 # TODO Badges related to retagging / Tag usage
                 # TODO Badges related to editing Questions
             return HttpResponseRedirect(question.get_absolute_url())
@@ -457,6 +460,9 @@ def _edit_question(request, question):
                     else:
                         revision.summary = 'No.%s Revision' % latest_revision.revision
                     revision.save()
+                    # send the question has updated signal
+                    edit_question_or_answer.send(sender=question, modified_by=request.user)
+                    
                     # TODO 5 body edits by the author = automatic wiki mode
                     # TODO 4 individual editors = automatic wiki mode
                     # TODO Badges related to Tag usage
@@ -519,6 +525,10 @@ def edit_answer(request, id):
                         else:
                             revision.summary = 'No.%s Revision' % latest_revision.revision
                         revision.save()
+                        
+                        # send the answer has updated signal
+                        edit_question_or_answer.send(sender=answer, modified_by=request.user)
+                        
                         # TODO 5 body edits by the author = automatic wiki mode
                         # TODO 4 individual editors = automatic wiki mode
                         # TODO Badges related to Tag usage
@@ -738,7 +748,8 @@ def vote(request, id):
                         #make sure retrieve data again after above author changes, they may have related data
                         answer = get_object_or_404(Answer, id=answer_id)
                         onAnswerAccept(answer, request.user)
-                      
+                        # send the answer be accepted signal
+                        answer_accepted.send(question, question=question, answer=answer)
                 else:
                     response_data['allowed'] = 0
                     response_data['success'] = 0

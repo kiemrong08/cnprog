@@ -10,6 +10,8 @@ from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 from django.template.defaultfilters import slugify
 from django.db.models.signals import post_delete, post_save, pre_save
+import django.dispatch
+
 from forum.managers import *
 from const import *
 
@@ -395,6 +397,11 @@ User.add_to_class('location', models.CharField(max_length=100, blank=True))
 User.add_to_class('date_of_birth', models.DateField(null=True, blank=True))
 User.add_to_class('about', models.TextField(blank=True))   
 
+# custom signal
+tags_updated = django.dispatch.Signal(providing_args=["question"])
+answer_accepted = django.dispatch.Signal(providing_args=["question", "answer"])
+edit_question_or_answer = django.dispatch.Signal(providing_args=["instance", "modified_by"])
+
 def get_profile_url(self):
     """Returns the URL for this User's profile."""
     return '%s%s/' % (reverse('user', args=[self.id]), self.username)
@@ -410,10 +417,12 @@ def record_ask_event(instance, created, **kwargs):
     if created:
         activity = Activity(user=instance.author, active_at=instance.added_at, content_object=instance, activity_type=1)
         activity.save()
+
 def record_answer_event(instance, created, **kwargs):
     if created:
         activity = Activity(user=instance.author, active_at=instance.added_at, content_object=instance, activity_type=2)
         activity.save()    
+
 def record_comment_event(instance, created, **kwargs):
     if created:
         from django.contrib.contenttypes.models import ContentType
@@ -422,18 +431,22 @@ def record_comment_event(instance, created, **kwargs):
         type = 3 if instance.content_type_id == question_type_id else 4
         activity = Activity(user=instance.user, active_at=instance.added_at, content_object=instance, activity_type=type)
         activity.save() 
+
 def record_revision_question_event(instance, created, **kwargs):
     if created and instance.revision <> 1:
         activity = Activity(user=instance.author, active_at=instance.revised_at, content_object=instance, activity_type=5)
         activity.save()   
+
 def record_revision_answer_event(instance, created, **kwargs):
     if created and instance.revision <> 1:
         activity = Activity(user=instance.author, active_at=instance.revised_at, content_object=instance, activity_type=6)
         activity.save()         
+
 def record_award_event(instance, created, **kwargs):
     if created:
         activity = Activity(user=instance.user, active_at=instance.awarded_at, content_object=instance, activity_type=7)
         activity.save()  
+
 def record_answer_accepted(instance, created, **kwargs):
     """
     when answer is accepted, we record it from data of reputation
@@ -441,6 +454,7 @@ def record_answer_accepted(instance, created, **kwargs):
     if instance.reputation_type == 2:
         activity = Activity(user=instance.user, active_at=instance.reputed_at, content_object=instance, activity_type=8)
         activity.save() 
+
 def update_last_seen(instance, created, **kwargs):
     """
     when user has activities, we update 'last_seen' time stamp for him
@@ -448,7 +462,75 @@ def update_last_seen(instance, created, **kwargs):
     user = instance.user
     user.last_seen = datetime.datetime.now()
     user.save()
-    
+
+def record_vote(instance, created, **kwargs):
+    """
+    when user have voted
+    """
+    if created:
+        if instance.vote == 1:
+            vote_type = 9
+        else:
+            vote_type = 10
+        
+        activity = Activity(user=instance.user, active_at=instance.voted_at, content_object=instance, activity_type=vote_type)
+        activity.save()
+
+def record_cancel_vote(instance, **kwargs):
+    """
+    when user canceled vote, the vote will be deleted.
+    """
+    activity = Activity(user=instance.user, active_at=datetime.datetime.now(), content_object=instance, activity_type=11)
+    activity.save()
+
+def record_delete_question(instance, **kwargs):
+    """
+    when user deleted the question
+    """
+    activity = Activity(user=instance.author, active_at=datetime.datetime.now(), content_object=instance, activity_type=12)
+    activity.save()
+
+def record_delete_answer(instance, **kwargs):
+    """
+    when user deleted the answer
+    """
+    activity = Activity(user=instance.author, active_at=datetime.datetime.now(), content_object=instance, activity_type=13)
+    activity.save()
+
+def record_mark_rubbish(instance, **kwargs):
+    # activity_type=14
+    pass
+
+def record_update_tags(question, **kwargs):
+    """
+    when user updated tags of the question
+    """
+    activity = Activity(user=question.author, active_at=question.revised_at, content_object=question, activity_type=15)
+    activity.save()
+
+def record_accept_answer(question, answer, **kwargs):
+    """
+    when user marked the answer of question
+    """
+    activity = Activity(user=question.author, active_at=datetime.datetime.now(), content_object=question, activity_type=16)
+    activity.save()
+
+def record_favorite_question(instance, created, **kwargs):
+    """
+    when user add the question in him favorite questions list.
+    """
+    if created:
+        activity = Activity(user=instance.user, active_at=instance.added_at, content_object=instance, activity_type=17)
+        activity.save()
+
+def record_edit(instance, modified_by, **kwargs):
+    """
+    when user save modification of question or answer
+    """
+    if not created:
+        activity = Activity(user=modified_by, active_at=instance.revised_at, content_object=instance, activity_type=18)
+        activity.save()
+
 #signal for User modle save changes
 pre_save.connect(calculate_gravatar_hash, sender=User)        
 post_save.connect(record_ask_event, sender=Question)
@@ -459,3 +541,12 @@ post_save.connect(record_revision_answer_event, sender=AnswerRevision)
 post_save.connect(record_award_event, sender=Award)
 post_save.connect(record_answer_accepted, sender=Repute)
 post_save.connect(update_last_seen, sender=Activity)
+post_save.connect(record_vote, sender=Vote)
+post_delete.connect(record_cancel_vote, sender=Vote)
+post_delete.connect(record_delete_question, sender=Question)
+post_delete.connect(record_delete_answer, sender=Answer)
+tags_updated.connect(record_update_tags, sender=Question)
+answer_accepted.connect(record_accept_answer, sender=Question)
+post_save.connect(record_favorite_question, sender=FavoriteQuestion)
+edit_question_or_answer.connect(record_edit, sender=Question)
+edit_question_or_answer.connect(record_edit, sender=Answer)
