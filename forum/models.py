@@ -22,7 +22,7 @@ class Tag(models.Model):
     used_count = models.PositiveIntegerField(default=0)
 
     objects = TagManager()
-    
+
     class Meta:
         db_table = u'tag'
         ordering = ('-used_count', 'name')
@@ -58,15 +58,15 @@ class Vote(models.Model):
     user           = models.ForeignKey(User, related_name='votes')
     vote           = models.SmallIntegerField(choices=VOTE_CHOICES)
     voted_at       = models.DateTimeField(default=datetime.datetime.now)
-    
+
     objects = VoteManager()
-    
+
     class Meta:
         unique_together = ('content_type', 'object_id', 'user')
         db_table = u'vote'
     def __unicode__(self):
         return '[%s] voted at %s: %s' %(self.user, self.voted_at, self.vote)
-        
+
     def is_upvote(self):
         return self.vote == self.VOTE_UP
 
@@ -82,13 +82,13 @@ class FlaggedItem(models.Model):
     flagged_at     = models.DateTimeField(default=datetime.datetime.now)
 
     objects = FlaggedItemManager()
-    
+
     class Meta:
         unique_together = ('content_type', 'object_id', 'user')
         db_table = u'flagged_item'
     def __unicode__(self):
         return '[%s] flagged at %s' %(self.user, self.flagged_at)
-        
+
 class Question(models.Model):
     title    = models.CharField(max_length=300)
     author   = models.ForeignKey(User, related_name='questions')
@@ -127,7 +127,7 @@ class Question(models.Model):
     comments             = generic.GenericRelation(Comment)
     votes                = generic.GenericRelation(Vote)
     flagged_items        = generic.GenericRelation(FlaggedItem)
-    
+
     objects = QuestionManager()
 
     def save(self, **kwargs):
@@ -145,35 +145,35 @@ class Question(models.Model):
                                                       self.author)
             self.tags.add(*tags)
             Tag.objects.update_use_counts(tags)
-    
+
     def tagname_list(self):
         """Creates a list of Tag names from the ``tagnames`` attribute."""
         return [name for name in self.tagnames.split(u' ')]
-       
+
     def get_absolute_url(self):
         return '%s%s' % (reverse('question', args=[self.id]), self.title)
-    
+
     def has_favorite_by_user(self, user):
         if not user.is_authenticated():
             return False
         return FavoriteQuestion.objects.filter(question=self, user=user).count() > 0
-        
+
     def get_answer_count_by_user(self, user_id):
         query_set = Answer.objects.filter(author__id=user_id)
-        return query_set.filter(question=self).count()       
-    
+        return query_set.filter(question=self).count()
+
     def get_question_title(self):
         return u'%s %s' % (self.title, CONST['closed']) if self.closed else self.title
-        
+
     def get_revision_url(self):
         return reverse('question_revisions', args=[self.id])
 
     def get_latest_revision(self):
-        return self.revisions.all()[0]    
-        
+        return self.revisions.all()[0]
+
     def __unicode__(self):
         return self.title
-        
+
     class Meta:
         db_table = u'question'
 
@@ -194,10 +194,10 @@ class QuestionRevision(models.Model):
 
     def get_question_title(self):
         return self.question.title
-        
+
     def get_absolute_url(self):
         return '/questions/%s/revisions' % (self.question.id)
-        
+
     def save(self, **kwargs):
         """Looks up the next available revision number."""
         if not self.revision:
@@ -208,7 +208,7 @@ class QuestionRevision(models.Model):
 
     def __unicode__(self):
         return u'revision %s of %s' % (self.revision, self.title)
-        
+
 class Answer(models.Model):
     question = models.ForeignKey(Question, related_name='answers')
     author   = models.ForeignKey(User, related_name='answers')
@@ -234,30 +234,30 @@ class Answer(models.Model):
     comments             = generic.GenericRelation(Comment)
     votes                = generic.GenericRelation(Vote)
     flagged_items        = generic.GenericRelation(FlaggedItem)
-    
+
     objects = AnswerManager()
-    
+
     def get_user_vote(self, user):
         votes = self.votes.filter(user=user)
         if votes.count() > 0:
             return votes[0]
         else:
             return None
-            
+
     def get_latest_revision(self):
-        return self.revisions.all()[0]  
-        
+        return self.revisions.all()[0]
+
     def get_question_title(self):
         return self.question.title
-        
+
     def get_absolute_url(self):
         return '%s%s#%s' % (reverse('question', args=[self.question.id]), self.question.title, self.id)
-        
+
     class Meta:
         db_table = u'answer'
-        
+
     def __unicode__(self):
-        return self.html    
+        return self.html
 
 class AnswerRevision(models.Model):
     """A revision of an Answer."""
@@ -270,10 +270,10 @@ class AnswerRevision(models.Model):
 
     def get_absolute_url(self):
         return '/answers/%s/revisions' % (self.answer.id)
-        
+
     def get_question_title(self):
         return self.answer.question.title
-        
+
     class Meta:
         db_table = u'answer_revision'
         ordering = ('-revision',)
@@ -285,7 +285,7 @@ class AnswerRevision(models.Model):
                 answer=self.answer).values_list('revision',
                                                 flat=True)[0] + 1
         super(AnswerRevision, self).save(**kwargs)
-        
+
 class FavoriteQuestion(models.Model):
     """A favorite Question of a User."""
     question      = models.ForeignKey(Question)
@@ -295,7 +295,7 @@ class FavoriteQuestion(models.Model):
         db_table = u'favorite_question'
     def __unicode__(self):
         return '[%s] favorited at %s' %(self.user, self.added_at)
-    
+
 class Badge(models.Model):
     """Awarded for notable actions performed on the site by Users."""
     GOLD = 1
@@ -337,7 +337,7 @@ class Award(models.Model):
     badge      = models.ForeignKey(Badge)
     awarded_at = models.DateTimeField(default=datetime.datetime.now)
     notified   = models.BooleanField(default=False)
-    
+
     class Meta:
         db_table = u'award'
 
@@ -351,7 +351,7 @@ class Repute(models.Model):
     reputation_type = models.SmallIntegerField(choices=TYPE_REPUTATION)
     reputation = models.IntegerField(default=1)
     objects = ReputeManager()
-    
+
     class Meta:
         db_table = u'repute'
 
@@ -366,10 +366,10 @@ class Activity(models.Model):
     object_id      = models.PositiveIntegerField()
     content_object = generic.GenericForeignKey('content_type', 'object_id')
     is_auditted    = models.BooleanField(default=False)
-    
+
     class Meta:
         db_table = u'activity'
-    
+
 # User extend properties
 QUESTIONS_PER_PAGE_CHOICES = (
    (10, u'10'),
@@ -395,7 +395,7 @@ User.add_to_class('real_name', models.CharField(max_length=100, blank=True))
 User.add_to_class('website', models.URLField(max_length=200, blank=True))
 User.add_to_class('location', models.CharField(max_length=100, blank=True))
 User.add_to_class('date_of_birth', models.DateField(null=True, blank=True))
-User.add_to_class('about', models.TextField(blank=True))   
+User.add_to_class('about', models.TextField(blank=True))
 
 # custom signal
 tags_updated = django.dispatch.Signal(providing_args=["question"])
@@ -407,7 +407,7 @@ def get_profile_url(self):
     """Returns the URL for this User's profile."""
     return '%s%s/' % (reverse('user', args=[self.id]), self.username)
 User.add_to_class('get_profile_url', get_profile_url)
-    
+
 def calculate_gravatar_hash(instance, **kwargs):
     """Calculates a User's gravatar hash from their email address."""
     if kwargs.get('raw', False):
@@ -422,7 +422,7 @@ def record_ask_event(instance, created, **kwargs):
 def record_answer_event(instance, created, **kwargs):
     if created:
         activity = Activity(user=instance.author, active_at=instance.added_at, content_object=instance, activity_type=TYPE_ACTIVITY_ANSWER)
-        activity.save()    
+        activity.save()
 
 def record_comment_event(instance, created, **kwargs):
     if created:
@@ -431,30 +431,47 @@ def record_comment_event(instance, created, **kwargs):
         question_type_id = question_type.id
         type = TYPE_ACTIVITY_COMMENT_QUESTION if instance.content_type_id == question_type_id else TYPE_ACTIVITY_COMMENT_ANSWER
         activity = Activity(user=instance.user, active_at=instance.added_at, content_object=instance, activity_type=type)
-        activity.save() 
+        activity.save()
 
 def record_revision_question_event(instance, created, **kwargs):
     if created and instance.revision <> 1:
         activity = Activity(user=instance.author, active_at=instance.revised_at, content_object=instance, activity_type=TYPE_ACTIVITY_UPDATE_QUESTION)
-        activity.save()   
+        activity.save()
 
 def record_revision_answer_event(instance, created, **kwargs):
     if created and instance.revision <> 1:
         activity = Activity(user=instance.author, active_at=instance.revised_at, content_object=instance, activity_type=TYPE_ACTIVITY_UPDATE_ANSWER)
-        activity.save()         
+        activity.save()
 
 def record_award_event(instance, created, **kwargs):
+    """
+    After we awarded a badge to user, we need to record this activity and notify user.
+    We also recaculate awarded_count of this badge and user information.
+    """
     if created:
-        activity = Activity(user=instance.user, active_at=instance.awarded_at, content_object=instance, activity_type=TYPE_ACTIVITY_PRIZE)
-        activity.save()  
+        activity = Activity(user=instance.user, active_at=instance.awarded_at, content_object=instance,
+            activity_type=TYPE_ACTIVITY_PRIZE)
+        activity.save()
+
+        instance.badge.awarded_count += 1
+        instance.badge.save()
+
+        if instance.badge.type == Badge.GOLD:
+            instance.user.gold += 1
+        if instance.badge.type == Badge.SILVER:
+            instance.user.silver += 1
+        if instance.badge.type == Badge.BRONZE:
+            instance.user.bronze += 1
+        instance.user.save()
 
 def record_answer_accepted(instance, created, **kwargs):
     """
-    when answer is accepted, we record it from data of reputation
+    when answer is accepted, we record this for question author - who accepted it.
     """
-    if instance.reputation_type == 2:
-        activity = Activity(user=instance.user, active_at=instance.reputed_at, content_object=instance, activity_type=TYPE_ACTIVITY_MARK_ANSWER)
-        activity.save() 
+    if not created and instance.accepted:
+        activity = Activity(user=instance.question.author, active_at=datetime.datetime.now(), \
+            content_object=instance, activity_type=TYPE_ACTIVITY_MARK_ANSWER)
+        activity.save()
 
 def update_last_seen(instance, created, **kwargs):
     """
@@ -473,7 +490,7 @@ def record_vote(instance, created, **kwargs):
             vote_type = TYPE_ACTIVITY_VOTE_UP
         else:
             vote_type = TYPE_ACTIVITY_VOTE_DOWN
-        
+
         activity = Activity(user=instance.user, active_at=instance.voted_at, content_object=instance, activity_type=vote_type)
         activity.save()
 
@@ -485,7 +502,6 @@ def record_cancel_vote(instance, **kwargs):
     activity.save()
 
 def record_delete_question(instance, delete_by, **kwargs):
-    print "this is sailing."
     """
     when user deleted the question
     """
@@ -493,7 +509,7 @@ def record_delete_question(instance, delete_by, **kwargs):
         activity_type = TYPE_ACTIVITY_DELETE_QUESTION
     else:
         activity_type = TYPE_ACTIVITY_DELETE_ANSWER
-    
+
     activity = Activity(user=delete_by, active_at=datetime.datetime.now(), content_object=instance, activity_type=activity_type)
     activity.save()
 
@@ -529,14 +545,14 @@ def record_edit(instance, modified_by, **kwargs):
         activity.save()
 
 #signal for User modle save changes
-pre_save.connect(calculate_gravatar_hash, sender=User)        
+pre_save.connect(calculate_gravatar_hash, sender=User)
 post_save.connect(record_ask_event, sender=Question)
 post_save.connect(record_answer_event, sender=Answer)
 post_save.connect(record_comment_event, sender=Comment)
 post_save.connect(record_revision_question_event, sender=QuestionRevision)
 post_save.connect(record_revision_answer_event, sender=AnswerRevision)
 post_save.connect(record_award_event, sender=Award)
-post_save.connect(record_answer_accepted, sender=Repute)
+post_save.connect(record_answer_accepted, sender=Answer)
 post_save.connect(update_last_seen, sender=Activity)
 post_save.connect(record_vote, sender=Vote)
 post_delete.connect(record_cancel_vote, sender=Vote)

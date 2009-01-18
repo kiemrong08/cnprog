@@ -6,10 +6,11 @@ from forum.models import *
 from forum.const import *
 
 class Command(NoArgsCommand):
-    def handle_noargs(self, **options): 
+    def handle_noargs(self, **options):
         cursor = connection.cursor()
         cursor.execute("SELECT count(*) offensive_count, user_id \
-            FROM activity WHERE is_auditted=0 AND activity_type=%s GROUP BY user_id", [TYPE_ACTIVITY_MARK_OFFENSIVE])
+            FROM activity WHERE is_auditted=0 AND activity_type=%s GROUP BY user_id",
+            [TYPE_ACTIVITY_MARK_OFFENSIVE])
         rows = cursor.fetchall()
         for row in rows:
             user_id = row[1]
@@ -22,7 +23,7 @@ class Command(NoArgsCommand):
                 count = Award.objects.filter(user=user, badge=badge).count()
                 if count:
                     return
-            
+
             # new award
             award = Award(user=user, badge=badge)
             # update badge
@@ -34,7 +35,7 @@ class Command(NoArgsCommand):
                 user.sliver += 1
             else:
                 user.bronze += 1
-            
+
             award.save()
             badge.save()
             user.save()

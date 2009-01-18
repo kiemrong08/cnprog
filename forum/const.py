@@ -57,7 +57,7 @@ TYPE_ACTIVITY = (
     (TYPE_ACTIVITY_UPDATE_QUESTION, u'修改问题'),
     (TYPE_ACTIVITY_UPDATE_ANSWER, u'修改回答'),
     (TYPE_ACTIVITY_PRIZE, u'获奖'),
-    (TYPE_ACTIVITY_MARK_ANSWER, u'最佳答案'),
+    (TYPE_ACTIVITY_MARK_ANSWER, u'标记最佳答案'),
     (TYPE_ACTIVITY_VOTE_UP, u'投赞成票'),
     (TYPE_ACTIVITY_VOTE_DOWN, u'投反对票'),
     (TYPE_ACTIVITY_CANCEL_VOTE, u'撤销投票'),
@@ -70,10 +70,16 @@ TYPE_ACTIVITY = (
     (TYPE_ACTIVITY_EDIT_ANSWER, u'编辑答案'),
 )
 
+TYPE_RESPONSE = {
+    'QUESTION_ANSWERED' : u'回答问题',
+    'QUESTION_COMMENTED': u'问题评论',
+    'ANSWER_COMMENTED'  : u'回答评论',
+    'ANSWER_ACCEPTED'   : u'最佳答案',
+}
+
 CONST = {
     'closed'            : u' [已关闭]',
     'default_version'   : u'初始版本',
     'retagged'          : u'更新了标签',
-    
+
 }
-    
