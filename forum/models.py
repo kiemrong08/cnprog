@@ -399,7 +399,6 @@ User.add_to_class('about', models.TextField(blank=True))
 
 # custom signal
 tags_updated = django.dispatch.Signal(providing_args=["question"])
-answer_accepted = django.dispatch.Signal(providing_args=["question", "answer"])
 edit_question_or_answer = django.dispatch.Signal(providing_args=["instance", "modified_by"])
 delete_post_or_answer = django.dispatch.Signal(providing_args=["instance", "deleted_by"])
 mark_offensive = django.dispatch.Signal(providing_args=["instance", "mark_by"])
@@ -417,12 +416,12 @@ def calculate_gravatar_hash(instance, **kwargs):
 
 def record_ask_event(instance, created, **kwargs):
     if created:
-        activity = Activity(user=instance.author, active_at=instance.added_at, content_object=instance, activity_type=1)
+        activity = Activity(user=instance.author, active_at=instance.added_at, content_object=instance, activity_type=TYPE_ACTIVITY_ASK_QUESTION)
         activity.save()
 
 def record_answer_event(instance, created, **kwargs):
     if created:
-        activity = Activity(user=instance.author, active_at=instance.added_at, content_object=instance, activity_type=2)
+        activity = Activity(user=instance.author, active_at=instance.added_at, content_object=instance, activity_type=TYPE_ACTIVITY_ANSWER)
         activity.save()    
 
 def record_comment_event(instance, created, **kwargs):
@@ -430,23 +429,23 @@ def record_comment_event(instance, created, **kwargs):
         from django.contrib.contenttypes.models import ContentType
         question_type = ContentType.objects.get_for_model(Question)
         question_type_id = question_type.id
-        type = 3 if instance.content_type_id == question_type_id else 4
+        type = TYPE_ACTIVITY_COMMENT_QUESTION if instance.content_type_id == question_type_id else TYPE_ACTIVITY_COMMENT_ANSWER
         activity = Activity(user=instance.user, active_at=instance.added_at, content_object=instance, activity_type=type)
         activity.save() 
 
 def record_revision_question_event(instance, created, **kwargs):
     if created and instance.revision <> 1:
-        activity = Activity(user=instance.author, active_at=instance.revised_at, content_object=instance, activity_type=5)
+        activity = Activity(user=instance.author, active_at=instance.revised_at, content_object=instance, activity_type=TYPE_ACTIVITY_UPDATE_QUESTION)
         activity.save()   
 
 def record_revision_answer_event(instance, created, **kwargs):
     if created and instance.revision <> 1:
-        activity = Activity(user=instance.author, active_at=instance.revised_at, content_object=instance, activity_type=6)
+        activity = Activity(user=instance.author, active_at=instance.revised_at, content_object=instance, activity_type=TYPE_ACTIVITY_UPDATE_ANSWER)
         activity.save()         
 
 def record_award_event(instance, created, **kwargs):
     if created:
-        activity = Activity(user=instance.user, active_at=instance.awarded_at, content_object=instance, activity_type=7)
+        activity = Activity(user=instance.user, active_at=instance.awarded_at, content_object=instance, activity_type=TYPE_ACTIVITY_PRIZE)
         activity.save()  
 
 def record_answer_accepted(instance, created, **kwargs):
@@ -454,7 +453,7 @@ def record_answer_accepted(instance, created, **kwargs):
     when answer is accepted, we record it from data of reputation
     """
     if instance.reputation_type == 2:
-        activity = Activity(user=instance.user, active_at=instance.reputed_at, content_object=instance, activity_type=8)
+        activity = Activity(user=instance.user, active_at=instance.reputed_at, content_object=instance, activity_type=TYPE_ACTIVITY_MARK_ANSWER)
         activity.save() 
 
 def update_last_seen(instance, created, **kwargs):
@@ -471,9 +470,9 @@ def record_vote(instance, created, **kwargs):
     """
     if created:
         if instance.vote == 1:
-            vote_type = 9
+            vote_type = TYPE_ACTIVITY_VOTE_UP
         else:
-            vote_type = 10
+            vote_type = TYPE_ACTIVITY_VOTE_DOWN
         
         activity = Activity(user=instance.user, active_at=instance.voted_at, content_object=instance, activity_type=vote_type)
         activity.save()
@@ -482,7 +481,7 @@ def record_cancel_vote(instance, **kwargs):
     """
     when user canceled vote, the vote will be deleted.
     """
-    activity = Activity(user=instance.user, active_at=datetime.datetime.now(), content_object=instance, activity_type=11)
+    activity = Activity(user=instance.user, active_at=datetime.datetime.now(), content_object=instance, activity_type=TYPE_ACTIVITY_CANCEL_VOTE)
     activity.save()
 
 def record_delete_question(instance, delete_by, **kwargs):
@@ -491,29 +490,22 @@ def record_delete_question(instance, delete_by, **kwargs):
     when user deleted the question
     """
     if instance.__class__ == "Question":
-        activity_type = 12
+        activity_type = TYPE_ACTIVITY_DELETE_QUESTION
     else:
-        activity_type = 13
+        activity_type = TYPE_ACTIVITY_DELETE_ANSWER
     
     activity = Activity(user=delete_by, active_at=datetime.datetime.now(), content_object=instance, activity_type=activity_type)
     activity.save()
 
 def record_mark_offensive(instance, mark_by, **kwargs):
-    activity = Activity(user=mark_by, active_at=datetime.datetime.now(), content_object=instance, activity_type=14)
+    activity = Activity(user=mark_by, active_at=datetime.datetime.now(), content_object=instance, activity_type=TYPE_ACTIVITY_MARK_OFFENSIVE)
     activity.save()
 
 def record_update_tags(question, **kwargs):
     """
     when user updated tags of the question
     """
-    activity = Activity(user=question.author, active_at=datetime.datetime.now(), content_object=question, activity_type=15)
-    activity.save()
-
-def record_accept_answer(question, answer, **kwargs):
-    """
-    when user marked the answer of question
-    """
-    activity = Activity(user=question.author, active_at=datetime.datetime.now(), content_object=question, activity_type=16)
+    activity = Activity(user=question.author, active_at=datetime.datetime.now(), content_object=question, activity_type=TYPE_ACTIVITY_UPDATE_TAGS)
     activity.save()
 
 def record_favorite_question(instance, created, **kwargs):
@@ -521,7 +513,7 @@ def record_favorite_question(instance, created, **kwargs):
     when user add the question in him favorite questions list.
     """
     if created:
-        activity = Activity(user=instance.user, active_at=datetime.datetime.now(), content_object=instance, activity_type=17)
+        activity = Activity(user=instance.user, active_at=datetime.datetime.now(), content_object=instance, activity_type=TYPE_ACTIVITY_FAVORITE)
         activity.save()
 
 def record_edit(instance, modified_by, **kwargs):
@@ -529,7 +521,11 @@ def record_edit(instance, modified_by, **kwargs):
     when user save modification of question or answer
     """
     if not created:
-        activity = Activity(user=modified_by, active_at=instance.last_edited_at, content_object=instance, activity_type=18)
+        if instance.__class__ == "Question":
+            activity_type = TYPE_ACTIVITY_EDIT_QUESTION
+        else:
+            activity_type = TYPE_ACTIVITY_EDIT_ANSWER
+        activity = Activity(user=modified_by, active_at=instance.last_edited_at, content_object=instance, activity_type=activity_type)
         activity.save()
 
 #signal for User modle save changes
@@ -549,7 +545,6 @@ delete_post_or_answer.connect(record_delete_question, sender=Answer)
 mark_offensive.connect(record_mark_offensive, sender=Question)
 mark_offensive.connect(record_mark_offensive, sender=Answer)
 tags_updated.connect(record_update_tags, sender=Question)
-answer_accepted.connect(record_accept_answer, sender=Question)
 post_save.connect(record_favorite_question, sender=FavoriteQuestion)
 edit_question_or_answer.connect(record_edit, sender=Question)
 edit_question_or_answer.connect(record_edit, sender=Answer)

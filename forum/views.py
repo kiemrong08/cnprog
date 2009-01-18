@@ -747,8 +747,6 @@ def vote(request, id):
                         #make sure retrieve data again after above author changes, they may have related data
                         answer = get_object_or_404(Answer, id=answer_id)
                         onAnswerAccept(answer, request.user)
-                        # send the answer be accepted signal
-                        answer_accepted.send(sender=question.__class__, question=question, answer=answer)
                 else:
                     response_data['allowed'] = 0
                     response_data['success'] = 0
