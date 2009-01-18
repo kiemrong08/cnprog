@@ -382,8 +382,7 @@ def _retag_question(request, question):
                     text       = latest_revision.text
                 )
                 # send tags updated singal
-                tags_updated.send(sender=question。__class__, question=question)
-                
+                tags_updated.send(send=question.__class__, question=question)
                 # TODO Badges related to retagging / Tag usage
                 # TODO Badges related to editing Questions
             return HttpResponseRedirect(question.get_absolute_url())
@@ -839,7 +838,8 @@ def vote(request, id):
                     item = FlaggedItem(user=request.user, content_object=post, flagged_at=datetime.datetime.now())
                     onFlaggedItem(item, post, request.user)
                     response_data['count'] = post.offensive_flag_count
-                    
+                    # send signal when question or answer be marked offensive
+                    mark_offensive.send(sender=post.__class__, instance=post, mark_by=request.user)
             elif vote_type in ['9', '10']:
                 post = question
                 post_id = id
@@ -854,7 +854,7 @@ def vote(request, id):
                     response_data['status'] = 1
                 else:
                     onDeleted(post, request.user)
-                    delete_post_or_answer.send(sender=post.__class__, instance=post)
+                    delete_post_or_answer.send(sender=post.__class__, instance=post, delete_by=request.user)
         else:
             response_data['success'] = 0
             response_data['message'] = u'Request mode is not supported. Please try again.'

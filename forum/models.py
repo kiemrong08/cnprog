@@ -402,6 +402,7 @@ tags_updated = django.dispatch.Signal(providing_args=["question"])
 answer_accepted = django.dispatch.Signal(providing_args=["question", "answer"])
 edit_question_or_answer = django.dispatch.Signal(providing_args=["instance", "modified_by"])
 delete_post_or_answer = django.dispatch.Signal(providing_args=["instance", "deleted_by"])
+mark_offensive = django.dispatch.Signal(providing_args=["instance", "mark_by"])
 
 def get_profile_url(self):
     """Returns the URL for this User's profile."""
@@ -484,23 +485,28 @@ def record_cancel_vote(instance, **kwargs):
     activity = Activity(user=instance.user, active_at=datetime.datetime.now(), content_object=instance, activity_type=11)
     activity.save()
 
-def record_delete_question(instance, **kwargs):
+def record_delete_question(instance, delete_by, **kwargs):
     print "this is sailing."
     """
     when user deleted the question
     """
-    activity = Activity(user=instance.author, active_at=datetime.datetime.now(), content_object=instance, activity_type=12)
+    if instance.__class__ == "Question":
+        activity_type = 12
+    else:
+        activity_type = 13
+    
+    activity = Activity(user=delete_by, active_at=datetime.datetime.now(), content_object=instance, activity_type=activity_type)
     activity.save()
 
-def record_mark_rubbish(instance, **kwargs):
-    # activity_type=14
-    pass
+def record_mark_offensive(instance, mark_by, **kwargs):
+    activity = Activity(user=mark_by, active_at=datetime.datetime.now(), content_object=instance, activity_type=14)
+    activity.save()
 
 def record_update_tags(question, **kwargs):
     """
     when user updated tags of the question
     """
-    activity = Activity(user=question.author, active_at=question.revised_at, content_object=question, activity_type=15)
+    activity = Activity(user=question.author, active_at=datetime.datetime.now(), content_object=question, activity_type=15)
     activity.save()
 
 def record_accept_answer(question, answer, **kwargs):
@@ -515,7 +521,7 @@ def record_favorite_question(instance, created, **kwargs):
     when user add the question in him favorite questions list.
     """
     if created:
-        activity = Activity(user=instance.user, active_at=instance.added_at, content_object=instance, activity_type=17)
+        activity = Activity(user=instance.user, active_at=datetime.datetime.now(), content_object=instance, activity_type=17)
         activity.save()
 
 def record_edit(instance, modified_by, **kwargs):
@@ -523,7 +529,7 @@ def record_edit(instance, modified_by, **kwargs):
     when user save modification of question or answer
     """
     if not created:
-        activity = Activity(user=modified_by, active_at=instance.revised_at, content_object=instance, activity_type=18)
+        activity = Activity(user=modified_by, active_at=instance.last_edited_at, content_object=instance, activity_type=18)
         activity.save()
 
 #signal for User modle save changes
@@ -540,6 +546,8 @@ post_save.connect(record_vote, sender=Vote)
 post_delete.connect(record_cancel_vote, sender=Vote)
 delete_post_or_answer.connect(record_delete_question, sender=Question)
 delete_post_or_answer.connect(record_delete_question, sender=Answer)
+mark_offensive.connect(record_mark_offensive, sender=Question)
+mark_offensive.connect(record_mark_offensive, sender=Answer)
 tags_updated.connect(record_update_tags, sender=Question)
 answer_accepted.connect(record_accept_answer, sender=Question)
 post_save.connect(record_favorite_question, sender=FavoriteQuestion)
