@@ -402,6 +402,7 @@ tags_updated = django.dispatch.Signal(providing_args=["question"])
 edit_question_or_answer = django.dispatch.Signal(providing_args=["instance", "modified_by"])
 delete_post_or_answer = django.dispatch.Signal(providing_args=["instance", "deleted_by"])
 mark_offensive = django.dispatch.Signal(providing_args=["instance", "mark_by"])
+user_updated = django.dispatch.Signal(providing_args=["instance", "updated_by"])
 
 def get_profile_url(self):
     """Returns the URL for this User's profile."""
@@ -532,17 +533,9 @@ def record_favorite_question(instance, created, **kwargs):
         activity = Activity(user=instance.user, active_at=datetime.datetime.now(), content_object=instance, activity_type=TYPE_ACTIVITY_FAVORITE)
         activity.save()
 
-def record_edit(instance, modified_by, **kwargs):
-    """
-    when user save modification of question or answer
-    """
-    if not created:
-        if instance.__class__ == "Question":
-            activity_type = TYPE_ACTIVITY_EDIT_QUESTION
-        else:
-            activity_type = TYPE_ACTIVITY_EDIT_ANSWER
-        activity = Activity(user=modified_by, active_at=instance.last_edited_at, content_object=instance, activity_type=activity_type)
-        activity.save()
+def record_user_full_updated(instance, **kwargs):
+    activity = Activity(user=instance, active_at=datetime.datetime.now(), content_object=instance, activity_type=TYPE_ACTIVITY_USER_FULL_UPDATED)
+    activity.save()
 
 #signal for User modle save changes
 pre_save.connect(calculate_gravatar_hash, sender=User)
@@ -562,5 +555,4 @@ mark_offensive.connect(record_mark_offensive, sender=Question)
 mark_offensive.connect(record_mark_offensive, sender=Answer)
 tags_updated.connect(record_update_tags, sender=Question)
 post_save.connect(record_favorite_question, sender=FavoriteQuestion)
-edit_question_or_answer.connect(record_edit, sender=Question)
-edit_question_or_answer.connect(record_edit, sender=Answer)
+user_updated.connect(record_user_full_updated, sender=User)

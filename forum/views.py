@@ -226,7 +226,6 @@ def ask(request):
                 summary    = CONST['default_version'],
                 text       = form.cleaned_data['text']
             )
-            #TODO:add badge support
 
             return HttpResponseRedirect(question.get_absolute_url())
 
@@ -382,9 +381,8 @@ def _retag_question(request, question):
                     text       = latest_revision.text
                 )
                 # send tags updated singal
-                tags_updated.send(send=question.__class__, question=question)
-                # TODO Badges related to retagging / Tag usage
-                # TODO Badges related to editing Questions
+                tags_updated.send(sender=question.__class__, question=question)
+
             return HttpResponseRedirect(question.get_absolute_url())
     else:
         form = RetagQuestionForm(question)
@@ -459,13 +457,7 @@ def _edit_question(request, question):
                     else:
                         revision.summary = 'No.%s Revision' % latest_revision.revision
                     revision.save()
-                    # send the question has updated signal
-                    edit_question_or_answer.send(sender=question.__class__, instance=question, modified_by=request.user)
 
-                    # TODO 5 body edits by the author = automatic wiki mode
-                    # TODO 4 individual editors = automatic wiki mode
-                    # TODO Badges related to Tag usage
-                    # TODO Badges related to editing Questions
                 return HttpResponseRedirect(question.get_absolute_url())
     else:
 
@@ -525,13 +517,6 @@ def edit_answer(request, id):
                             revision.summary = 'No.%s Revision' % latest_revision.revision
                         revision.save()
 
-                        # send the answer has updated signal
-                        edit_question_or_answer.send(sender=answer.__class__, instance=answer, modified_by=request.user)
-
-                        # TODO 5 body edits by the author = automatic wiki mode
-                        # TODO 4 individual editors = automatic wiki mode
-                        # TODO Badges related to Tag usage
-                        # TODO Badges related to editing Questions
                     return HttpResponseRedirect(answer.get_absolute_url())
         else:
             revision_form = RevisionForm(answer, latest_revision)
@@ -726,7 +711,7 @@ def vote(request, id):
             return can_vote_up(request.user)
         else:
             return can_vote_down(request.user)
-   
+
     try:
         if not request.user.is_authenticated():
             response_data['allowed'] = 0
@@ -873,7 +858,7 @@ def vote(request, id):
 
     except Exception, e:
         response_data['message'] = str(e)
-        data = simplejson.dumps(response_data)  
+        data = simplejson.dumps(response_data)
     return HttpResponse(data, mimetype="application/json")
 
 def users(request):
@@ -948,6 +933,10 @@ def edit_user(request, id):
             user.about = sanitize_html(form.cleaned_data['about'])
 
             user.save()
+            # send user updated singal if full fields have been updated
+            if user.email and user.real_name and user.website and user.location and \
+                user.date_of_birth and user.about:
+                user_updated.send(sender=user.__class__, instance=user, updated_by=user)
             return HttpResponseRedirect(user.get_profile_url())
     else:
         form = EditUserForm(user)
@@ -1065,7 +1054,14 @@ def user_recent(request, user_id, user_view):
             self.type_id = type
             self.title = title
             self.summary = summary
-            self.title_link = u'/questions/%s/%s#%s' %(question_id, title, answer_id) if int(answer_id) > 0 else u'/questions/%s/%s' %(question_id, title)
+            self.title_link = u'/questions/%s/%s#%s' %(question_id, title, answer_id)\
+                if int(answer_id) > 0 else u'/questions/%s/%s' %(question_id, title)
+    class AwardEvent:
+        def __init__(self, time, type, id):
+            self.time = time
+            self.type = get_type_name(type)
+            self.type_id = type
+            self.badge = get_object_or_404(Badge, id=id)
 
     activities = []
     # ask questions
@@ -1077,8 +1073,9 @@ def user_recent(request, user_id, user_view):
             'activity_type' : 'activity.activity_type'
             },
         tables=['activity', 'question'],
-        where=['activity.content_type_id = %s AND activity.object_id = question.id AND activity.user_id = %s'],
-        params=[question_type_id, user_id],
+        where=['activity.content_type_id = %s AND activity.object_id = question.id AND \
+            activity.user_id = %s AND activity.activity_type = %s'],
+        params=[question_type_id, user_id, TYPE_ACTIVITY_ASK_QUESTION],
         order_by=['-activity.active_at']
     ).values(
             'title',
@@ -1087,7 +1084,8 @@ def user_recent(request, user_id, user_view):
             'activity_type'
             )
     if len(questions) > 0:
-        questions = [(Event(q['active_at'], q['activity_type'], q['title'], '', '0', q['question_id'])) for q in questions]
+        questions = [(Event(q['active_at'], q['activity_type'], q['title'], '', '0', \
+            q['question_id'])) for q in questions]
         activities.extend(questions)
 
     # answers
@@ -1100,8 +1098,9 @@ def user_recent(request, user_id, user_view):
             'activity_type' : 'activity.activity_type'
             },
         tables=['activity', 'answer', 'question'],
-        where=['activity.content_type_id = %s AND activity.object_id = answer.id AND answer.question_id = question.id AND  activity.user_id = %s'],
-        params=[answer_type_id, user_id],
+        where=['activity.content_type_id = %s AND activity.object_id = answer.id AND \
+            answer.question_id=question.id AND activity.user_id=%s AND activity.activity_type=%s'],
+        params=[answer_type_id, user_id, TYPE_ACTIVITY_ANSWER],
         order_by=['-activity.active_at']
     ).values(
             'title',
@@ -1111,7 +1110,8 @@ def user_recent(request, user_id, user_view):
             'activity_type'
             )
     if len(answers) > 0:
-        answers = [(Event(q['active_at'], q['activity_type'], q['title'], '', q['answer_id'], q['question_id'])) for q in answers]
+        answers = [(Event(q['active_at'], q['activity_type'], q['title'], '', q['answer_id'], \
+            q['question_id'])) for q in answers]
         activities.extend(answers)
 
     # question comments
@@ -1123,8 +1123,11 @@ def user_recent(request, user_id, user_view):
             'activity_type' : 'activity.activity_type'
             },
         tables=['activity', 'question', 'comment'],
-        where=['activity.content_type_id = %s AND activity.object_id = comment.id AND activity.user_id = comment.user_id AND comment.object_id=question.id AND comment.content_type_id=%s AND activity.user_id = %s'],
-        params=[comment_type_id, question_type_id, user_id],
+
+        where=['activity.content_type_id = %s AND activity.object_id = comment.id AND \
+            activity.user_id = comment.user_id AND comment.object_id=question.id AND \
+            comment.content_type_id=%s AND activity.user_id = %s AND activity.activity_type=%s'],
+        params=[comment_type_id, question_type_id, user_id, TYPE_ACTIVITY_COMMENT_QUESTION],
         order_by=['-comment.added_at']
     ).values(
             'title',
@@ -1134,7 +1137,8 @@ def user_recent(request, user_id, user_view):
             )
 
     if len(comments) > 0:
-        comments = [(Event(q['added_at'], q['activity_type'], q['title'], '', '0', q['question_id'])) for q in comments]
+        comments = [(Event(q['added_at'], q['activity_type'], q['title'], '', '0', \
+            q['question_id'])) for q in comments]
         activities.extend(comments)
 
     # answer comments
@@ -1147,8 +1151,12 @@ def user_recent(request, user_id, user_view):
             'activity_type' : 'activity.activity_type'
             },
         tables=['activity', 'question', 'answer', 'comment'],
-        where=['activity.content_type_id = %s AND activity.object_id = comment.id AND activity.user_id = comment.user_id AND comment.object_id=answer.id AND comment.content_type_id=%s AND question.id = answer.question_id AND activity.user_id = %s'],
-        params=[comment_type_id, answer_type_id, user_id],
+
+        where=['activity.content_type_id = %s AND activity.object_id = comment.id AND \
+            activity.user_id = comment.user_id AND comment.object_id=answer.id AND \
+            comment.content_type_id=%s AND question.id = answer.question_id AND \
+            activity.user_id = %s AND activity.activity_type=%s'],
+        params=[comment_type_id, answer_type_id, user_id, TYPE_ACTIVITY_COMMENT_ANSWER],
         order_by=['-comment.added_at']
     ).values(
             'title',
@@ -1159,7 +1167,8 @@ def user_recent(request, user_id, user_view):
             )
 
     if len(comments) > 0:
-        comments = [(Event(q['added_at'], q['activity_type'], q['title'], '', q['answer_id'], q['question_id'])) for q in comments]
+        comments = [(Event(q['added_at'], q['activity_type'], q['title'], '', q['answer_id'], \
+            q['question_id'])) for q in comments]
         activities.extend(comments)
 
     # question revisions
@@ -1172,8 +1181,10 @@ def user_recent(request, user_id, user_view):
             'summary' : 'question_revision.summary'
             },
         tables=['activity', 'question_revision'],
-        where=['activity.content_type_id = %s AND activity.object_id = question_revision.id AND activity.user_id = question_revision.author_id AND activity.user_id = %s'],
-        params=[question_revision_type_id, user_id],
+        where=['activity.content_type_id = %s AND activity.object_id = question_revision.id AND \
+            activity.user_id = question_revision.author_id AND activity.user_id = %s AND \
+            activity.activity_type=%s'],
+        params=[question_revision_type_id, user_id, TYPE_ACTIVITY_UPDATE_QUESTION],
         order_by=['-activity.active_at']
     ).values(
             'title',
@@ -1184,7 +1195,8 @@ def user_recent(request, user_id, user_view):
             )
 
     if len(revisions) > 0:
-        revisions = [(Event(q['added_at'], q['activity_type'], q['title'], q['summary'], '0', q['question_id'])) for q in revisions]
+        revisions = [(Event(q['added_at'], q['activity_type'], q['title'], q['summary'], '0', \
+            q['question_id'])) for q in revisions]
         activities.extend(revisions)
 
     # answer revisions
@@ -1198,8 +1210,12 @@ def user_recent(request, user_id, user_view):
             'summary' : 'answer_revision.summary'
             },
         tables=['activity', 'answer_revision', 'question', 'answer'],
-        where=['activity.content_type_id = %s AND activity.object_id = answer_revision.id AND activity.user_id = answer_revision.author_id AND activity.user_id = %s AND answer_revision.answer_id=answer.id AND answer.question_id = question.id'],
-        params=[answer_revision_type_id, user_id],
+
+        where=['activity.content_type_id = %s AND activity.object_id = answer_revision.id AND \
+            activity.user_id = answer_revision.author_id AND activity.user_id = %s AND \
+            answer_revision.answer_id=answer.id AND answer.question_id = question.id AND \
+            activity.activity_type=%s'],
+        params=[answer_revision_type_id, user_id, TYPE_ACTIVITY_UPDATE_ANSWER],
         order_by=['-activity.active_at']
     ).values(
             'title',
@@ -1211,7 +1227,8 @@ def user_recent(request, user_id, user_view):
             )
 
     if len(revisions) > 0:
-        revisions = [(Event(q['added_at'], q['activity_type'], q['title'], q['summary'], q['answer_id'], q['question_id'])) for q in revisions]
+        revisions = [(Event(q['added_at'], q['activity_type'], q['title'], q['summary'], \
+            q['answer_id'], q['question_id'])) for q in revisions]
         activities.extend(revisions)
 
     # accepted answers
@@ -1222,9 +1239,11 @@ def user_recent(request, user_id, user_view):
             'added_at' : 'activity.active_at',
             'activity_type' : 'activity.activity_type',
             },
-        tables=['activity', 'repute', 'question'],
-        where=['activity.content_type_id = %s AND activity.object_id = repute.id AND activity.user_id = repute.user_id AND activity.user_id = %s AND repute.question_id=question.id'],
-        params=[repute_type_id, user_id],
+        tables=['activity', 'answer', 'question'],
+        where=['activity.content_type_id = %s AND activity.object_id = answer.id AND \
+            activity.user_id = question.author_id AND activity.user_id = %s AND \
+            answer.question_id=question.id AND activity.activity_type=%s'],
+        params=[answer_type_id, user_id, TYPE_ACTIVITY_MARK_ANSWER],
         order_by=['-activity.active_at']
     ).values(
             'title',
@@ -1233,9 +1252,29 @@ def user_recent(request, user_id, user_view):
             'activity_type',
             )
     if len(accept_answers) > 0:
-        accept_answers = [(Event(q['added_at'], q['activity_type'], q['title'], '', '0', q['question_id'])) for q in accept_answers]
+        accept_answers = [(Event(q['added_at'], q['activity_type'], q['title'], '', '0', \
+            q['question_id'])) for q in accept_answers]
         activities.extend(accept_answers)
-    #TODO: award history
+    #award history
+    awards = Activity.objects.extra(
+        select={
+            'badge_id' : 'badge.id',
+            'awarded_at': 'award.awarded_at',
+            'activity_type' : 'activity.activity_type'
+            },
+        tables=['activity', 'award', 'badge'],
+        where=['activity.user_id = award.user_id AND activity.user_id = %s AND \
+            award.badge_id=badge.id AND activity.object_id=award.id AND activity.activity_type=%s'],
+        params=[user_id, TYPE_ACTIVITY_PRIZE],
+        order_by=['-activity.active_at']
+    ).values(
+            'badge_id',
+            'awarded_at',
+            'activity_type'
+            )
+    if len(awards) > 0:
+        awards = [(AwardEvent(q['awarded_at'], q['activity_type'], q['badge_id'])) for q in awards]
+        activities.extend(awards)
 
     activities.sort(lambda x,y: cmp(y.time, x.time))
 
@@ -1248,6 +1287,9 @@ def user_recent(request, user_id, user_view):
     }, context_instance=RequestContext(request))
 
 def user_responses(request, user_id, user_view):
+    """
+    We list answers for question, comments, and answer accepted by others for this user.
+    """
     class Response:
         def __init__(self, type, title, question_id, answer_id, time, username, user_id, content):
             self.type = type
@@ -1275,7 +1317,8 @@ def user_responses(request, user_id, user_view):
             },
         select_params=[user_id],
         tables=['answer', 'question', 'auth_user'],
-        where=['answer.question_id = question.id AND answer.deleted=0 AND question.deleted = 0 AND question.author_id = %s AND answer.author_id <> %s AND answer.author_id=auth_user.id'],
+        where=['answer.question_id = question.id AND answer.deleted=0 AND question.deleted = 0 AND \
+            question.author_id = %s AND answer.author_id <> %s AND answer.author_id=auth_user.id'],
         params=[user_id, user_id],
         order_by=['-answer.id']
     ).values(
@@ -1288,7 +1331,8 @@ def user_responses(request, user_id, user_view):
             'user_id'
             )
     if len(answers) > 0:
-        answers = [(Response(u'回答问题：', a['title'], a['question_id'], a['answer_id'], a['added_at'], a['username'], a['user_id'], a['html'])) for a in answers]
+        answers = [(Response(TYPE_RESPONSE['QUESTION_ANSWERED'], a['title'], a['question_id'],
+        a['answer_id'], a['added_at'], a['username'], a['user_id'], a['html'])) for a in answers]
         responses.extend(answers)
 
 
@@ -1303,7 +1347,8 @@ def user_responses(request, user_id, user_view):
             'user_id' : 'auth_user.id'
             },
         tables=['question', 'auth_user', 'comment'],
-        where=['question.deleted = 0 AND question.author_id = %s AND comment.object_id=question.id AND comment.content_type_id=%s AND comment.user_id <> %s AND comment.user_id = auth_user.id'],
+        where=['question.deleted = 0 AND question.author_id = %s AND comment.object_id=question.id AND \
+            comment.content_type_id=%s AND comment.user_id <> %s AND comment.user_id = auth_user.id'],
         params=[user_id, question_type_id, user_id],
         order_by=['-comment.added_at']
     ).values(
@@ -1316,7 +1361,8 @@ def user_responses(request, user_id, user_view):
             )
 
     if len(comments) > 0:
-        comments = [(Response(u'评论问题：', c['title'], c['question_id'], '', c['added_at'], c['username'], c['user_id'], c['comment'])) for c in comments]
+        comments = [(Response(TYPE_RESPONSE['QUESTION_COMMENTED'], c['title'], c['question_id'],
+            '', c['added_at'], c['username'], c['user_id'], c['comment'])) for c in comments]
         responses.extend(comments)
 
     # answer comments
@@ -1331,7 +1377,9 @@ def user_responses(request, user_id, user_view):
             'user_id' : 'auth_user.id'
             },
         tables=['answer', 'auth_user', 'comment', 'question'],
-        where=['answer.deleted = 0 AND answer.author_id = %s AND comment.object_id=answer.id AND comment.content_type_id=%s AND comment.user_id <> %s AND comment.user_id = auth_user.id AND question.id = answer.question_id'],
+        where=['answer.deleted = 0 AND answer.author_id = %s AND comment.object_id=answer.id AND \
+            comment.content_type_id=%s AND comment.user_id <> %s AND comment.user_id = auth_user.id \
+            AND question.id = answer.question_id'],
         params=[user_id, answer_type_id, user_id],
         order_by=['-comment.added_at']
     ).values(
@@ -1345,8 +1393,41 @@ def user_responses(request, user_id, user_view):
             )
 
     if len(comments) > 0:
-        comments = [(Response(u'评论回答：', c['title'], c['question_id'], c['answer_id'], c['added_at'], c['username'], c['user_id'], c['comment'])) for c in comments]
+        comments = [(Response(TYPE_RESPONSE['ANSWER_COMMENTED'], c['title'], c['question_id'],
+        c['answer_id'], c['added_at'], c['username'], c['user_id'], c['comment'])) for c in comments]
         responses.extend(comments)
+
+    # answer has been accepted
+    answers = Answer.objects.extra(
+        select={
+            'title' : 'question.title',
+            'question_id' : 'question.id',
+            'answer_id' : 'answer.id',
+            'added_at' : 'answer.added_at',
+            'html' : 'answer.html',
+            'username' : 'auth_user.username',
+            'user_id' : 'auth_user.id'
+            },
+        select_params=[user_id],
+        tables=['answer', 'question', 'auth_user'],
+        where=['answer.question_id = question.id AND answer.deleted=0 AND question.deleted = 0 AND \
+            answer.author_id = %s AND answer.accepted=1 AND question.author_id=auth_user.id'],
+        params=[user_id],
+        order_by=['-answer.id']
+    ).values(
+            'title',
+            'question_id',
+            'answer_id',
+            'added_at',
+            'html',
+            'username',
+            'user_id'
+            )
+    if len(answers) > 0:
+        answers = [(Response(TYPE_RESPONSE['ANSWER_ACCEPTED'], a['title'], a['question_id'],
+            a['answer_id'], a['added_at'], a['username'], a['user_id'], a['html'])) for a in answers]
+        responses.extend(answers)
+
     # sort posts by time
     responses.sort(lambda x,y: cmp(y.time, x.time))
 
