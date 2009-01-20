@@ -93,83 +93,116 @@ BADGE_AWARD_TYPE_FIRST = {
 class Command(NoArgsCommand):
     def handle_noargs(self, **options):
         try:
-            #clean_awards()
-            #alpha_user()
-            first_type_award()
-            first_ask_and_voted()
-            first_answer_and_voted()
+            #self.alpha_user()
+            self.first_type_award()
+            #self.first_ask_and_voted()
+            #self.first_answer_and_voted()
         except Exception, e:
             print e
 
-def alpha_user():
-    """
-    Before Jan 25, 2009(Chinese New Year Eve and enter into Beta for CNProg), every registered user
-    will be awarded the "Alpha" badge if he has any activities.
-    """
-    alpha_end_date = date(2009, 1, 25)
-    if date.today() < alpha_end_date:
-        badge = get_object_or_404(Badge, id=22)
-        for user in User.objects.all():
-            award = Award.objects.filter(user=user, badge=badge)
-            if award and not badge.multiple:
-                continue
-            activities = Activity.objects.filter(user=user)
-            if len(activities) > 0:
-                new_award = Award(user=user, badge=badge)
-                new_award.save()
+    def alpha_user(self):
+        """
+        Before Jan 25, 2009(Chinese New Year Eve and enter into Beta for CNProg), every registered user
+        will be awarded the "Alpha" badge if he has any activities.
+        """
+        alpha_end_date = date(2009, 1, 25)
+        if date.today() < alpha_end_date:
+            badge = get_object_or_404(Badge, id=22)
+            for user in User.objects.all():
+                award = Award.objects.filter(user=user, badge=badge)
+                if award and not badge.multiple:
+                    continue
+                activities = Activity.objects.filter(user=user)
+                if len(activities) > 0:
+                    new_award = Award(user=user, badge=badge)
+                    new_award.save()
 
-def first_type_award():
-    for type in BADGE_AWARD_TYPE_FIRST.keys():
-        activities = Activity.objects.filter(activity_type=type, is_auditted=False)
-        # for same activity we only need one for same user
-        activities.query.group_by = ['user_id']
-        badge = get_object_or_404(Badge, id=BADGE_AWARD_TYPE_FIRST[type])
+    def first_type_award(self):
+        activity_types = ','.join('%s' % item for item in BADGE_AWARD_TYPE_FIRST.keys())
+        # ORDER BY user_id, activity_type
+        query = "SELECT id, user_id, activity_type\
+            FROM activity WHERE is_auditted = 0 AND activity_type IN (%s) ORDER BY user_id, activity_type" % activity_types
+    
+        cursor = connection.cursor()
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        # collect activity_id in current process
+        activity_ids = []
+        last_user_id = 0
+        last_activity_type = 0
+        for row in rows:
+            activity_ids.append(row[0])
+            user_id = row[1]
+            activity_type = row[2]
+            
+            # if the user and activity are same as the last, continue
+            if user_id == last_user_id and activity_type == last_activity_type:
+                continue;
+            
+            user = get_object_or_404(User, id=user_id)
+            badge = get_object_or_404(Badge, id=BADGE_AWARD_TYPE_FIRST[activity_type])
+            
+            count = Award.objects.filter(user=user, badge=badge).count()
+            if count and not badge.multiple:
+                continue
+            else:
+                # new award
+                award = Award(user=user, badge=badge)
+                award.save()
+        
+            # set the current user_id and activity_type to last
+            last_user_id = user_id
+            last_activity_type = activity_type
+        
+        # update processed rows to auditted
+        if len(activity_ids):
+            query = "UPDATE activity SET is_auditted = 1 WHERE id in (%s)"\
+                    % ','.join('%s' % item for item in activity_ids)
+            cursor.execute(query)
+        
+    def first_ask_and_voted(self):
+        activities = Activity.objects.filter(activity_type=TYPE_ACTIVITY_ASK_QUESTION, is_auditted=False)
+        badge = get_object_or_404(Badge, id=13)
         for act in activities:
             award = Award.objects.filter(user=act.user, badge=badge)
             if award and not badge.multiple:
                 continue
-            new_award = Award(user=act.user, badge=badge)
-            new_award.save()
+            question = act.content_object
+            if question.vote_up_count > 0:
+                new_award = Award(user=act.user, badge=badge)
+                new_award.save()
 
-def first_ask_and_voted():
-    activities = Activity.objects.filter(activity_type=TYPE_ACTIVITY_ASK_QUESTION, is_auditted=False)
-    badge = get_object_or_404(Badge, id=13)
-    for act in activities:
-        award = Award.objects.filter(user=act.user, badge=badge)
-        if award and not badge.multiple:
-            continue
-        question = act.content_object
-        if question.vote_up_count > 0:
-            new_award = Award(user=act.user, badge=badge)
-            new_award.save()
+    def first_answer_and_voted(self):
+        activities = Activity.objects.filter(activity_type=TYPE_ACTIVITY_ANSWER, is_auditted=False)
+        badge = get_object_or_404(Badge, id=15)
+        for act in activities:
+            award = Award.objects.filter(user=act.user, badge=badge)
+            if award and not badge.multiple:
+                continue
+            answer = act.content_object
+            if answer.vote_up_count > 0:
+                new_award = Award(user=act.user, badge=badge)
+                new_award.save()
 
-def first_answer_and_voted():
-    activities = Activity.objects.filter(activity_type=TYPE_ACTIVITY_ANSWER, is_auditted=False)
-    badge = get_object_or_404(Badge, id=15)
-    for act in activities:
-        award = Award.objects.filter(user=act.user, badge=badge)
-        if award and not badge.multiple:
-            continue
-        answer = act.content_object
-        if answer.vote_up_count > 0:
-            new_award = Award(user=act.user, badge=badge)
-            new_award.save()
+    def clean_awards(self):
+        Award.objects.all().delete()
 
-def clean_awards():
-    Award.objects.all().delete()
+        award_type =ContentType.objects.get_for_model(Award)
+        Activity.objects.filter(content_type=award_type).delete()
 
-    award_type =ContentType.objects.get_for_model(Award)
-    Activity.objects.filter(content_type=award_type).delete()
+        for user in User.objects.all():
+            user.gold = 0
+            user.silver = 0
+            user.bronze = 0
+            user.save()
 
-    for user in User.objects.all():
-        user.gold = 0
-        user.silver = 0
-        user.bronze = 0
-        user.save()
-
-    for badge in Badge.objects.all():
-        badge.awarded_count = 0
-        badge.save()
+        for badge in Badge.objects.all():
+            badge.awarded_count = 0
+            badge.save()
+            
+        query = "UPDATE activity SET is_auditted = 0"
+        cursor = connection.cursor()
+        cursor.execute(query)
 
 def main():
     pass
