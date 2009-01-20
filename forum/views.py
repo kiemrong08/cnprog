@@ -441,8 +441,9 @@ def _edit_question(request, question):
                         id=question.id).update(**updated_fields)
                     # Update the Question's tag associations
                     if tags_changed:
+                        print 'changing tags %s' % question.tagnames
                         tags_updated = Question.objects.update_tags(
-                            question, question.tagnames, request.user)
+                            question, form.cleaned_data['tags'], request.user)
                     # Create a new revision
                     revision = QuestionRevision(
                         question   = question,
