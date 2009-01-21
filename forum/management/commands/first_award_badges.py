@@ -161,7 +161,7 @@ class Command(NoArgsCommand):
             cursor.execute(query)
         
     def first_ask_and_voted(self):
-        query = "SELECT act.user_id, act.object_id, q.vote_up_count FROM \
+        query = "SELECT act.user_id, q.vote_up_count FROM \
                     activity act, question q WHERE act.activity_type = %s AND \
                     act.object_id = q.id AND\
                     act.is_auditted = 0 AND \
@@ -173,28 +173,26 @@ class Command(NoArgsCommand):
         badge = get_object_or_404(Badge, id=13)
         for row in rows:
             user_id = row[0]
-            object_id = row[1]
-            vote_up_count = row[2]
+            vote_up_count = row[1]
             if vote_up_count > 0:
                 user = get_object_or_404(User, id=user_id)
                 award = Award(user=user, badge=badge)
                 award.save()
 
     def first_answer_and_voted(self):
-        query = "SELECT act.user_id, act.object_id, a.vote_up_count FROM \
+        query = "SELECT act.user_id, a.vote_up_count FROM \
                     activity act, answer a WHERE act.activity_type = %s AND \
-                    act.object_id = q.id AND\
+                    act.object_id = a.id AND\
                     act.is_auditted = 0 AND \
                     act.user_id NOT IN (SELECT user_id FROM award WHERE badge_id = %s)" % (TYPE_ACTIVITY_ANSWER, 15)
         cursor = connection.cursor()
         cursor.execute(query)
         rows = cursor.fetchall()
         
-        badge = get_object_or_404(Badge, id=13)
+        badge = get_object_or_404(Badge, id=15)
         for row in rows:
             user_id = row[0]
-            object_id = row[1]
-            vote_up_count = row[2]
+            vote_up_count = row[1]
             if vote_up_count > 0:
                 user = get_object_or_404(User, id=user_id)
                 award = Award(user=user, badge=badge)
