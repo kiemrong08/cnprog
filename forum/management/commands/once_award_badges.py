@@ -95,8 +95,11 @@ class Command(NoArgsCommand):
         try:
             #self.alpha_user()
             self.first_type_award()
-            self.first_ask_and_voted()
-            self.first_answer_and_voted()
+            self.first_ask_be_voted()
+            self.first_answer_be_voted()
+            self.first_answer_be_voted_10()
+            self.vote_count_300()
+            self.edit_count_100()
         except Exception, e:
             print e
 
@@ -160,11 +163,10 @@ class Command(NoArgsCommand):
                     % ','.join('%s' % item for item in activity_ids)
             cursor.execute(query)
         
-    def first_ask_and_voted(self):
+    def first_ask_be_voted(self):
         query = "SELECT act.user_id, q.vote_up_count FROM \
                     activity act, question q WHERE act.activity_type = %s AND \
                     act.object_id = q.id AND\
-                    act.is_auditted = 0 AND \
                     act.user_id NOT IN (SELECT user_id FROM award WHERE badge_id = %s)" % (TYPE_ACTIVITY_ASK_QUESTION, 13)
         cursor = connection.cursor()
         cursor.execute(query)
@@ -179,11 +181,10 @@ class Command(NoArgsCommand):
                 award = Award(user=user, badge=badge)
                 award.save()
 
-    def first_answer_and_voted(self):
+    def first_answer_be_voted(self):
         query = "SELECT act.user_id, a.vote_up_count FROM \
                     activity act, answer a WHERE act.activity_type = %s AND \
                     act.object_id = a.id AND\
-                    act.is_auditted = 0 AND \
                     act.user_id NOT IN (SELECT user_id FROM award WHERE badge_id = %s)" % (TYPE_ACTIVITY_ANSWER, 15)
         cursor = connection.cursor()
         cursor.execute(query)
@@ -197,7 +198,65 @@ class Command(NoArgsCommand):
                 user = get_object_or_404(User, id=user_id)
                 award = Award(user=user, badge=badge)
                 award.save()
-
+    
+    def first_answer_be_voted_10(self):
+        query = "SELECT act.user_id, a.vote_up_count FROM \
+                    activity act, answer a WHERE act.activity_type = %s AND \
+                    act.object_id = a.id AND\
+                    act.user_id NOT IN (SELECT user_id FROM award WHERE badge_id = %s)" % (TYPE_ACTIVITY_ANSWER, 32)
+        cursor = connection.cursor()
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        
+        badge = get_object_or_404(Badge, id=32)
+        for row in rows:
+            user_id = row[0]
+            vote_up_count = row[1]
+            if vote_up_count >= 10:
+                user = get_object_or_404(User, id=user_id)
+                award = Award(user=user, badge=badge)
+                award.save()
+    
+    def vote_count_300(self):
+        query = "SELECT count(*) vote_count, user_id FROM activity WHERE \
+                    activity_type = %s OR \
+                    activity_type = %s AND \
+                    user_id NOT IN (SELECT user_id FROM award WHERE badge_id = %s) \
+                    GROUP BY user_id HAVING vote_count >= 300" % (TYPE_ACTIVITY_VOTE_UP, TYPE_ACTIVITY_VOTE_DOWN, 26)
+        
+        self.__award_for_count_num(query, 26)
+        
+    def edit_count_100(self):
+        query = "SELECT count(*) vote_count, user_id FROM activity WHERE \
+                    activity_type = %s OR \
+                    activity_type = %s AND \
+                    user_id NOT IN (SELECT user_id FROM award WHERE badge_id = %s) \
+                    GROUP BY user_id HAVING vote_count >= 100" % (TYPE_ACTIVITY_UPDATE_QUESTION, TYPE_ACTIVITY_UPDATE_ANSWER, 27)
+        
+        self.__award_for_count_num(query, 27)
+            
+    def comment_count_10(self):
+        query = "SELECT count(*) vote_count, user_id FROM activity WHERE \
+                    activity_type = %s OR \
+                    activity_type = %s AND \
+                    user_id NOT IN (SELECT user_id FROM award WHERE badge_id = %s) \
+                    GROUP BY user_id HAVING vote_count >= 10" % (TYPE_ACTIVITY_COMMENT_QUESTION, TYPE_ACTIVITY_COMMENT_ANSWER, 5)
+        self.__award_for_count_num(query, 5)
+        
+    def __award_for_count_num(self, query, badge):
+        cursor = connection.cursor()
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        
+        badge = get_object_or_404(Badge, id=badge)
+        for row in rows:
+            vote_count = row[0]
+            user_id = row[1]
+        
+            user = get_object_or_404(User, id=user_id)
+            award = Award(user=user, badge=badge)
+            award.save()
+                
 def main():
     pass
 
