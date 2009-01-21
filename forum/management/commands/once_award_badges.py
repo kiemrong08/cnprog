@@ -100,6 +100,7 @@ class Command(NoArgsCommand):
             self.first_answer_be_voted_10()
             self.vote_count_300()
             self.edit_count_100()
+            self.comment_count_10()
         except Exception, e:
             print e
 
