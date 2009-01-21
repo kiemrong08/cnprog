@@ -95,8 +95,8 @@ class Command(NoArgsCommand):
         try:
             #self.alpha_user()
             self.first_type_award()
-            #self.first_ask_and_voted()
-            #self.first_answer_and_voted()
+            self.first_ask_and_voted()
+            self.first_answer_and_voted()
         except Exception, e:
             print e
 
@@ -161,48 +161,44 @@ class Command(NoArgsCommand):
             cursor.execute(query)
         
     def first_ask_and_voted(self):
-        activities = Activity.objects.filter(activity_type=TYPE_ACTIVITY_ASK_QUESTION, is_auditted=False)
-        badge = get_object_or_404(Badge, id=13)
-        for act in activities:
-            award = Award.objects.filter(user=act.user, badge=badge)
-            if award and not badge.multiple:
-                continue
-            question = act.content_object
-            if question.vote_up_count > 0:
-                new_award = Award(user=act.user, badge=badge)
-                new_award.save()
-
-    def first_answer_and_voted(self):
-        activities = Activity.objects.filter(activity_type=TYPE_ACTIVITY_ANSWER, is_auditted=False)
-        badge = get_object_or_404(Badge, id=15)
-        for act in activities:
-            award = Award.objects.filter(user=act.user, badge=badge)
-            if award and not badge.multiple:
-                continue
-            answer = act.content_object
-            if answer.vote_up_count > 0:
-                new_award = Award(user=act.user, badge=badge)
-                new_award.save()
-
-    def clean_awards(self):
-        Award.objects.all().delete()
-
-        award_type =ContentType.objects.get_for_model(Award)
-        Activity.objects.filter(content_type=award_type).delete()
-
-        for user in User.objects.all():
-            user.gold = 0
-            user.silver = 0
-            user.bronze = 0
-            user.save()
-
-        for badge in Badge.objects.all():
-            badge.awarded_count = 0
-            badge.save()
-            
-        query = "UPDATE activity SET is_auditted = 0"
+        query = "SELECT act.user_id, act.object_id, q.vote_up_count FROM \
+                    activity act, question q WHERE act.activity_type = %s AND \
+                    act.object_id = q.id AND\
+                    act.is_auditted = 0 AND \
+                    act.user_id NOT IN (SELECT user_id FROM award WHERE badge_id = %s)" % (TYPE_ACTIVITY_ASK_QUESTION, 13)
         cursor = connection.cursor()
         cursor.execute(query)
+        rows = cursor.fetchall()
+        
+        badge = get_object_or_404(Badge, id=13)
+        for row in rows:
+            user_id = row[0]
+            object_id = row[1]
+            vote_up_count = row[2]
+            if vote_up_count > 0:
+                user = get_object_or_404(User, id=user_id)
+                award = Award(user=user, badge=badge)
+                award.save()
+
+    def first_answer_and_voted(self):
+        query = "SELECT act.user_id, act.object_id, a.vote_up_count FROM \
+                    activity act, answer a WHERE act.activity_type = %s AND \
+                    act.object_id = q.id AND\
+                    act.is_auditted = 0 AND \
+                    act.user_id NOT IN (SELECT user_id FROM award WHERE badge_id = %s)" % (TYPE_ACTIVITY_ANSWER, 15)
+        cursor = connection.cursor()
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        
+        badge = get_object_or_404(Badge, id=13)
+        for row in rows:
+            user_id = row[0]
+            object_id = row[1]
+            vote_up_count = row[2]
+            if vote_up_count > 0:
+                user = get_object_or_404(User, id=user_id)
+                award = Award(user=user, badge=badge)
+                award.save()
 
 def main():
     pass
