@@ -93,7 +93,7 @@ BADGE_AWARD_TYPE_FIRST = {
 class Command(NoArgsCommand):
     def handle_noargs(self, **options):
         try:
-            #self.alpha_user()
+            self.alpha_user()
             self.first_type_award()
             self.first_ask_be_voted()
             self.first_answer_be_voted()
@@ -122,11 +122,23 @@ class Command(NoArgsCommand):
                     new_award.save()
 
     def first_type_award(self):
+        """
+        This will award below badges for users first behaviors:
+
+        (7, '巡逻兵', 3, '巡逻兵', '第一次标记垃圾帖子', 0, 0),
+        (8, '清洁工', 3, '清洁工', '第一次撤销投票', 0, 0),
+        (9, '批评家', 3, '批评家', '第一次反对票', 0, 0),
+        (10, '小编', 3, '小编', '第一次编辑更新', 0, 0),
+        (11, '村长', 3, '村长', '第一次重新标签', 0, 0),
+        (12, '学者', 3, '学者', '第一次标记答案', 0, 0),
+        (14, '支持者', 3, '支持者', '第一次赞成票', 0, 0),
+        (16, '自传作者', 3, '自传作者', '完整填写用户资料所有选项', 0, 0),
+        """
         activity_types = ','.join('%s' % item for item in BADGE_AWARD_TYPE_FIRST.keys())
         # ORDER BY user_id, activity_type
         query = "SELECT id, user_id, activity_type\
             FROM activity WHERE is_auditted = 0 AND activity_type IN (%s) ORDER BY user_id, activity_type" % activity_types
-    
+
         cursor = connection.cursor()
         cursor.execute(query)
         rows = cursor.fetchall()
@@ -138,14 +150,14 @@ class Command(NoArgsCommand):
             activity_ids.append(row[0])
             user_id = row[1]
             activity_type = row[2]
-            
+
             # if the user and activity are same as the last, continue
             if user_id == last_user_id and activity_type == last_activity_type:
                 continue;
-            
+
             user = get_object_or_404(User, id=user_id)
             badge = get_object_or_404(Badge, id=BADGE_AWARD_TYPE_FIRST[activity_type])
-            
+
             count = Award.objects.filter(user=user, badge=badge).count()
             if count and not badge.multiple:
                 continue
@@ -153,53 +165,67 @@ class Command(NoArgsCommand):
                 # new award
                 award = Award(user=user, badge=badge)
                 award.save()
-        
+
             # set the current user_id and activity_type to last
             last_user_id = user_id
             last_activity_type = activity_type
-        
+
         # update processed rows to auditted
         if len(activity_ids):
             query = "UPDATE activity SET is_auditted = 1 WHERE id in (%s)"\
                     % ','.join('%s' % item for item in activity_ids)
             cursor.execute(query)
-        
+
     def first_ask_be_voted(self):
+        """
+        For user asked question and got first upvote, we award him following badge:
+
+        (13, '学生', 3, '学生', '第一次提问并且有一次以上赞成票', 0, 0),
+        """
         query = "SELECT act.user_id, q.vote_up_count FROM \
                     activity act, question q WHERE act.activity_type = %s AND \
                     act.object_id = q.id AND\
-                    act.user_id NOT IN (SELECT user_id FROM award WHERE badge_id = %s)" % (TYPE_ACTIVITY_ASK_QUESTION, 13)
+                    act.user_id NOT IN (SELECT distinct user_id FROM award WHERE badge_id = %s)" % (TYPE_ACTIVITY_ASK_QUESTION, 13)
         cursor = connection.cursor()
         cursor.execute(query)
         rows = cursor.fetchall()
-        
+
         badge = get_object_or_404(Badge, id=13)
+        awarded_users = []
         for row in rows:
             user_id = row[0]
             vote_up_count = row[1]
-            if vote_up_count > 0:
+            if vote_up_count > 0 and user_id not in awarded_users:
                 user = get_object_or_404(User, id=user_id)
                 award = Award(user=user, badge=badge)
                 award.save()
+                awarded_users.append(user_id)
 
     def first_answer_be_voted(self):
+        """
+        When user answerd questions and got first upvote, we award him following badge:
+
+        (15, '教师', 3, '教师', '第一次回答问题并且得到一个以上赞成票', 0, 0),
+        """
         query = "SELECT act.user_id, a.vote_up_count FROM \
                     activity act, answer a WHERE act.activity_type = %s AND \
                     act.object_id = a.id AND\
-                    act.user_id NOT IN (SELECT user_id FROM award WHERE badge_id = %s)" % (TYPE_ACTIVITY_ANSWER, 15)
+                    act.user_id NOT IN (SELECT distinct user_id FROM award WHERE badge_id = %s)" % (TYPE_ACTIVITY_ANSWER, 15)
         cursor = connection.cursor()
         cursor.execute(query)
         rows = cursor.fetchall()
-        
+
+        awarded_users = []
         badge = get_object_or_404(Badge, id=15)
         for row in rows:
             user_id = row[0]
             vote_up_count = row[1]
-            if vote_up_count > 0:
+            if vote_up_count > 0 and user_id not in awarded_users:
                 user = get_object_or_404(User, id=user_id)
                 award = Award(user=user, badge=badge)
                 award.save()
-    
+                awarded_users.append(user_id)
+
     def first_answer_be_voted_10(self):
         query = "SELECT act.user_id, a.vote_up_count FROM \
                     activity act, answer a WHERE act.activity_type = %s AND \
@@ -208,7 +234,7 @@ class Command(NoArgsCommand):
         cursor = connection.cursor()
         cursor.execute(query)
         rows = cursor.fetchall()
-        
+
         badge = get_object_or_404(Badge, id=32)
         for row in rows:
             user_id = row[0]
@@ -217,25 +243,25 @@ class Command(NoArgsCommand):
                 user = get_object_or_404(User, id=user_id)
                 award = Award(user=user, badge=badge)
                 award.save()
-    
+
     def vote_count_300(self):
         query = "SELECT count(*) vote_count, user_id FROM activity WHERE \
                     activity_type = %s OR \
                     activity_type = %s AND \
                     user_id NOT IN (SELECT user_id FROM award WHERE badge_id = %s) \
                     GROUP BY user_id HAVING vote_count >= 300" % (TYPE_ACTIVITY_VOTE_UP, TYPE_ACTIVITY_VOTE_DOWN, 26)
-        
+
         self.__award_for_count_num(query, 26)
-        
+
     def edit_count_100(self):
         query = "SELECT count(*) vote_count, user_id FROM activity WHERE \
                     activity_type = %s OR \
                     activity_type = %s AND \
                     user_id NOT IN (SELECT user_id FROM award WHERE badge_id = %s) \
                     GROUP BY user_id HAVING vote_count >= 100" % (TYPE_ACTIVITY_UPDATE_QUESTION, TYPE_ACTIVITY_UPDATE_ANSWER, 27)
-        
+
         self.__award_for_count_num(query, 27)
-            
+
     def comment_count_10(self):
         query = "SELECT count(*) vote_count, user_id FROM activity WHERE \
                     activity_type = %s OR \
@@ -243,21 +269,21 @@ class Command(NoArgsCommand):
                     user_id NOT IN (SELECT user_id FROM award WHERE badge_id = %s) \
                     GROUP BY user_id HAVING vote_count >= 10" % (TYPE_ACTIVITY_COMMENT_QUESTION, TYPE_ACTIVITY_COMMENT_ANSWER, 5)
         self.__award_for_count_num(query, 5)
-        
+
     def __award_for_count_num(self, query, badge):
         cursor = connection.cursor()
         cursor.execute(query)
         rows = cursor.fetchall()
-        
+
         badge = get_object_or_404(Badge, id=badge)
         for row in rows:
             vote_count = row[0]
             user_id = row[1]
-        
+
             user = get_object_or_404(User, id=user_id)
             award = Award(user=user, badge=badge)
             award.save()
-                
+
 def main():
     pass
 
