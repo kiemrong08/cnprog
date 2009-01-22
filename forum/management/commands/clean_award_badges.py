@@ -43,7 +43,11 @@ class Command(NoArgsCommand):
             
         query = "UPDATE activity SET is_auditted = 0"
         cursor = connection.cursor()
-        cursor.execute(query)
+        try:
+            cursor.execute(query)
+        finally:
+            cursor.close()
+            connection.close()
 
 def main():
     pass
