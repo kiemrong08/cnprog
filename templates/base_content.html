@@ -13,10 +13,10 @@
         <script src="http://www.google.com/jsapi"></script>
         <script>google.load("jquery", "1.2.6");</script>
         {% if request.user.is_anonymous and not request.session.message_silent %}
-        <style type="text/css"> 
+        <style type="text/css">
             body { margin-top:2.4em; }
-        </style> 
-        <script type="text/javascript"> 
+        </style>
+        <script type="text/javascript">
             $().ready(function() {
                 notify.show();
             });
@@ -26,21 +26,23 @@
         {% endblock %}
     </head>
     <body>
-        <div class="notify" style="display:none"> 
-            <span>{% block message %}{% if request.user.is_anonymous and not request.session.message_silent %}第一次来CNProg吧？别忘记瞅瞅<a href="/faq/">FAQ</a>哦！{% endif %}{% endblock %}</span> 
-            <a class="close-notify" onclick="notify.close(true)">&times;</a> 
-        </div> 
+        <div class="notify" style="display:none">
+            <span>{% block message %}{% if request.user.is_anonymous and not request.session.message_silent %}第一次来CNProg吧？别忘记瞅瞅<a href="/faq/">FAQ</a>哦！{% endif %}{% endblock %}</span>
+            <a class="close-notify" onclick="notify.close(true)">&times;</a>
+        </div>
         <div id="container">
-            {% include "header.html" %}
+            <div id="header">
+                 {% include "header.html" %}
+            </div>
             <div id="content">
                 <div id="container">
                     {% block content%}
                     {% endblock%}
 
                 </div>
-                
+
             </div>
-            
+
         </div>
         {% include "footer.html" %}
         {% block endjs %}

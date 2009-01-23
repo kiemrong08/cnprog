@@ -59,12 +59,12 @@ def _get_tags_cache_json():
 
 def index(request):
     view_id = request.GET.get('sort', None)
-    view_dic = {"latest":"-added_at", "active":"-last_activity_at", "hottest":"-answer_count", "mostvoted":"-score" }
+    view_dic = {"latest":"-last_activity_at", "hottest":"-answer_count", "mostvoted":"-score" }
     try:
         orderby = view_dic[view_id]
     except KeyError:
         view_id = "latest"
-        orderby = "-added_at"
+        orderby = "-last_activity_at"
     questions = Question.objects.filter(deleted=False).order_by(orderby)[:INDEX_PAGE_SIZE]
 
     # RISK - inner join queries

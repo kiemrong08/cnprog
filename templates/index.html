@@ -10,7 +10,7 @@
             var tab_id = "{{ tab_id }}";
             $("#"+tab_id).attr('className',"youarehere");
         });
-         
+
         </script>
 {% endblock %}
 {% block content %}
@@ -19,17 +19,16 @@
         问题列表
     </h3>
     <div id="tab" class="">
-        <a id="latest" href="?sort=latest" title="最新加入系统的问题">最新问题</a>
-        <a id="active" href="?sort=active" title="最新被更新的问题">活跃问题</a>
+        <a id="latest" href="?sort=latest" title="最新更新的问题">最新问题</a>
         <a id="hottest" href="?sort=hottest" title="被回复最多的问题">热门问题</a>
         <a id="mostvoted" href="?sort=mostvoted" title="投票次数最多的问题">最有价值问题</a>
     </div>
-    
+
 </div>
 <div id="main-body" class="">
     {% for question in questions %}
     <div class="question-item">
-        
+
         <div class="boxes">
             <table height="100%">
                 <tr>
@@ -91,32 +90,26 @@
                         {{ question.get_question_title }}
                     </a>
                 </h3>
-                
+
             </div>
-            
+
             <div class="question-tag">
                 {% for tag in question.tagname_list %}
                     <a href="{% url forum.views.tag tag|urlencode %}" class="post-tag" title="查看有关'{{ tag }}'的问题" rel="tag">{{ tag }}</a>
                 {% endfor %}
             </div>
             <div class="question-started">
-                    {% ifequal tab_id 'active'%}
-                    <span class="updatedtime" title="{{ question.last_activity_at }}"><strong>{% diff_date question.last_activity_at %}</strong></span> <span class="big"><a href="/users/{{ question.last_activity_by.id }}/{{ question.last_activity_by.username }}">{{ question.last_activity_by.username }}</a></span>&nbsp;{% get_score_badge question.last_activity_by %}
-                    {% else %}
                     {% if question.wiki %}
                     <span class="gray">社区Wiki</span>
                     {% else %}
-                    <span class="updatedtime" title="{{ question.added_at }}"><strong>{% diff_date question.added_at %}</strong></span> <span class="big"><a href="/users/{{ question.author.id }}/{{ question.author.username }}">{{ question.author.username }}</a></span>&nbsp;{% get_score_badge question.author %}
+                    <span class="updatedtime" title="{{ question.last_activity_at }}"><strong>{% diff_date question.last_activity_at %}</strong></span> <span class="big"><a href="/users/{{ question.author.id }}/{{ question.author.username }}">{{ question.author.username }}</a></span>&nbsp;{% get_score_badge question.author %}
                     {% endif %}
-                    {% endifequal %}
-                    
-   
             </div>
-            
+
         </div>
     </div>
     {% endfor %}
-    
+
     <div>
 
         <h3>在寻找更多问题吗？请查阅<a href="/questions">完整问题列表</a>，或者<a href="/tags">受欢迎的标签</a>。请帮助我们回答<a href="/questions/unanswered">没有回答的问题</a>。</h3>
