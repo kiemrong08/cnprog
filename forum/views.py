@@ -1690,4 +1690,7 @@ def read_message(request):
     if request.method == "POST":
         if request.POST['formdata'] == 'required':
             request.session['message_silent'] = 1
+
+            if request.user.is_authenticated():
+                request.user.delete_messages()
     return HttpResponse('')

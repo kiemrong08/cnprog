@@ -403,11 +403,21 @@ edit_question_or_answer = django.dispatch.Signal(providing_args=["instance", "mo
 delete_post_or_answer = django.dispatch.Signal(providing_args=["instance", "deleted_by"])
 mark_offensive = django.dispatch.Signal(providing_args=["instance", "mark_by"])
 user_updated = django.dispatch.Signal(providing_args=["instance", "updated_by"])
+def get_messages(self):
+        messages = []
+        for m in self.message_set.all():
+            messages.append(m.message)
+        return messages
+
+def delete_messages(self):
+    self.message_set.all().delete()
 
 def get_profile_url(self):
     """Returns the URL for this User's profile."""
     return '%s%s/' % (reverse('user', args=[self.id]), self.username)
 User.add_to_class('get_profile_url', get_profile_url)
+User.add_to_class('get_messages', get_messages)
+User.add_to_class('delete_messages', delete_messages)
 
 def calculate_gravatar_hash(instance, **kwargs):
     """Calculates a User's gravatar hash from their email address."""
@@ -464,6 +474,14 @@ def record_award_event(instance, created, **kwargs):
         if instance.badge.type == Badge.BRONZE:
             instance.user.bronze += 1
         instance.user.save()
+
+def notify_award_message(instance, created, **kwargs):
+    """
+    Notify users when they have been awarded badges by using Django message.
+    """
+    if created:
+        user = instance.user
+        user.message_set.create(message=u"%s" % instance.badge.name)
 
 def record_answer_accepted(instance, created, **kwargs):
     """
@@ -545,6 +563,7 @@ post_save.connect(record_comment_event, sender=Comment)
 post_save.connect(record_revision_question_event, sender=QuestionRevision)
 post_save.connect(record_revision_answer_event, sender=AnswerRevision)
 post_save.connect(record_award_event, sender=Award)
+post_save.connect(notify_award_message, sender=Award)
 post_save.connect(record_answer_accepted, sender=Answer)
 post_save.connect(update_last_seen, sender=Activity)
 post_save.connect(record_vote, sender=Vote)

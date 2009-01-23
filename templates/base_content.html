@@ -21,13 +21,26 @@
                 notify.show();
             });
          </script>
+        {% else %}
+        {% with request.user.get_messages as messages%}
+        {% if messages %}
+        <style type="text/css">
+            body { margin-top:2.4em; }
+        </style>
+        <script type="text/javascript">
+            $().ready(function() {
+                notify.show();
+            });
+        </script>
+        {% endif %}
+        {% endwith %}
         {% endif %}
         {% block forejs %}
         {% endblock %}
     </head>
     <body>
         <div class="notify" style="display:none">
-            <span>{% block message %}{% if request.user.is_anonymous and not request.session.message_silent %}第一次来CNProg吧？别忘记瞅瞅<a href="/faq/">FAQ</a>哦！{% endif %}{% endblock %}</span>
+            <span>{% if request.user.is_anonymous and not request.session.message_silent %}第一次来CNProg吧？别忘记瞅瞅<a href="/faq/">FAQ</a>哦！{% endif %}{% if request.user.get_messages %}恭喜您，社区给您颁发了奖牌：{% for message in request.user.get_messages %}<font class="darkred">{{ message }}</font>, {% endfor %}{% endif %}查看<a href="{{ request.user.get_profile_url }}">个人资料</a></span>
             <a class="close-notify" onclick="notify.close(true)">&times;</a>
         </div>
         <div id="container">
