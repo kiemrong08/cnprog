@@ -139,7 +139,7 @@ class Command(BaseCommand):
         """
         activity_types = ','.join('%s' % item for item in BADGE_AWARD_TYPE_FIRST.keys())
         # ORDER BY user_id, activity_type
-        query = "SELECT id, user_id, activity_type\
+        query = "SELECT id, user_id, activity_type, content_type_id, object_id\
             FROM activity WHERE is_auditted = 0 AND activity_type IN (%s) ORDER BY user_id, activity_type" % activity_types
         
         cursor = connection.cursor()
@@ -154,20 +154,23 @@ class Command(BaseCommand):
                 activity_ids.append(row[0])
                 user_id = row[1]
                 activity_type = row[2]
+                content_type_id = row[3]
+                objet_id = row[4]
 
                 # if the user and activity are same as the last, continue
                 if user_id == last_user_id and activity_type == last_activity_type:
                     continue;
-
+                        
                 user = get_object_or_404(User, id=user_id)
                 badge = get_object_or_404(Badge, id=BADGE_AWARD_TYPE_FIRST[activity_type])
-
+                content_type = get_object_or_404(ContentType, id=content_type_id)
+                
                 count = Award.objects.filter(user=user, badge=badge).count()
                 if count and not badge.multiple:
                     continue
                 else:
                     # new award
-                    award = Award(user=user, badge=badge)
+                    award = Award(user=user, badge=badge, content_type=content_type, object_id=objet_id)
                     award.save()
 
                 # set the current user_id and activity_type to last
@@ -185,7 +188,7 @@ class Command(BaseCommand):
 
         (13, '学生', 3, '学生', '第一次提问并且有一次以上赞成票', 0, 0),
         """
-        query = "SELECT act.user_id, q.vote_up_count FROM \
+        query = "SELECT act.user_id, q.vote_up_count, act.object_id FROM \
                     activity act, question q WHERE act.activity_type = %s AND \
                     act.object_id = q.id AND\
                     act.user_id NOT IN (SELECT distinct user_id FROM award WHERE badge_id = %s)" % (TYPE_ACTIVITY_ASK_QUESTION, 13)
@@ -195,13 +198,15 @@ class Command(BaseCommand):
             rows = cursor.fetchall()
 
             badge = get_object_or_404(Badge, id=13)
+            content_type = ContentType.objects.get_for_model(Question)
             awarded_users = []
             for row in rows:
                 user_id = row[0]
                 vote_up_count = row[1]
+                object_id = row[2]
                 if vote_up_count > 0 and user_id not in awarded_users:
                     user = get_object_or_404(User, id=user_id)
-                    award = Award(user=user, badge=badge)
+                    award = Award(user=user, badge=badge, content_type=content_type, object_id=objet_id)
                     award.save()
                     awarded_users.append(user_id)
         finally:
@@ -213,7 +218,7 @@ class Command(BaseCommand):
 
         (15, '教师', 3, '教师', '第一次回答问题并且得到一个以上赞成票', 0, 0),
         """
-        query = "SELECT act.user_id, a.vote_up_count FROM \
+        query = "SELECT act.user_id, a.vote_up_count, act.object_id FROM \
                     activity act, answer a WHERE act.activity_type = %s AND \
                     act.object_id = a.id AND\
                     act.user_id NOT IN (SELECT distinct user_id FROM award WHERE badge_id = %s)" % (TYPE_ACTIVITY_ANSWER, 15)
@@ -224,12 +229,14 @@ class Command(BaseCommand):
 
             awarded_users = []
             badge = get_object_or_404(Badge, id=15)
+            content_type = ContentType.objects.get_for_model(Answer)
             for row in rows:
                 user_id = row[0]
                 vote_up_count = row[1]
+                object_id = row[2]
                 if vote_up_count > 0 and user_id not in awarded_users:
                     user = get_object_or_404(User, id=user_id)
-                    award = Award(user=user, badge=badge)
+                    award = Award(user=user, badge=badge, content_type=content_type, object_id=objet_id)
                     award.save()
                     awarded_users.append(user_id)
         finally:
@@ -239,7 +246,7 @@ class Command(BaseCommand):
         """
         (32, '学问家', 2, '学问家', '第一次回答被投赞成票10次以上', 0, 0)
         """
-        query = "SELECT act.user_id FROM \
+        query = "SELECT act.user_id, act.object_id FROM \
                     activity act, answer a WHERE act.object_id = a.id AND\
                     act.activity_type = %s AND \
                     a.vote_up_count >= 10 AND\
@@ -251,11 +258,13 @@ class Command(BaseCommand):
         
             awarded_users = []
             badge = get_object_or_404(Badge, id=32)
+            content_type = ContentType.objects.get_for_model(Answer)
             for row in rows:
                 user_id = row[0]
                 if user_id not in awarded_users:
                     user = get_object_or_404(User, id=user_id)
-                    award = Award(user=user, badge=badge)
+                    object_id = row[1]
+                    award = Award(user=user, badge=badge, content_type=content_type, object_id=objet_id)
                     award.save()
                     awarded_users.append(user_id)
         finally:

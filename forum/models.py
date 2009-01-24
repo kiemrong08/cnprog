@@ -335,6 +335,9 @@ class Award(models.Model):
     """The awarding of a Badge to a User."""
     user       = models.ForeignKey(User)
     badge      = models.ForeignKey(Badge)
+    content_type   = models.ForeignKey(ContentType)
+    object_id      = models.PositiveIntegerField()
+    content_object = generic.GenericForeignKey('content_type', 'object_id')
     awarded_at = models.DateTimeField(default=datetime.datetime.now)
     notified   = models.BooleanField(default=False)
 

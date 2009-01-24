@@ -82,89 +82,108 @@ TYPE_ACTIVITY_USER_FULL_UPDATED = 17
 class Command(BaseCommand):
     def handle_noargs(self, **options):
         try:
-            self.delete_question_up_vote_3()
-            self.delete_answer_up_vote_3()
-            self.delete_question_down_vote_3()
-            self.delete_answer_down_vote_3()
-            self.answer_be_voted_10()
-            self.question_be_voted_10()
+            self.delete_question_be_voted_up_3()
+            self.delete_answer_be_voted_up_3()
+            self.delete_question_be_vote_down_3()
+            self.delete_answer_be_voted_down_3()
+            self.answer_be_voted_up_10()
+            self.question_be_voted_up_10()
             self.question_view_1000()
+            self.answerd_self_question_be_voted_up_3()
         except Exception, e:
             print e
     
-    def delete_question_up_vote_3(self):
+    def delete_question_be_voted_up_3(self):
         """
         (1, '炼狱法师', 3, '炼狱法师', '删除自己有3个以上赞成票的帖子', 1, 0),
         """
-        query = "SELECT act.id, act.user_id FROM activity act, question q WHERE act.object_id = q.id AND\
+        query = "SELECT act.id, act.user_id, act.object_id FROM activity act, question q WHERE act.object_id = q.id AND\
                 act.activity_type = %s AND\
                 q.vote_up_count >=3 AND \
                 act.is_auditted = 0" % (TYPE_ACTIVITY_DELETE_QUESTION)
-        self.__process_badge(query, 1)
+        self.__process_badge(query, 1, Question)
         
-    def delete_answer_up_vote_3(self):
+    def delete_answer_be_voted_up_3(self):
         """
         (1, '炼狱法师', 3, '炼狱法师', '删除自己有3个以上赞成票的帖子', 1, 0),
         """
-        query = "SELECT act.id, act.user_id FROM activity act, answer an WHERE act.object_id = an.id AND\
+        query = "SELECT act.id, act.user_id, act.object_id FROM activity act, answer an WHERE act.object_id = an.id AND\
                 act.activity_type = %s AND\
                 an.vote_up_count >=3 AND \
                 act.is_auditted = 0" % (TYPE_ACTIVITY_DELETE_ANSWER)
-        self.__process_badge(query, 1)
+        self.__process_badge(query, 1, Answer)
         
-    def delete_question_down_vote_3(self):
+    def delete_question_be_vote_down_3(self):
         """
         (2, '压力白领', 3, '压力白领', '删除自己有3个以上反对票的帖子', 1, 0),
         """
-        query = "SELECT act.id, act.user_id FROM activity act, question q WHERE act.object_id = q.id AND\
+        query = "SELECT act.id, act.user_id, act.object_id FROM activity act, question q WHERE act.object_id = q.id AND\
                 act.activity_type = %s AND\
                 q.vote_down_count >=3 AND \
                 act.is_auditted = 0" % (TYPE_ACTIVITY_DELETE_QUESTION)
-        self.__process_badge(query, 2)
+        content_type = ContentType.objects.get_for_model(Question)
+        self.__process_badge(query, 2, Question)
 
-    def delete_answer_down_vote_3(self):
+    def delete_answer_be_voted_down_3(self):
         """
         (2, '压力白领', 3, '压力白领', '删除自己有3个以上反对票的帖子', 1, 0),
         """
-        query = "SELECT act.id, act.user_id FROM activity act, answer an WHERE act.object_id = an.id AND\
+        query = "SELECT act.id, act.user_id, act.object_id FROM activity act, answer an WHERE act.object_id = an.id AND\
                 act.activity_type = %s AND\
                 an.vote_down_count >=3 AND \
                 act.is_auditted = 0" % (TYPE_ACTIVITY_DELETE_ANSWER)
-        self.__process_badge(query, 2)
+        self.__process_badge(query, 2, Answer)
         
-    def answer_be_voted_10(self):
+    def answer_be_voted_up_10(self):
         """
         (3, '优秀回答', 3, '优秀回答', '回答好评10次以上', 1, 0),
         """
-        query = "SELECT act.id, act.user_id FROM \
+        query = "SELECT act.id, act.user_id, act.object_id FROM \
                     activity act, answer a WHERE act.object_id = a.id AND\
                     act.activity_type = %s AND \
                     a.vote_up_count >= 10 AND\
                     act.is_auditted = 0" % (TYPE_ACTIVITY_ANSWER)
-        self.__process_badge(query, 3)
+        self.__process_badge(query, 3, Answer)
         
-    def question_be_voted_10(self):
+    def question_be_voted_up_10(self):
         """
         (4, '优秀问题', 3, '优秀问题', '问题好评10次以上', 1, 0),
         """
-        query = "SELECT act.id, act.user_id FROM \
+        query = "SELECT act.id, act.user_id, act.object_id FROM \
                     activity act, question q WHERE act.object_id = q.id AND\
                     act.activity_type = %s AND \
                     q.vote_up_count >= 10 AND\
                     act.is_auditted = 0" % (TYPE_ACTIVITY_ASK_QUESTION)
-        self.__process_badge(query, 4)
+        self.__process_badge(query, 4, Question)
     
     def question_view_1000(self):
         """
         (6, '流行问题', 3, '流行问题', '问题的浏览量超过1000人次', 1, 0),
         """
-        query = "SELECT act.id, act.user_id FROM \
-                    activity act, question q WHERE act.object_id = q.id AND\
-                    act.activity_type = %s AND \
-                    q.view_count >= 1000" % (TYPE_ACTIVITY_ASK_QUESTION)
-        self.__process_badge(query, 4, False)
+        query = "SELECT act.id, act.user_id, act.object_id FROM \
+                    activity act, question q WHERE act.activity_type = %s AND\
+                    act.object_id = q.id AND \
+                    q.view_count >= 1000 AND\
+                    act.object_id NOT IN \
+                        (SELECT object_id FROM award WHERE award.badge_id = %s)" % (TYPE_ACTIVITY_ASK_QUESTION, 6)
+        self.__process_badge(query, 6, Question, False)
     
-    def __process_badge(self, query, badge, update_auditted=True):
+    def answerd_self_question_be_voted_up_3(self):
+        """
+        (17, '自学成才', 3, '自学成才', '回答自己的问题并且有3个以上赞成票', 1, 0),
+        """
+        query = "SELECT act.id, act.user_id, act.object_id FROM \
+                    activity act, answer an WHERE act.activity_type = %s AND\
+                    act.object_id = an.id AND\
+                    an.vote_up_count >= 3 AND\
+                    act.user_id = (SELECT user_id FROM question q WHERE q.id = an.question_id) AND\
+                    act.object_id NOT IN \
+                        (SELECT object_id FROM award WHERE award.badge_id = %s)" % (TYPE_ACTIVITY_ANSWER, 17)
+        self.__process_badge(query, 17, Question, False)
+    
+    def __process_badge(self, query, badge, content_object, update_auditted=True):
+        content_type = ContentType.objects.get_for_model(content_object)
+
         cursor = connection.cursor()
         try:
             cursor.execute(query)
@@ -176,9 +195,10 @@ class Command(BaseCommand):
             for row in rows:
                 activity_id = row[0]
                 user_id = row[1]
-
+                object_id = row[2]
+                
                 user = get_object_or_404(User, id=user_id)
-                award = Award(user=user, badge=badge)
+                award = Award(user=user, badge=badge, content_type=content_type, object_id=objet_id)
                 award.save()
                 
                 if update_auditted:
