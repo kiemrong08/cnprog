@@ -26,6 +26,7 @@ from forum import auth
 
 # used in index page
 INDEX_PAGE_SIZE = 30
+INDEX_AWARD_SIZE = 15
 INDEX_TAGS_SIZE = 100
 # used in tags list
 DEFAULT_PAGE_SIZE = 65
@@ -59,14 +60,22 @@ def _get_tags_cache_json():
 
 def index(request):
     view_id = request.GET.get('sort', None)
-    view_dic = {"latest":"-last_activity_at", "hottest":"-answer_count", "mostvoted":"-score" }
+    view_dic = {
+             "latest":"-last_activity_at",
+             "hottest":"-answer_count",
+             "mostvoted":"-score",
+             "trans": "-last_activity_at"
+             }
     try:
         orderby = view_dic[view_id]
     except KeyError:
         view_id = "latest"
         orderby = "-last_activity_at"
-    questions = Question.objects.filter(deleted=False).order_by(orderby)[:INDEX_PAGE_SIZE]
-
+    # group questions by author_id of 28,29
+    if view_id == 'trans':
+        questions = Question.objects.filter(deleted=False, author__id__in=[28,29]).order_by(orderby)[:INDEX_PAGE_SIZE]
+    else:
+        questions = Question.objects.filter(deleted=False).order_by(orderby)[:INDEX_PAGE_SIZE]
     # RISK - inner join queries
     questions = questions.select_related();
     tags = Tag.objects.all().order_by("-id")[:INDEX_TAGS_SIZE]
@@ -81,14 +90,23 @@ def index(request):
     ma = MAX if end > MAX else end
     #print datetime.datetime.now()
 
-    awards = Award.objects.select_related(depth=1).all().order_by('-awarded_at')[:10]
+    awards = Award.objects.extra(
+        select={'badge_id': 'badge.id', 'badge_name':'badge.name',
+                      'badge_description': 'badge.description', 'badge_type': 'badge.type',
+                      'user_id': 'auth_user.id', 'user_name': 'auth_user.username'
+                      },
+        tables=['award', 'badge', 'auth_user'],
+        order_by=['-awarded_at'],
+        where=['auth_user.id=award.user_id AND badge_id=badge.id'],
+    ).values('badge_id', 'badge_name', 'badge_description', 'badge_type', 'user_id', 'user_name')
+
     return render_to_response('index.html', {
         "questions" : questions,
         "tab_id" : view_id,
         "tags" : tags,
         "max" : ma,
         "min" : mi,
-        "awards" : awards,
+        "awards" : awards[:INDEX_AWARD_SIZE],
         }, context_instance=RequestContext(request))
 
 def about(request):
@@ -441,7 +459,6 @@ def _edit_question(request, question):
                         id=question.id).update(**updated_fields)
                     # Update the Question's tag associations
                     if tags_changed:
-                        print 'changing tags %s' % question.tagnames
                         tags_updated = Question.objects.update_tags(
                             question, form.cleaned_data['tags'], request.user)
                     # Create a new revision

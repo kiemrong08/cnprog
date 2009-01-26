@@ -146,10 +146,10 @@ def can_view_deleted_post(user, post):
 
 # user preferences view permissions
 def can_view_user_votes(request_user, target_user):
-    return request_user.is_superuser or (request_user.is_authenticated() and request_user == target_user)
+    return (request_user.is_authenticated() and request_user == target_user)
 
 def can_view_user_preferences(request_user, target_user):
-    return request_user.is_superuser or (request_user.is_authenticated() and request_user == target_user)
+    return (request_user.is_authenticated() and request_user == target_user)
 
 def can_view_user_edit(request_user, target_user):
     return (request_user.is_authenticated() and request_user == target_user)

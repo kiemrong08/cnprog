@@ -22,6 +22,7 @@
         <a id="latest" href="?sort=latest" title="最新更新的问题">最新问题</a>
         <a id="hottest" href="?sort=hottest" title="被回复最多的问题">热门问题</a>
         <a id="mostvoted" href="?sort=mostvoted" title="投票次数最多的问题">最有价值问题</a>
+        <a id="trans" href="?sort=trans" title="外文翻译的经典问题">翻译问题</a>
     </div>
 
 </div>
@@ -151,7 +152,9 @@
     <h3>最新奖牌</h3>
     {% for award in awards %}
     <div style="clear:both;line-height:35px">
-    <a href="{{award.badge.get_absolute_url}}" title="{{ award.badge.get_type_display }} : {{ award.badge.description }}" class="badge"><span class="badge{{ award.badge.type }}">&#9679;</span>&nbsp;{{ award.badge.name }}</a> 授予 <a href="{{ award.user.get_profile_url }}">{{ award.user.username }}</a>
+        <a href="/badges/{{award.badge_id}}/{{award.badge_name}}" title="{{ award.badge_description }}" class="badge">
+        <span class="badge{{ award.badge_type }}">&#9679;</span>&nbsp;{{ award.badge_name }}</a> 授予
+        <a href="/users/{{award.user_id}}/{{award.user_name}}">{{ award.user_name }}</a>
     </div>
     {% endfor %}
     <a href="{% url badges %}" style="float:right;position:relative">所有奖牌 »</a>

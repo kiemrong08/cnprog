@@ -333,8 +333,8 @@ class Badge(models.Model):
 
 class Award(models.Model):
     """The awarding of a Badge to a User."""
-    user       = models.ForeignKey(User)
-    badge      = models.ForeignKey(Badge)
+    user       = models.ForeignKey(User, related_name='award_user')
+    badge      = models.ForeignKey(Badge, related_name='award_badge')
     content_type   = models.ForeignKey(ContentType)
     object_id      = models.PositiveIntegerField()
     content_object = generic.GenericForeignKey('content_type', 'object_id')
