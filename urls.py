@@ -3,9 +3,12 @@ from django.conf.urls.defaults import *
 from django.contrib import admin
 from forum.views import index
 from forum import views as app
+from forum.feed import RssLastestQuestionsFeed
 
 admin.autodiscover()
-
+feeds = {
+    'rss': RssLastestQuestionsFeed
+}
 urlpatterns = patterns('',
     (r'^$', index),
     (r'^favicon\.ico$', 'django.views.generic.simple.redirect_to', {'url': '/content/images/favicon.ico'}),
@@ -46,4 +49,5 @@ urlpatterns = patterns('',
     url(r'^messages/markread/$',app.read_message, name='read_message'),
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^nimda/(.*)', admin.site.root),
+    (r'^feeds/(?P<url>.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': feeds}),
 )
