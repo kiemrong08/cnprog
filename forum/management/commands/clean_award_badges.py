@@ -24,6 +24,8 @@ class Command(NoArgsCommand):
             self.clean_awards()
         except Exception, e:
             print e
+        finally:
+            connection.close()
 
     def clean_awards(self):
         Award.objects.all().delete()
