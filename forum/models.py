@@ -379,8 +379,8 @@ QUESTIONS_PER_PAGE_CHOICES = (
    (30, u'30'),
    (50, u'50'),
 )
-
-User.add_to_class('reputation', models.PositiveIntegerField(default=1))
+# 2009-1-25 - 2009-2-25 default rep: +50
+User.add_to_class('reputation', models.PositiveIntegerField(default=50))
 User.add_to_class('gravatar', models.CharField(max_length=32))
 User.add_to_class('favorite_questions',
                   models.ManyToManyField(Question, through=FavoriteQuestion,

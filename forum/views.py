@@ -977,9 +977,9 @@ def user_stats(request, user_id, user_view):
             },
         select_params=[user_id],
         tables=['question', 'auth_user'],
-        where=['question.deleted = 0 AND question.author_id=%s AND question.author_id = auth_user.id'],
+        where=['question.deleted = 0 AND question.author_id=%s AND question.last_activity_by_id = auth_user.id'],
         params=[user_id],
-        order_by=['-vote_count', '-added_at']
+        order_by=['-vote_count', '-last_activity_at']
     ).values('vote_count',
              'favorited_myself',
              'id',

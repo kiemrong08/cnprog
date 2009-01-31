@@ -95,6 +95,7 @@ class Command(BaseCommand):
     def handle_noargs(self, **options):
         try:
             self.alpha_user()
+            self.beta_user()
             self.first_type_award()
             self.first_ask_be_voted()
             self.first_answer_be_voted()
@@ -124,6 +125,23 @@ class Command(BaseCommand):
                     new_award = Award(user=user, badge=badge)
                     new_award.save()
 
+    def beta_user(self):
+        """
+        Before Feb 25, 2009, every registered user
+        will be awarded the "Beta" badge if he has any activities.
+        """
+        beta_end_date = date(2009, 2, 25)
+        if date.today() < beta_end_date:
+            badge = get_object_or_404(Badge, id=33)
+            for user in User.objects.all():
+                award = Award.objects.filter(user=user, badge=badge)
+                if award and not badge.multiple:
+                    continue
+                activities = Activity.objects.filter(user=user)
+                if len(activities) > 0:
+                    new_award = Award(user=user, badge=badge)
+                    new_award.save()
+
     def first_type_award(self):
         """
         This will award below badges for users first behaviors:
@@ -141,7 +159,7 @@ class Command(BaseCommand):
         # ORDER BY user_id, activity_type
         query = "SELECT id, user_id, activity_type, content_type_id, object_id\
             FROM activity WHERE is_auditted = 0 AND activity_type IN (%s) ORDER BY user_id, activity_type" % activity_types
-        
+
         cursor = connection.cursor()
         try:
             cursor.execute(query)
@@ -155,22 +173,22 @@ class Command(BaseCommand):
                 user_id = row[1]
                 activity_type = row[2]
                 content_type_id = row[3]
-                objet_id = row[4]
+                object_id = row[4]
 
                 # if the user and activity are same as the last, continue
                 if user_id == last_user_id and activity_type == last_activity_type:
                     continue;
-                        
+
                 user = get_object_or_404(User, id=user_id)
                 badge = get_object_or_404(Badge, id=BADGE_AWARD_TYPE_FIRST[activity_type])
                 content_type = get_object_or_404(ContentType, id=content_type_id)
-                
+
                 count = Award.objects.filter(user=user, badge=badge).count()
                 if count and not badge.multiple:
                     continue
                 else:
                     # new award
-                    award = Award(user=user, badge=badge, content_type=content_type, object_id=objet_id)
+                    award = Award(user=user, badge=badge, content_type=content_type, object_id=object_id)
                     award.save()
 
                 # set the current user_id and activity_type to last
@@ -206,7 +224,7 @@ class Command(BaseCommand):
                 object_id = row[2]
                 if vote_up_count > 0 and user_id not in awarded_users:
                     user = get_object_or_404(User, id=user_id)
-                    award = Award(user=user, badge=badge, content_type=content_type, object_id=objet_id)
+                    award = Award(user=user, badge=badge, content_type=content_type, object_id=object_id)
                     award.save()
                     awarded_users.append(user_id)
         finally:
@@ -236,7 +254,7 @@ class Command(BaseCommand):
                 object_id = row[2]
                 if vote_up_count > 0 and user_id not in awarded_users:
                     user = get_object_or_404(User, id=user_id)
-                    award = Award(user=user, badge=badge, content_type=content_type, object_id=objet_id)
+                    award = Award(user=user, badge=badge, content_type=content_type, object_id=object_id)
                     award.save()
                     awarded_users.append(user_id)
         finally:
@@ -255,7 +273,7 @@ class Command(BaseCommand):
         try:
             cursor.execute(query)
             rows = cursor.fetchall()
-        
+
             awarded_users = []
             badge = get_object_or_404(Badge, id=32)
             content_type = ContentType.objects.get_for_model(Answer)
@@ -264,7 +282,7 @@ class Command(BaseCommand):
                 if user_id not in awarded_users:
                     user = get_object_or_404(User, id=user_id)
                     object_id = row[1]
-                    award = Award(user=user, badge=badge, content_type=content_type, object_id=objet_id)
+                    award = Award(user=user, badge=badge, content_type=content_type, object_id=object_id)
                     award.save()
                     awarded_users.append(user_id)
         finally:
@@ -310,13 +328,13 @@ class Command(BaseCommand):
         try:
             cursor.execute(query)
             rows = cursor.fetchall()
-        
+
             awarded_users = []
             badge = get_object_or_404(Badge, id=badge)
             for row in rows:
                 vote_count = row[0]
                 user_id = row[1]
-            
+
                 if user_id not in awarded_users:
                     user = get_object_or_404(User, id=user_id)
                     award = Award(user=user, badge=badge)
