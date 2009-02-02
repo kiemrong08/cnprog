@@ -9,12 +9,17 @@ admin.autodiscover()
 feeds = {
     'rss': RssLastestQuestionsFeed
 }
+
+APP_PATH = os.path.dirname(__file__)
 urlpatterns = patterns('',
     (r'^$', index),
     (r'^favicon\.ico$', 'django.views.generic.simple.redirect_to', {'url': '/content/images/favicon.ico'}),
     (r'^favicon\.gif$', 'django.views.generic.simple.redirect_to', {'url': '/content/images/favicon.gif'}),
     (r'^content/(?P<path>.*)$', 'django.views.static.serve',
-        {'document_root': os.path.join(os.path.dirname(__file__), 'templates/content').replace('\\','/')}
+        {'document_root': os.path.join(APP_PATH, 'templates/content').replace('\\','/')}
+    ),
+    (r'^media/(?P<path>.*)$', 'django.views.static.serve',
+        {'document_root': os.path.join(APP_PATH, 'templates/media').replace('\\','/')}
     ),
     (r'^account/', include('django_authopenid.urls')),
     (r'^signin/$', 'django_authopenid.views.signin'),
@@ -50,4 +55,5 @@ urlpatterns = patterns('',
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^nimda/(.*)', admin.site.root),
     (r'^feeds/(?P<url>.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': feeds}),
+    (r'^upload/$', app.upload),
 )

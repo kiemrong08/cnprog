@@ -24,8 +24,8 @@ DEBUG_TOOLBAR_CONFIG = {
 
 #for logging
 import logging
-#LOG_FILENAME = '/Users/sailing/Development/cnprog/svn/trunk/log/django.lanai.log'
-LOG_FILENAME = 'c:/logs/django.lanai.log'
+LOG_FILENAME = '/Users/sailing/Development/cnprog/log/django.lanai.log'
+#LOG_FILENAME = 'c:/logs/django.lanai.log'
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,)
 
 #for OpenID auth
@@ -40,15 +40,15 @@ ADMINS = (
 MANAGERS = ADMINS
 
 DATABASE_ENGINE = 'mysql'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-#DATABASE_NAME = 'cnprog'             # Or path to database file if using sqlite3.
-#DATABASE_USER = 'root'             # Not used with sqlite3.
-#DATABASE_PASSWORD = ''         # Not used with sqlite3.
+DATABASE_NAME = 'cnprog'             # Or path to database file if using sqlite3.
+DATABASE_USER = 'root'             # Not used with sqlite3.
+DATABASE_PASSWORD = ''         # Not used with sqlite3.
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
 DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
 
-DATABASE_NAME = 'twogeekt_lanai'             # Or path to database file if using sqlite3.
-DATABASE_USER = 'twogeekt_lanai'             # Not used with sqlite3.
-DATABASE_PASSWORD = 'sysadm'         # Not used with sqlite3.
+#DATABASE_NAME = 'twogeekt_lanai'             # Or path to database file if using sqlite3.
+#DATABASE_USER = 'twogeekt_lanai'             # Not used with sqlite3.
+#DATABASE_PASSWORD = 'sysadm'         # Not used with sqlite3.
 
 SERVER_EMAIL = 'webmaster@cnprog.com'
 DEFAULT_FROM_EMAIL = 'webmaster@cnprog.com'
@@ -82,17 +82,17 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = ''
+MEDIA_ROOT = '/Users/sailing/Development/cnprog/templates/media/'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = ''
+MEDIA_URL = 'http://127.0.0.1:8000/media/'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/media/'
+ADMIN_MEDIA_PREFIX = '/admin/media/'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '$oo^&_m&qwbib=(_4m_n*zn-d=g#s0he5fx9xonnym#8p6yigm'
@@ -124,6 +124,11 @@ TEMPLATE_DIRS = (
     os.path.join(os.path.dirname(__file__), 'templates').replace('\\','/'),
 )
 
+FILE_UPLOAD_TEMP_DIR = os.path.join(os.path.dirname(__file__), 'tmp').replace('\\','/')
+
+FILE_UPLOAD_HANDLERS = ("django.core.files.uploadhandler.MemoryFileUploadHandler",
+ "django.core.files.uploadhandler.TemporaryFileUploadHandler",)
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -135,3 +140,5 @@ INSTALLED_APPS = (
     'django_authopenid',
     'debug_toolbar' ,
 )
+
+DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'

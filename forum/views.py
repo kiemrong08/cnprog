@@ -1,7 +1,9 @@
 ﻿# encoding:utf-8
-import datetime, calendar
+import os.path
+import time, datetime, calendar, random
 import logging
 from urllib import quote, unquote
+from django.core.files.storage import default_storage
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse,Http404
@@ -1711,3 +1713,14 @@ def read_message(request):
             if request.user.is_authenticated():
                 request.user.delete_messages()
     return HttpResponse('')
+
+def upload(request):
+    f = request.FILES['file-upload']
+    file_name_suffix = os.path.splitext(f.name)[1]
+    new_file_name = str(time.time()).replace('.', str(random.randint(0,100000))) + file_name_suffix
+    default_storage.save(new_file_name, f)
+    result = {'error':'',
+                'msg':'good',
+                'file_url': default_storage.url(new_file_name)}
+    data = simplejson.dumps(result)
+    return HttpResponse(data, mimetype="application/javascript")

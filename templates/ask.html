@@ -4,6 +4,7 @@
         <script type='text/javascript' src='/content/js/com.cnprog.editor.js'></script>
         <script type='text/javascript' src='/content/js/com.cnprog.post.js'></script>
         <script type='text/javascript' src='/content/js/jquery.validate.pack.js'></script>
+        <script type='text/javascript' src='/content/js/ajaxfileupload.js'></script>
         <script type="text/javascript">
         
         $().ready(function(){
@@ -48,6 +49,52 @@
             lanai.highlightSyntax();
             
         });
+        
+        function ajaxFileUpload(imageUrl)
+    	{
+    		$("#loading").ajaxStart(function(){
+    			$(this).show();
+    		}).ajaxComplete(function(){
+    			$(this).hide();
+    		});
+    		
+            $("#upload").ajaxStart(function(){
+    			$(this).hide();
+    		}).ajaxComplete(function(){
+    			$(this).show();
+    		});
+            
+    		$.ajaxFileUpload
+    		(
+    			{
+    				url:'/upload/',
+    				secureuri:false,
+    				fileElementId:'file-upload',
+    				dataType: 'json',
+    				success: function (data, status)
+    				{
+    					if(typeof(data.error) != 'undefined')
+    					{
+    						if(data.error != '')
+    						{
+    							alert(data.error);
+    						}else
+    						{
+    						    imageUrl.attr('value',data.file_url);
+    							alert(data.msg);
+    						}
+    					}
+    				},
+    				error: function (data, status, e)
+    				{
+    					alert(e);
+    				}
+    			}
+    		)
+
+    		return false;
+
+    	}
         </script>
 {% endblock %}
         

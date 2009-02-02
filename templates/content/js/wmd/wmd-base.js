@@ -318,14 +318,19 @@ _44.textAlign="center";
 _44.position="relative";
 _45.appendChild(_53);
 _47=_3.createElement("input");
+_47.id="image-url"
 _47.value=_42;
 _44=_47.style;
 _44.display="block";
 _44.width="80%";
-_44.marginLeft=_44.marginRight="auto";
+_44.marginLeft="2.5em"
+_44.marginRight="auto";
 _44.backgroundColor="white";
 _44.color="black";
 _53.appendChild(_47);
+$(_53).append("<div style=\"border: medium none ; margin: 0pt; padding: 5px; clear: none; float: none; text-align: left; position: relative; line-height: 1em; color: black; background-repeat: no-repeat; background-image: none; min-height: 0pt; min-width: 0pt; max-height: 90000px; max-width: 90000px; font-size: 14px; font-family: Helvetica,Arial,Verdana,sans-serif;\">Or upload file:</div>" + 
+              "<input type=\"file\" name=\"file-upload\" id=\"file-upload\" size=\"26\" style=\"display: block;width: 80%; margin-right: auto; margin-left: 2.5em; background-color: white; color: black;\" onchange=\"return ajaxFileUpload($('#image-url'));\"/>" + 
+              "<img id=\"loading\" src=\"/content/images/indicator.gif\" style=\"display:none;\"/>");
 var _54=_3.createElement("input");
 _54.type="button";
 _54.onclick=function(){
