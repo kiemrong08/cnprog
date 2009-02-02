@@ -1,40 +1,35 @@
-
 jQuery.extend({
-	
-
-    createUploadIframe: function(id, uri)
-	{
-			//create frame
-            var frameId = 'jUploadFrame' + id;
-            
-            if(window.ActiveXObject) {
-                var io = document.createElement('<iframe id="' + frameId + '" name="' + frameId + '" />');
-                if(typeof uri== 'boolean'){
-                    io.src = 'javascript:false';
-                }
-                else if(typeof uri== 'string'){
-                    io.src = uri;
-                }
+    createUploadIframe: function(id, uri){
+        //create frame
+        var frameId = 'jUploadFrame' + id;           
+        if(window.ActiveXObject) {
+            var io = document.createElement('<iframe id="' + frameId + '" name="' + frameId + '" />');
+            if(typeof uri== 'boolean'){
+                io.src = 'javascript:false';
             }
-            else {
-                var io = document.createElement('iframe');
-                io.id = frameId;
-                io.name = frameId;
+            else if(typeof uri== 'string'){
+                io.src = uri;
             }
-            io.style.position = 'absolute';
-            io.style.top = '-1000px';
-            io.style.left = '-1000px';
+        }
+        else {
+            var io = document.createElement('iframe');
+            io.id = frameId;
+            io.name = frameId;
+        }
+        io.style.position = 'absolute';
+        io.style.top = '-1000px';
+        io.style.left = '-1000px';
 
-            document.body.appendChild(io);
-
-            return io			
+        document.body.appendChild(io);
+        return io;
     },
     createUploadForm: function(id, fileElementId)
 	{
 		//create form	
 		var formId = 'jUploadForm' + id;
 		var fileId = 'jUploadFile' + id;
-		var form = $('<form  action="" method="POST" name="' + formId + '" id="' + formId + '" enctype="multipart/form-data"></form>');	
+		var form = $('<form  action="" method="POST" name="' + formId + '" id="' + formId 
+            + '" enctype="multipart/form-data"></form>');	
 		var oldElement = $('#' + fileElementId);
 		var newElement = $(oldElement).clone();
 		$(oldElement).attr('id', fileId);
@@ -70,19 +65,23 @@ jQuery.extend({
         var uploadCallback = function(isTimeout)
 		{			
 			var io = document.getElementById(frameId);
-            try 
-			{				
-				if(io.contentWindow)
-				{
-					 xml.responseText = io.contentWindow.document.body?io.contentWindow.document.body.textContent:null;
-                	 xml.responseXML = io.contentWindow.document.XMLDocument?io.contentWindow.document.XMLDocument:io.contentWindow.document;
+            try {				
+				if(io.contentWindow){
+					 xml.responseText = io.contentWindow.document.body ? 
+                        io.contentWindow.document.body.innerText : null;
+                	 xml.responseXML = io.contentWindow.document.XMLDocument ? 
+                        io.contentWindow.document.XMLDocument : io.contentWindow.document;
 					 
-				}else if(io.contentDocument)
+				}
+                else if(io.contentDocument)
 				{
-					 xml.responseText = io.contentDocument.document.body?io.contentDocument.document.body.textContent:null;
-                	xml.responseXML = io.contentDocument.document.XMLDocument?io.contentDocument.document.XMLDocument:io.contentDocument.document;
+					xml.responseText = io.contentDocument.document.body ? 
+                        io.contentDocument.document.body.textContent : null;
+                	xml.responseXML = io.contentDocument.document.XMLDocument ? 
+                        io.contentDocument.document.XMLDocument : io.contentDocument.document;
 				}						
-            }catch(e)
+            }
+            catch(e)
 			{
 				jQuery.handleError(s, xml, null, e);
 			}
@@ -124,28 +123,24 @@ jQuery.extend({
                 if ( s.complete )
                     s.complete(xml, status);
 
-                jQuery(io).unbind()
+                jQuery(io).unbind();
 
                 setTimeout(function()
-									{	try 
-										{
-											$(io).remove();
-											$(form).remove();	
-											
-										} catch(e) 
-										{
-											jQuery.handleError(s, xml, null, e);
-										}									
-
-									}, 100)
-
-                xml = null
-
+                    {	try 
+                        {
+                            $(io).remove();
+                            $(form).remove();	
+                            
+                        } catch(e) 
+                        {
+                            jQuery.handleError(s, xml, null, e);
+                        }									
+                    }, 100)
+                xml = null;
             }
         }
         // Timeout checker
-        if ( s.timeout > 0 ) 
-		{
+        if ( s.timeout > 0 ) {
             setTimeout(function(){
                 // Check to see if the request is still happening
                 if( !requestDone ) uploadCallback( "timeout" );

@@ -4,7 +4,10 @@
         <script type='text/javascript' src='/content/js/com.cnprog.editor.js'></script>
         <script type='text/javascript' src='/content/js/com.cnprog.post.js'></script>
         <script type='text/javascript' src='/content/js/jquery.validate.pack.js'></script>
+        <script type='text/javascript' src='/content/js/wmd/showdown.js'></script>
+        <script type='text/javascript' src='/content/js/wmd/wmd.js'></script>
         <script type='text/javascript' src='/content/js/ajaxfileupload.js'></script>
+        <link rel="stylesheet" type="text/css" href="/content/js/wmd/wmd.css" />
         <script type="text/javascript">
         
         $().ready(function(){
@@ -45,7 +48,6 @@
             });
  
             setupFormValidation("#fmask", CPValidator.getQuestionFormRules(), CPValidator.getQuestionFormMessages());
-
             lanai.highlightSyntax();
             
         });
@@ -117,6 +119,7 @@
             </div>
     
             <div class="form-item">
+                <div id="wmd-button-bar" class="wmd-panel"></div>
                 {{ form.text }}
                 
                 <div class="preview-toggle">
