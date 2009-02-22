@@ -9,16 +9,16 @@
         <script type='text/javascript' src='/content/js/ajaxfileupload.js'></script>
         <link rel="stylesheet" type="text/css" href="/content/js/wmd/wmd.css" />
         <script type="text/javascript">
-        
+
         $().ready(function(){
             //set current module button style
             $("#nav_ask").attr('className',"youarehere");
             $('#editor').TextAreaResizer();
-            
+
             //highlight code synctax when editor has new text
             $("#editor").typeWatch({highlight: false, wait: 3000,
                              captureLength: 5, callback: lanai.highlightSyntax});
-                             
+
             //toggle preview of editor
             var display = true;
             var txt = "[禁用预览]";
@@ -29,7 +29,7 @@
                 $('#previewer').toggle();
                 $('#pre-collapse').text(txt);
             });
-            
+
             //Tags autocomplete action
             var tags = {{ tags|safe }};
         	$("#id_tags").autocomplete(tags, {
@@ -44,14 +44,14 @@
                 formatResult: function(row, i, max){
                     return row.n;
                 }
-                
+
             });
- 
+
             setupFormValidation("#fmask", CPValidator.getQuestionFormRules(), CPValidator.getQuestionFormMessages());
             lanai.highlightSyntax();
-            
+
         });
-        
+
         function ajaxFileUpload(imageUrl)
     	  {
     		  $("#loading").ajaxStart(function(){
@@ -59,13 +59,13 @@
     		  }).ajaxComplete(function(){
     			  $(this).hide();
     		  });
-    		
+
           $("#upload").ajaxStart(function(){
     			  $(this).hide();
     		  }).ajaxComplete(function(){
     			  $(this).show();
     		  });
-            
+
     		  $.ajaxFileUpload
     		  (
     		    {
@@ -82,42 +82,42 @@
     					  }else{
     					    imageUrl.attr('value', fileURL);
     					  }
-    					  
+
     				  },
     				  error: function (data, status, e)
     				  {
-    					  alert('error');
+    					  alert(e);
     				  }
     			  }
     		  )
-    	
+
     	    return false;
     	}
         </script>
 {% endblock %}
-        
+
 {% block content %}
 <div id="main-bar" class="">
     <h3>
         我要提问
     </h3>
-    
+
 </div>
 <div id="main-body" class="">
     <div id="askform">
         <form id="fmask" action="{% url forum.views.ask %}" method="post" >
             <div class="form-item">
-                <label for="id_title" ><strong>{{ form.title.label_tag }}:</strong></label> <span class="form-error"></span><br> 
-                {{ form.title }} {{ form.title.errors }}  
+                <label for="id_title" ><strong>{{ form.title.label_tag }}:</strong></label> <span class="form-error"></span><br>
+                {{ form.title }} {{ form.title.errors }}
                 <div class="title-desc">
                     {{ form.title.help_text }}
-                </div>     
+                </div>
             </div>
-    
+
             <div class="form-item">
                 <div id="wmd-button-bar" class="wmd-panel"></div>
                 {{ form.text }}
-                
+
                 <div class="preview-toggle">
                     <table width="100%">
                         <tr>
@@ -128,8 +128,8 @@
                                 {{ form.wiki }} <span style="font-weight:normal;cursor:help" title="{{form.wiki.help_text}}">{{ form.wiki.label_tag }} </span>
                             </td>
                         </tr>
-                    
-                    </table>  
+
+                    </table>
                 </div>
                 <div id="previewer" class="wmd-preview"></div>
                 <span class="form-error"></span>
@@ -144,29 +144,29 @@
             </div>
             <br>
             {% if not request.user.is_authenticated %}
-            <table id="login-box"> 
-                <tr> 
-                    <td style="vertical-align:middle;"> 
+            <table id="login-box">
+                <tr>
+                    <td style="vertical-align:middle;">
                     <strong>使用 <a href="http://openid.net/" title="了解更多有关OpenID的信息">OpenID</a> 登录：</strong><br>
                         {{ form.openid }}
                         <div class="title-desc">
                             获取您自己的<a href="https://www.myopenid.com/" target=="_blank">OpenID</a>。
                         </div>
-                    </td> 
-                    <td style="vertical-align:middle; padding: 0px 40px 0px 40px"> 
-                        <div style="position: absolute; margin-top:40px; background-color:white; margin-left:-10px; padding:5px;">或</div> 
-                        <div style="width:1px; border-left:solid 1px #999; height:8em; margin:auto;"></div> 
-                    </td> 
-                    <td style="vertical-align:middle;"> 
+                    </td>
+                    <td style="vertical-align:middle; padding: 0px 40px 0px 40px">
+                        <div style="position: absolute; margin-top:40px; background-color:white; margin-left:-10px; padding:5px;">或</div>
+                        <div style="width:1px; border-left:solid 1px #999; height:8em; margin:auto;"></div>
+                    </td>
+                    <td style="vertical-align:middle;">
                         <strong>您的大名:</strong><br>
                         {{ form.user }}
                         <p>
                         <strong>电子邮件:（不会公开显示）</strong><br>
                         {{ form.email }}
                         </p>
-                    </td> 
-                </tr> 
-            </table>    
+                    </td>
+                </tr>
+            </table>
             {% endif %}
             <input type="submit" value="现在提问" class="submit" />
         </form>
@@ -193,7 +193,7 @@
             </li>
         </ul>
          <a href="/faq/" target="_blank" title="查看常见问题" style="float:right;position:relative">faq »</a>
-         <br>  
+         <br>
     </div>
 </div>
 
@@ -201,18 +201,18 @@
     <h3>Markdown快速参考</h3>
     <ul class="list-item">
         <li>
-            *斜体* 或者 _斜体_  
+            *斜体* 或者 _斜体_
 
         </li>
         <li>
-            **加粗** 或者 __加粗__ 
+            **加粗** 或者 __加粗__
 
         </li>
         <li>
             <b>链接</b>：一个[例子](http://url.com/ "标题")
 
         </li>
-        
+
         <li>
             <b>图片</b>：![alt 文本](/path/img.jpg "标题")
 
@@ -227,7 +227,7 @@
         </li>
     </ul>
     <a href="http://en.wikipedia.org/wiki/Markdown" target="_blank" style="float:right;position:relative">有关Markdown详细说明 »</a>
-    <br>  
+    <br>
 </div>
 
 {% endblock %}

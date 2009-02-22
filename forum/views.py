@@ -1720,16 +1720,23 @@ def upload(request):
         pass
     class FileSizeNotAllow(Exception):
         pass
-        
+    class UploadPermissionNotAuthorized(Exception):
+        pass
+
     #<result><msg><![CDATA[%s]]></msg><error><![CDATA[%s]]></error><file_url>%s</file_url></result>
     xml_template = "<result><msg><![CDATA[%s]]></msg><error><![CDATA[%s]]></error><file_url>%s</file_url></result>"
-    
+
     try:
         f = request.FILES['file-upload']
+        # check upload permission
+        if not can_upload_files(request.user):
+            raise UploadPermissionNotAuthorized
+
         # check file type
         file_name_suffix = os.path.splitext(f.name)[1].lower()
         if not file_name_suffix in settings.ALLOW_FILE_TYPES:
             raise FileTypeNotAllow
+
         # genetate new file name
         new_file_name = str(time.time()).replace('.', str(random.randint(0,100000))) + file_name_suffix
         # use default storage to store file
@@ -1740,13 +1747,15 @@ def upload(request):
         if size > settings.ALLOW_MAX_FILE_SIZE:
             default_storage.delete(new_file_name)
             raise FileSizeNotAllow
-            
+
         result = xml_template % ('Good', '', default_storage.url(new_file_name))
+    except UploadPermissionNotAuthorized:
+        result = xml_template % ('', u"上传图片只限于积分+60以上注册用户!", '')
     except FileTypeNotAllow:
         result = xml_template % ('', u"只允许上传'jpg', 'jpeg', 'gif', 'bmp', 'png', 'tiff'类型的文件！", '')
     except FileSizeNotAllow:
         result = xml_template % ('', u"只允许上传%sK大小的文件！" % settings.ALLOW_MAX_FILE_SIZE / 1024, '')
     except Exception:
         result = xml_template % ('', u"在文件上传过程中产生了错误，请联系管理员，谢谢^_^", '')
-    
+
     return HttpResponse(result, mimetype="application/xml")

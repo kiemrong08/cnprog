@@ -18,6 +18,7 @@ VOTE_UP                   = 15
 FLAG_OFFENSIVE            = 15
 POST_IMAGES               = 15
 LEAVE_COMMENTS            = 50
+UPLOAD_FILES              = 60
 VOTE_DOWN                 = 100
 CLOSE_OWN_QUESTIONS       = 250
 RETAG_OTHER_QUESTIONS     = 500
@@ -153,6 +154,10 @@ def can_view_user_preferences(request_user, target_user):
 
 def can_view_user_edit(request_user, target_user):
     return (request_user.is_authenticated() and request_user == target_user)
+
+def can_upload_files(request_user):
+    return (request_user.is_authenticated() and request_user.reputation >= UPLOAD_FILES) or \
+           request_user.is_superuser
 
 ###########################################
 ## actions and reputation changes event
