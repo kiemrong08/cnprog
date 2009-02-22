@@ -3,6 +3,7 @@ import os.path
 import time, datetime, calendar, random
 import logging
 from urllib import quote, unquote
+from django.conf import settings
 from django.core.files.storage import default_storage
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -1715,12 +1716,37 @@ def read_message(request):
     return HttpResponse('')
 
 def upload(request):
-    f = request.FILES['file-upload']
-    file_name_suffix = os.path.splitext(f.name)[1]
-    new_file_name = str(time.time()).replace('.', str(random.randint(0,100000))) + file_name_suffix
-    default_storage.save(new_file_name, f)
-    result = {'error':'',
-                'msg':'good',
-                'file_url': default_storage.url(new_file_name)}
-    data = simplejson.dumps(result)
-    return HttpResponse(data, mimetype="application/javascript")
+    class FileTypeNotAllow(Exception):
+        pass
+    class FileSizeNotAllow(Exception):
+        pass
+        
+    #<result><msg><![CDATA[%s]]></msg><error><![CDATA[%s]]></error><file_url>%s</file_url></result>
+    xml_template = "<result><msg><![CDATA[%s]]></msg><error><![CDATA[%s]]></error><file_url>%s</file_url></result>"
+    
+    try:
+        f = request.FILES['file-upload']
+        # check file type
+        file_name_suffix = os.path.splitext(f.name)[1].lower()
+        if not file_name_suffix in settings.ALLOW_FILE_TYPES:
+            raise FileTypeNotAllow
+        # genetate new file name
+        new_file_name = str(time.time()).replace('.', str(random.randint(0,100000))) + file_name_suffix
+        # use default storage to store file
+        default_storage.save(new_file_name, f)
+        # check file size
+        # byte
+        size = default_storage.size(new_file_name)
+        if size > settings.ALLOW_MAX_FILE_SIZE:
+            default_storage.delete(new_file_name)
+            raise FileSizeNotAllow
+            
+        result = xml_template % ('Good', '', default_storage.url(new_file_name))
+    except FileTypeNotAllow:
+        result = xml_template % ('', u"只允许上传'jpg', 'jpeg', 'gif', 'bmp', 'png', 'tiff'类型的文件！", '')
+    except FileSizeNotAllow:
+        result = xml_template % ('', u"只允许上传%sK大小的文件！" % settings.ALLOW_MAX_FILE_SIZE / 1024, '')
+    except Exception:
+        result = xml_template % ('', u"在文件上传过程中产生了错误，请联系管理员，谢谢^_^", '')
+    
+    return HttpResponse(result, mimetype="application/xml")

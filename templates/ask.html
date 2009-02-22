@@ -53,49 +53,45 @@
         });
         
         function ajaxFileUpload(imageUrl)
-    	{
-    		$("#loading").ajaxStart(function(){
-    			$(this).show();
-    		}).ajaxComplete(function(){
-    			$(this).hide();
-    		});
+    	  {
+    		  $("#loading").ajaxStart(function(){
+    			  $(this).show();
+    		  }).ajaxComplete(function(){
+    			  $(this).hide();
+    		  });
     		
-            $("#upload").ajaxStart(function(){
-    			$(this).hide();
-    		}).ajaxComplete(function(){
-    			$(this).show();
-    		});
+          $("#upload").ajaxStart(function(){
+    			  $(this).hide();
+    		  }).ajaxComplete(function(){
+    			  $(this).show();
+    		  });
             
-    		$.ajaxFileUpload
-    		(
-    			{
-    				url:'/upload/',
-    				secureuri:false,
-    				fileElementId:'file-upload',
-    				dataType: 'json',
-    				success: function (data, status)
-    				{
-    					if(typeof(data.error) != 'undefined')
-    					{
-    						if(data.error != '')
-    						{
-    							alert(data.error);
-    						}else
-    						{
-    						    imageUrl.attr('value',data.file_url);
-    							alert(data.msg);
-    						}
-    					}
-    				},
-    				error: function (data, status, e)
-    				{
-    					alert(e);
-    				}
-    			}
-    		)
-
-    		return false;
-
+    		  $.ajaxFileUpload
+    		  (
+    		    {
+    			    url:'/upload/',
+    				  secureuri:false,
+    				  fileElementId:'file-upload',
+    				  dataType: 'xml',
+    				  success: function (data, status)
+    				  {
+    					  var fileURL = $(data).find('file_url').text();
+    					  var error = $(data).find('error').text();
+    					  if(error != ''){
+    					    alert(error);
+    					  }else{
+    					    imageUrl.attr('value', fileURL);
+    					  }
+    					  
+    				  },
+    				  error: function (data, status, e)
+    				  {
+    					  alert('error');
+    				  }
+    			  }
+    		  )
+    	
+    	    return false;
     	}
         </script>
 {% endblock %}

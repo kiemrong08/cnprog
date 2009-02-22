@@ -4,7 +4,8 @@ import os.path
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-SITE_SRC_ROOT = 'c:/Projects/Lanai/src'
+#SITE_SRC_ROOT = 'c:/Projects/Lanai/src'
+SITE_SRC_ROOT = '/Users/sailing/Development/cnprog'
 #David Cramer debug toolbar
 INTERNAL_IPS = ('127.0.0.1',)
 DEBUG_TOOLBAR_PANELS = (
@@ -142,3 +143,8 @@ INSTALLED_APPS = (
 )
 
 DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+
+# for user upload
+ALLOW_FILE_TYPES = ('.jpg', '.jpeg', '.gif', '.bmp', '.png', '.tiff')
+# unit byte
+ALLOW_MAX_FILE_SIZE = 1024 * 1024

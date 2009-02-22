@@ -76,7 +76,7 @@ jQuery.extend({
                 else if(io.contentDocument)
 				{
 					xml.responseText = io.contentDocument.document.body ? 
-                        io.contentDocument.document.body.textContent : null;
+                        io.contentDocument.document.body.textContent || document.body.innerText : null;
                 	xml.responseXML = io.contentDocument.document.XMLDocument ? 
                         io.contentDocument.document.XMLDocument : io.contentDocument.document;
 				}						
@@ -131,8 +131,7 @@ jQuery.extend({
                             $(io).remove();
                             $(form).remove();	
                             
-                        } catch(e) 
-                        {
+                        } catch(e) {
                             jQuery.handleError(s, xml, null, e);
                         }									
                     }, 100)
