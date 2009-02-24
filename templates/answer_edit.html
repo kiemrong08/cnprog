@@ -4,6 +4,9 @@
         <script type='text/javascript' src='/content/js/com.cnprog.editor.js'></script>
         <script type='text/javascript' src='/content/js/com.cnprog.post.js'></script>
         <script type='text/javascript' src='/content/js/jquery.validate.pack.js'></script>
+        <script type='text/javascript' src='/content/js/wmd/showdown-min.js'></script>
+        <script type='text/javascript' src='/content/js/wmd/wmd-min.js'></script>
+        <link rel="stylesheet" type="text/css" href="/content/js/wmd/wmd.css" />
         <script type="text/javascript">
         
         $().ready(function(){
@@ -50,9 +53,9 @@
             {% if revision_form.revision.errors %}{{ revision_form.revision.errors.as_ul }}{% endif %}
             <div style="vertical-align:middle">
             {{ revision_form.revision }} <input type="submit" style="display:none" id="select_revision" name="select_revision" value="选择版本">
-            </div><br> <br>
-             
+            </div><br>
             <div class="form-item">
+                <div id="wmd-button-bar" class="wmd-panel"></div>
                 {{ form.text }}
                 <span class="form-error"></span>
                 <div class="preview-toggle"><span id="pre-collapse" title="打开或者关闭Markdown编辑器的实时预览">预览开关</span></div>

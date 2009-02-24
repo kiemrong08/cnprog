@@ -1,18 +1,17 @@
-{% extends "base.html" %}
-{% load extra_tags %}
-{% load extra_filters %}
-{% load humanize %}
+{% extends "base.html" %}{% load extra_tags %}{% load extra_filters %}{% load humanize %}
 {% block title %}{% spaceless %}{{ question.get_question_title }}{% endspaceless %}{% endblock %}
 {% block forejs %}
         {% if not question.closed and request.user.is_authenticated %}
         <script type='text/javascript' src='/content/js/com.cnprog.editor.js'></script>
+        <script type='text/javascript' src='/content/js/wmd/showdown-min.js'></script>
+        <script type='text/javascript' src='/content/js/wmd/wmd-min.js'></script>
+        <link rel="stylesheet" type="text/css" href="/content/js/wmd/wmd.css" />
         {% endif %}
-        <script type='text/javascript' src='/content/js/com.cnprog.post.js'></script>
+        <script type='text/javascript' src='/content/js/com.cnprog.post.pack.js'></script>
         <script type='text/javascript' src='/content/js/jquery.validate.pack.js'></script>
         <script type="text/javascript">
         // define reputation needs for comments
         var repNeededForComments = 50;
-        
         $().ready(function(){
             $("#nav_questions").attr('className',"youarehere");
             var answer_sort_tab = "{{ tab_id }}";
@@ -43,8 +42,6 @@
             });
             
             setupFormValidation("#fmanswer", CPValidator.getQuestionFormRules(), CPValidator.getQuestionFormMessages());
-            
-            
         }
          
         </script>
@@ -87,7 +84,7 @@
                     </td>
                     <td>
                         <div id="item-right">
-                            <div style="min-height:100px">
+                            <div class="question-body">
                                 {{ question.html|safe }}
                             </div>
                             <div id="question-tags" class="question-tag-extra" >
@@ -258,7 +255,7 @@
                                 </td>
                                 <td>
                                     <div class="item-right">
-                                        <div style="min-height:80px">
+                                        <div class="answer-body">
                                             {{ answer.html|safe }}
                                         </div>
                                         <div class="answer-controls" style="clear:both;">
@@ -390,6 +387,7 @@
             </div>
 
             <div id="description" class="" >
+                <div id="wmd-button-bar" class="wmd-panel"></div>
                 {{ answer.text }}
                 <div class="preview-toggle">
                     <table width="100%">

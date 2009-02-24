@@ -2,14 +2,12 @@
 {% block title %}{% spaceless %}我要提问{% endspaceless %}{% endblock %}
 {% block forejs %}
         <script type='text/javascript' src='/content/js/com.cnprog.editor.js'></script>
-        <script type='text/javascript' src='/content/js/com.cnprog.post.js'></script>
+        <script type='text/javascript' src='/content/js/com.cnprog.post.pack.js'></script>
         <script type='text/javascript' src='/content/js/jquery.validate.pack.js'></script>
-        <script type='text/javascript' src='/content/js/wmd/showdown.js'></script>
-        <script type='text/javascript' src='/content/js/wmd/wmd.js'></script>
-        <script type='text/javascript' src='/content/js/ajaxfileupload.js'></script>
+        <script type='text/javascript' src='/content/js/wmd/showdown-min.js'></script>
+        <script type='text/javascript' src='/content/js/wmd/wmd-min.js'></script>
         <link rel="stylesheet" type="text/css" href="/content/js/wmd/wmd.css" />
         <script type="text/javascript">
-
         $().ready(function(){
             //set current module button style
             $("#nav_ask").attr('className',"youarehere");
@@ -51,48 +49,6 @@
             lanai.highlightSyntax();
 
         });
-
-        function ajaxFileUpload(imageUrl)
-    	  {
-    		  $("#loading").ajaxStart(function(){
-    			  $(this).show();
-    		  }).ajaxComplete(function(){
-    			  $(this).hide();
-    		  });
-
-          $("#upload").ajaxStart(function(){
-    			  $(this).hide();
-    		  }).ajaxComplete(function(){
-    			  $(this).show();
-    		  });
-
-    		  $.ajaxFileUpload
-    		  (
-    		    {
-    			    url:'/upload/',
-    				  secureuri:false,
-    				  fileElementId:'file-upload',
-    				  dataType: 'xml',
-    				  success: function (data, status)
-    				  {
-    					  var fileURL = $(data).find('file_url').text();
-    					  var error = $(data).find('error').text();
-    					  if(error != ''){
-    					    alert(error);
-    					  }else{
-    					    imageUrl.attr('value', fileURL);
-    					  }
-
-    				  },
-    				  error: function (data, status, e)
-    				  {
-    					  alert(e);
-    				  }
-    			  }
-    		  )
-
-    	    return false;
-    	}
         </script>
 {% endblock %}
 

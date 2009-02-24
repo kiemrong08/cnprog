@@ -27,7 +27,19 @@ Attacklab.wmdBase = function(){
 	global.isOpera 		= /opera/.test(nav.userAgent.toLowerCase());
 	global.isKonqueror 	= /konqueror/.test(nav.userAgent.toLowerCase());
 	
-	
+	var toolbar_strong_label = "粗体 <strong> Ctrl-B";
+    var toolbar_emphasis_label = "斜体 <em> Ctrl-I";
+    var toolbar_hyperlink_label = "超链接 <a> Ctrl-L";
+    var toolbar_blockquote_label = "引用 <blockquote> Ctrl-.";
+    var toolbar_code_label = "代码 <pre><code> Ctrl-K";
+    var toolbar_image_label = "图片 <img> Ctrl-G";
+    var toolbar_numbered_label = "数字编号列表 <ol> Ctrl-O";
+    var toolbar_bulleted_label = "项目符号列表 <ul> Ctrl-U";
+    var toolbar_heading_label = "标题 <h1>/<h2> Ctrl-H";
+    var toolbar_horizontal_label = "水平线 <hr> Ctrl-R";
+    var toolbar_undo_label = "撤销 Ctrl-Z";
+    var toolbar_redo_label = "重做 Ctrl-Y";
+    
 	// -------------------------------------------------------------------
 	//  YOUR CHANGES GO HERE
 	//
@@ -925,7 +937,6 @@ Attacklab.wmdBase = function(){
 		var makeSpritedButtonRow = function(){
 		 	
 			var buttonBar = document.getElementById("wmd-button-bar");
- 	
 			var normalYShift = "0px";
 			var disabledYShift = "-20px";
 			var highlightYShift = "-40px";
@@ -938,7 +949,7 @@ Attacklab.wmdBase = function(){
 			var boldButton = document.createElement("li");
 			boldButton.className = "wmd-button";
 			boldButton.id = "wmd-bold-button";
-			boldButton.title = "Strong <strong> Ctrl-B";
+			boldButton.title = toolbar_strong_label;
 			boldButton.XShift = "0px";
 			boldButton.textOp = command.doBold;
 			setupButton(boldButton, true);
@@ -947,7 +958,7 @@ Attacklab.wmdBase = function(){
 			var italicButton = document.createElement("li");
 			italicButton.className = "wmd-button";
 			italicButton.id = "wmd-italic-button";
-			italicButton.title = "Emphasis <em> Ctrl-I";
+			italicButton.title = toolbar_emphasis_label;
 			italicButton.XShift = "-20px";
 			italicButton.textOp = command.doItalic;
 			setupButton(italicButton, true);
@@ -961,7 +972,7 @@ Attacklab.wmdBase = function(){
 			var linkButton = document.createElement("li");
 			linkButton.className = "wmd-button";
 			linkButton.id = "wmd-link-button";
-			linkButton.title = "Hyperlink <a> Ctrl-L";
+			linkButton.title = toolbar_hyperlink_label;
 			linkButton.XShift = "-40px";
 			linkButton.textOp = function(chunk, postProcessing){
 				return command.doLinkOrImage(chunk, postProcessing, false);
@@ -972,7 +983,7 @@ Attacklab.wmdBase = function(){
 			var quoteButton = document.createElement("li");
 			quoteButton.className = "wmd-button";
 			quoteButton.id = "wmd-quote-button";
-			quoteButton.title = "Blockquote <blockquote> Ctrl-.";
+			quoteButton.title = toolbar_blockquote_label;
 			quoteButton.XShift = "-60px";
 			quoteButton.textOp = command.doBlockquote;
 			setupButton(quoteButton, true);
@@ -981,7 +992,7 @@ Attacklab.wmdBase = function(){
 			var codeButton = document.createElement("li");
 			codeButton.className = "wmd-button";
 			codeButton.id = "wmd-code-button";
-			codeButton.title = "Code Sample <pre><code> Ctrl-K";
+			codeButton.title = toolbar_code_label;
 			codeButton.XShift = "-80px";
 			codeButton.textOp = command.doCode;
 			setupButton(codeButton, true);
@@ -990,7 +1001,7 @@ Attacklab.wmdBase = function(){
 			var imageButton = document.createElement("li");
 			imageButton.className = "wmd-button";
 			imageButton.id = "wmd-image-button";
-			imageButton.title = "Image <img> Ctrl-G";
+			imageButton.title = toolbar_image_label;
 			imageButton.XShift = "-100px";
 			imageButton.textOp = function(chunk, postProcessing){
 				return command.doLinkOrImage(chunk, postProcessing, true);
@@ -1006,7 +1017,7 @@ Attacklab.wmdBase = function(){
 			var olistButton = document.createElement("li");
 			olistButton.className = "wmd-button";
 			olistButton.id = "wmd-olist-button";
-			olistButton.title = "Numbered List <ol> Ctrl-O";
+			olistButton.title = toolbar_numbered_label;
 			olistButton.XShift = "-120px";
 			olistButton.textOp = function(chunk, postProcessing){
 				command.doList(chunk, postProcessing, true);
@@ -1017,7 +1028,7 @@ Attacklab.wmdBase = function(){
 			var ulistButton = document.createElement("li");
 			ulistButton.className = "wmd-button";
 			ulistButton.id = "wmd-ulist-button";
-			ulistButton.title = "Bulleted List <ul> Ctrl-U";
+			ulistButton.title = toolbar_bulleted_label;
 			ulistButton.XShift = "-140px";
 			ulistButton.textOp = function(chunk, postProcessing){
 				command.doList(chunk, postProcessing, false);
@@ -1028,7 +1039,7 @@ Attacklab.wmdBase = function(){
 			var headingButton = document.createElement("li");
 			headingButton.className = "wmd-button";
 			headingButton.id = "wmd-heading-button";
-			headingButton.title = "Heading <h1>/<h2> Ctrl-H";
+			headingButton.title = toolbar_heading_label;
 			headingButton.XShift = "-160px";
 			headingButton.textOp = command.doHeading;
 			setupButton(headingButton, true);
@@ -1037,7 +1048,7 @@ Attacklab.wmdBase = function(){
 			var hrButton = document.createElement("li");
 			hrButton.className = "wmd-button";
 			hrButton.id = "wmd-hr-button";
-			hrButton.title = "Horizontal Rule <hr> Ctrl-R";
+			hrButton.title = toolbar_horizontal_label;
 			hrButton.XShift = "-180px";
 			hrButton.textOp = command.doHorizontalRule;
 			setupButton(hrButton, true);
@@ -1051,7 +1062,7 @@ Attacklab.wmdBase = function(){
 			var undoButton = document.createElement("li");
 			undoButton.className = "wmd-button";
 			undoButton.id = "wmd-undo-button";
-			undoButton.title = "Undo - Ctrl-Z";
+			undoButton.title = toolbar_undo_label;
 			undoButton.XShift = "-200px";
 			undoButton.execute = function(manager){
 				manager.undo();
@@ -1062,13 +1073,13 @@ Attacklab.wmdBase = function(){
 			var redoButton = document.createElement("li");
 			redoButton.className = "wmd-button";
 			redoButton.id = "wmd-redo-button";
-			redoButton.title = "Redo - Ctrl-Y";
+			redoButton.title = toolbar_redo_label;
 			if (/win/.test(nav.platform.toLowerCase())) {
-				redoButton.title = "Redo - Ctrl-Y";
+				redoButton.title = toolbar_redo_label;
 			}
 			else {
 				// mac and other non-Windows platforms
-				redoButton.title = "Redo - Ctrl+Shift+Z";
+				redoButton.title = "重做 - Ctrl+Shift+Z";
 			}
 			redoButton.XShift = "-220px";
 			redoButton.execute = function(manager){
