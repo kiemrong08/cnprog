@@ -64,7 +64,7 @@ class TagNamesField(forms.CharField):
             #if not tagname_re.match(tag):
                 raise forms.ValidationError(u'标签请使用英文字母，中文或者数字字符串（. - _ # 也可以）')
             # only keep one same tag
-            if tag not in list_temp:
+            if tag not in list_temp and len(tag.strip()) > 0:
                 list_temp.append(tag)
         return u' '.join(list_temp)
 

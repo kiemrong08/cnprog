@@ -18,8 +18,8 @@ urlpatterns = patterns('',
     (r'^content/(?P<path>.*)$', 'django.views.static.serve',
         {'document_root': os.path.join(APP_PATH, 'templates/content').replace('\\','/')}
     ),
-    (r'^media/(?P<path>.*)$', 'django.views.static.serve',
-        {'document_root': os.path.join(APP_PATH, 'templates/media').replace('\\','/')}
+    (r'^upfiles/(?P<path>.*)$', 'django.views.static.serve',
+        {'document_root': os.path.join(APP_PATH, 'templates/upfiles').replace('\\','/')}
     ),
     (r'^account/', include('django_authopenid.urls')),
     (r'^signin/$', 'django_authopenid.views.signin'),

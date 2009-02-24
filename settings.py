@@ -4,8 +4,7 @@ import os.path
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-#SITE_SRC_ROOT = 'c:/Projects/Lanai/src'
-SITE_SRC_ROOT = '/Users/sailing/Development/cnprog'
+SITE_SRC_ROOT = 'c:/Projects/Lanai/src'
 #David Cramer debug toolbar
 INTERNAL_IPS = ('127.0.0.1',)
 DEBUG_TOOLBAR_PANELS = (
@@ -25,8 +24,8 @@ DEBUG_TOOLBAR_CONFIG = {
 
 #for logging
 import logging
-LOG_FILENAME = '/Users/sailing/Development/cnprog/log/django.lanai.log'
-#LOG_FILENAME = 'c:/logs/django.lanai.log'
+#LOG_FILENAME = '/Users/sailing/Development/cnprog/svn/trunk/log/django.lanai.log'
+LOG_FILENAME = 'c:/logs/django.lanai.log'
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,)
 
 #for OpenID auth
@@ -41,15 +40,15 @@ ADMINS = (
 MANAGERS = ADMINS
 
 DATABASE_ENGINE = 'mysql'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-DATABASE_NAME = 'cnprog'             # Or path to database file if using sqlite3.
-DATABASE_USER = 'root'             # Not used with sqlite3.
-DATABASE_PASSWORD = ''         # Not used with sqlite3.
+#DATABASE_NAME = 'cnprog'             # Or path to database file if using sqlite3.
+#DATABASE_USER = 'root'             # Not used with sqlite3.
+#DATABASE_PASSWORD = ''         # Not used with sqlite3.
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
 DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
 
-#DATABASE_NAME = 'twogeekt_lanai'             # Or path to database file if using sqlite3.
-#DATABASE_USER = 'twogeekt_lanai'             # Not used with sqlite3.
-#DATABASE_PASSWORD = 'sysadm'         # Not used with sqlite3.
+DATABASE_NAME = 'twogeekt_lanai'             # Or path to database file if using sqlite3.
+DATABASE_USER = 'twogeekt_lanai'             # Not used with sqlite3.
+DATABASE_PASSWORD = 'sysadm'         # Not used with sqlite3.
 
 SERVER_EMAIL = 'webmaster@cnprog.com'
 DEFAULT_FROM_EMAIL = 'webmaster@cnprog.com'
@@ -83,12 +82,12 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = '/Users/sailing/Development/cnprog/templates/media/'
+MEDIA_ROOT = 'C:/Projects/Lanai/src/templates/upfiles/'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = 'http://127.0.0.1:8000/media/'
+MEDIA_URL = 'http://127.0.0.1:8000/upfiles/'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -126,9 +125,13 @@ TEMPLATE_DIRS = (
 )
 
 FILE_UPLOAD_TEMP_DIR = os.path.join(os.path.dirname(__file__), 'tmp').replace('\\','/')
-
 FILE_UPLOAD_HANDLERS = ("django.core.files.uploadhandler.MemoryFileUploadHandler",
  "django.core.files.uploadhandler.TemporaryFileUploadHandler",)
+DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+# for user upload
+ALLOW_FILE_TYPES = ('.jpg', '.jpeg', '.gif', '.bmp', '.png', '.tiff')
+# unit byte
+ALLOW_MAX_FILE_SIZE = 1024 * 1024
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -141,10 +144,3 @@ INSTALLED_APPS = (
     'django_authopenid',
     'debug_toolbar' ,
 )
-
-DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
-
-# for user upload
-ALLOW_FILE_TYPES = ('.jpg', '.jpeg', '.gif', '.bmp', '.png', '.tiff')
-# unit byte
-ALLOW_MAX_FILE_SIZE = 1024 * 1024

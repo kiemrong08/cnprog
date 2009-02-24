@@ -538,6 +538,10 @@ def edit_answer(request, id):
                             revision.summary = 'No.%s Revision' % latest_revision.revision
                         revision.save()
 
+                        answer.question.last_activity_at = edited_at
+                        answer.question.last_activity_by = request.user
+                        answer.question.save()
+                        
                     return HttpResponseRedirect(answer.get_absolute_url())
         else:
             revision_form = RevisionForm(answer, latest_revision)
