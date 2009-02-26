@@ -85,6 +85,7 @@ def index(request):
     #print datetime.datetime.now()
     MIN = 1
     MAX = 100
+    begin = end = 0
     if len(tags) > 0:
         sorted_tags = list(tag.used_count for tag in tags)
         begin = min(sorted_tags)
@@ -541,7 +542,7 @@ def edit_answer(request, id):
                         answer.question.last_activity_at = edited_at
                         answer.question.last_activity_by = request.user
                         answer.question.save()
-                        
+
                     return HttpResponseRedirect(answer.get_absolute_url())
         else:
             revision_form = RevisionForm(answer, latest_revision)
@@ -1428,7 +1429,7 @@ def user_responses(request, user_id, user_view):
             'title' : 'question.title',
             'question_id' : 'question.id',
             'answer_id' : 'answer.id',
-            'added_at' : 'answer.added_at',
+            'added_at' : 'answer.accepted_at',
             'html' : 'answer.html',
             'username' : 'auth_user.username',
             'user_id' : 'auth_user.id'

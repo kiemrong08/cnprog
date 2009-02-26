@@ -173,29 +173,46 @@ def onFlaggedItem(item, post, user):
     post.offensive_flag_count = post.offensive_flag_count + 1
     post.save()
 
-    post.author.reputation = calculate_reputation(post.author.reputation, int(REPUTATION_RULES['lose_by_flagged']))
+    post.author.reputation = calculate_reputation(post.author.reputation,
+                           int(REPUTATION_RULES['lose_by_flagged']))
     post.author.save()
 
     question = post
     if ContentType.objects.get_for_model(post) == answer_type:
         question = post.question
 
-    reputation = Repute(user=post.author, negative=int(REPUTATION_RULES['lose_by_flagged']), question=question, reputed_at=datetime.datetime.now(), reputation_type=-4, reputation=post.author.reputation)
+    reputation = Repute(user=post.author,
+               negative=int(REPUTATION_RULES['lose_by_flagged']),
+               question=question, reputed_at=datetime.datetime.now(),
+               reputation_type=-4,
+               reputation=post.author.reputation)
     reputation.save()
 
     #todo: These should be updated to work on same revisions.
     if post.offensive_flag_count ==  VOTE_RULES['scope_flags_invisible_main_page'] :
-        post.author.reputation = calculate_reputation(post.author.reputation, int(REPUTATION_RULES['lose_by_flagged_lastrevision_3_times']))
+        post.author.reputation = calculate_reputation(post.author.reputation,
+                               int(REPUTATION_RULES['lose_by_flagged_lastrevision_3_times']))
         post.author.save()
 
-        reputation = Repute(user=post.author, negative=int(REPUTATION_RULES['lose_by_flagged_lastrevision_3_times']), question=question, reputed_at=datetime.datetime.now(), reputation_type=-6, reputation=post.author.reputation)
+        reputation = Repute(user=post.author,
+                   negative=int(REPUTATION_RULES['lose_by_flagged_lastrevision_3_times']),
+                   question=question,
+                   reputed_at=datetime.datetime.now(),
+                   reputation_type=-6,
+                   reputation=post.author.reputation)
         reputation.save()
 
     elif post.offensive_flag_count == VOTE_RULES['scope_flags_delete_post']:
-        post.author.reputation = calculate_reputation(post.author.reputation, int(REPUTATION_RULES['lose_by_flagged_lastrevision_5_times']))
+        post.author.reputation = calculate_reputation(post.author.reputation,
+                               int(REPUTATION_RULES['lose_by_flagged_lastrevision_5_times']))
         post.author.save()
 
-        reputation = Repute(user=post.author, negative=int(REPUTATION_RULES['lose_by_flagged_lastrevision_5_times']), question=question, reputed_at=datetime.datetime.now(), reputation_type=-7, reputation=post.author.reputation)
+        reputation = Repute(user=post.author,
+                   negative=int(REPUTATION_RULES['lose_by_flagged_lastrevision_5_times']),
+                   question=question,
+                   reputed_at=datetime.datetime.now(),
+                   reputation_type=-7,
+                   reputation=post.author.reputation)
         reputation.save()
 
         post.deleted = True
@@ -207,35 +224,61 @@ def onFlaggedItem(item, post, user):
 @transaction.commit_on_success
 def onAnswerAccept(answer, user):
     answer.accepted = True
+    answer.accepted_at = datetime.datetime.now()
     answer.question.answer_accepted = True
     answer.save()
     answer.question.save()
 
-    answer.author.reputation = calculate_reputation(answer.author.reputation, int(REPUTATION_RULES['gain_by_answer_accepted']))
+    answer.author.reputation = calculate_reputation(answer.author.reputation,
+                             int(REPUTATION_RULES['gain_by_answer_accepted']))
     answer.author.save()
-    reputation = Repute(user=answer.author, positive=int(REPUTATION_RULES['gain_by_answer_accepted']), question=answer.question, reputed_at=datetime.datetime.now(), reputation_type=2, reputation=answer.author.reputation)
+    reputation = Repute(user=answer.author,
+               positive=int(REPUTATION_RULES['gain_by_answer_accepted']),
+               question=answer.question,
+               reputed_at=datetime.datetime.now(),
+               reputation_type=2,
+               reputation=answer.author.reputation)
     reputation.save()
 
-    user.reputation = calculate_reputation(user.reputation, int(REPUTATION_RULES['gain_by_accepting_answer']))
+    user.reputation = calculate_reputation(user.reputation,
+                    int(REPUTATION_RULES['gain_by_accepting_answer']))
     user.save()
-    reputation = Repute(user=user, positive=int(REPUTATION_RULES['gain_by_accepting_answer']), question=answer.question, reputed_at=datetime.datetime.now(), reputation_type=3, reputation=user.reputation)
+    reputation = Repute(user=user,
+               positive=int(REPUTATION_RULES['gain_by_accepting_answer']),
+               question=answer.question,
+               reputed_at=datetime.datetime.now(),
+               reputation_type=3,
+               reputation=user.reputation)
     reputation.save()
 
 @transaction.commit_on_success
 def onAnswerAcceptCanceled(answer, user):
     answer.accepted = False
+    answer.accepted_at = None
     answer.question.answer_accepted = False
     answer.save()
     answer.question.save()
 
-    answer.author.reputation = calculate_reputation(answer.author.reputation, int(REPUTATION_RULES['lose_by_accepted_answer_cancled']))
+    answer.author.reputation = calculate_reputation(answer.author.reputation,
+                             int(REPUTATION_RULES['lose_by_accepted_answer_cancled']))
     answer.author.save()
-    reputation = Repute(user=answer.author, negative=int(REPUTATION_RULES['lose_by_accepted_answer_cancled']), question=answer.question, reputed_at=datetime.datetime.now(), reputation_type=-2, reputation=answer.author.reputation)
+    reputation = Repute(user=answer.author,
+               negative=int(REPUTATION_RULES['lose_by_accepted_answer_cancled']),
+               question=answer.question,
+               reputed_at=datetime.datetime.now(),
+               reputation_type=-2,
+               reputation=answer.author.reputation)
     reputation.save()
 
-    user.reputation = calculate_reputation(user.reputation, int(REPUTATION_RULES['lose_by_canceling_accepted_answer']))
+    user.reputation = calculate_reputation(user.reputation,
+                    int(REPUTATION_RULES['lose_by_canceling_accepted_answer']))
     user.save()
-    reputation = Repute(user=user, negative=int(REPUTATION_RULES['lose_by_canceling_accepted_answer']), question=answer.question, reputed_at=datetime.datetime.now(), reputation_type=-1, reputation=user.reputation)
+    reputation = Repute(user=user,
+               negative=int(REPUTATION_RULES['lose_by_canceling_accepted_answer']),
+               question=answer.question,
+               reputed_at=datetime.datetime.now(),
+               reputation_type=-1,
+               reputation=user.reputation)
     reputation.save()
 
 @transaction.commit_on_success
@@ -249,14 +292,20 @@ def onUpVoted(vote, post, user):
     if not post.wiki:
         author = post.author
         if Repute.objects.get_reputation_by_upvoted_today(author) <  int(REPUTATION_RULES['scope_per_day_by_upvotes']):
-            author.reputation = calculate_reputation(author.reputation, int(REPUTATION_RULES['gain_by_upvoted']))
+            author.reputation = calculate_reputation(author.reputation,
+                              int(REPUTATION_RULES['gain_by_upvoted']))
             author.save()
 
             question = post
             if ContentType.objects.get_for_model(post) == answer_type:
                 question = post.question
 
-            reputation = Repute(user=author, positive=int(REPUTATION_RULES['gain_by_upvoted']), question=question, reputed_at=datetime.datetime.now(), reputation_type=1, reputation=author.reputation)
+            reputation = Repute(user=author,
+                       positive=int(REPUTATION_RULES['gain_by_upvoted']),
+                       question=question,
+                       reputed_at=datetime.datetime.now(),
+                       reputation_type=1,
+                       reputation=author.reputation)
             reputation.save()
 
 @transaction.commit_on_success
@@ -271,14 +320,20 @@ def onUpVotedCanceled(vote, post, user):
 
     if not post.wiki:
         author = post.author
-        author.reputation = calculate_reputation(author.reputation, int(REPUTATION_RULES['lose_by_upvote_canceled']))
+        author.reputation = calculate_reputation(author.reputation,
+                          int(REPUTATION_RULES['lose_by_upvote_canceled']))
         author.save()
 
         question = post
         if ContentType.objects.get_for_model(post) == answer_type:
             question = post.question
 
-        reputation = Repute(user=author, negative=int(REPUTATION_RULES['lose_by_upvote_canceled']), question=question, reputed_at=datetime.datetime.now(), reputation_type=-8, reputation=author.reputation)
+        reputation = Repute(user=author,
+                   negative=int(REPUTATION_RULES['lose_by_upvote_canceled']),
+                   question=question,
+                   reputed_at=datetime.datetime.now(),
+                   reputation_type=-8,
+                   reputation=author.reputation)
         reputation.save()
 
 @transaction.commit_on_success
@@ -291,20 +346,32 @@ def onDownVoted(vote, post, user):
 
     if not post.wiki:
         author = post.author
-        author.reputation = calculate_reputation(author.reputation, int(REPUTATION_RULES['lose_by_downvoted']))
+        author.reputation = calculate_reputation(author.reputation,
+                          int(REPUTATION_RULES['lose_by_downvoted']))
         author.save()
 
         question = post
         if ContentType.objects.get_for_model(post) == answer_type:
             question = post.question
 
-        reputation = Repute(user=author, negative=int(REPUTATION_RULES['lose_by_downvoted']), question=question, reputed_at=datetime.datetime.now(), reputation_type=-3, reputation=author.reputation)
+        reputation = Repute(user=author,
+                   negative=int(REPUTATION_RULES['lose_by_downvoted']),
+                   question=question,
+                   reputed_at=datetime.datetime.now(),
+                   reputation_type=-3,
+                   reputation=author.reputation)
         reputation.save()
 
-        user.reputation = calculate_reputation(user.reputation, int(REPUTATION_RULES['lose_by_downvoting']))
+        user.reputation = calculate_reputation(user.reputation,
+                        int(REPUTATION_RULES['lose_by_downvoting']))
         user.save()
 
-        reputation = Repute(user=user, negative=int(REPUTATION_RULES['lose_by_downvoting']), question=question, reputed_at=datetime.datetime.now(), reputation_type=-5, reputation=user.reputation)
+        reputation = Repute(user=user,
+                   negative=int(REPUTATION_RULES['lose_by_downvoting']),
+                   question=question,
+                   reputed_at=datetime.datetime.now(),
+                   reputation_type=-5,
+                   reputation=user.reputation)
         reputation.save()
 
 @transaction.commit_on_success
@@ -319,20 +386,32 @@ def onDownVotedCanceled(vote, post, user):
 
     if not post.wiki:
         author = post.author
-        author.reputation = calculate_reputation(author.reputation, int(REPUTATION_RULES['gain_by_downvote_canceled']))
+        author.reputation = calculate_reputation(author.reputation,
+                          int(REPUTATION_RULES['gain_by_downvote_canceled']))
         author.save()
 
         question = post
         if ContentType.objects.get_for_model(post) == answer_type:
             question = post.question
 
-        reputation = Repute(user=author, positive=int(REPUTATION_RULES['gain_by_downvote_canceled']), question=question, reputed_at=datetime.datetime.now(), reputation_type=4, reputation=author.reputation)
+        reputation = Repute(user=author,
+                   positive=int(REPUTATION_RULES['gain_by_downvote_canceled']),
+                   question=question,
+                   reputed_at=datetime.datetime.now(),
+                   reputation_type=4,
+                   reputation=author.reputation)
         reputation.save()
 
-        user.reputation = calculate_reputation(user.reputation, int(REPUTATION_RULES['gain_by_canceling_downvote']))
+        user.reputation = calculate_reputation(user.reputation,
+                        int(REPUTATION_RULES['gain_by_canceling_downvote']))
         user.save()
 
-        reputation = Repute(user=user, positive=int(REPUTATION_RULES['gain_by_canceling_downvote']), question=question, reputed_at=datetime.datetime.now(), reputation_type=5, reputation=user.reputation)
+        reputation = Repute(user=user,
+                   positive=int(REPUTATION_RULES['gain_by_canceling_downvote']),
+                   question=question,
+                   reputed_at=datetime.datetime.now(),
+                   reputation_type=5,
+                   reputation=user.reputation)
         reputation.save()
 
 def onDeleteCanceled(post, user):

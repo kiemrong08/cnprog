@@ -217,6 +217,7 @@ class Answer(models.Model):
     wiki        = models.BooleanField(default=False)
     wikified_at = models.DateTimeField(null=True, blank=True)
     accepted    = models.BooleanField(default=False)
+    accepted_at = models.DateTimeField(null=True, blank=True)
     deleted     = models.BooleanField(default=False)
     deleted_by  = models.ForeignKey(User, null=True, blank=True, related_name='deleted_answers')
     locked      = models.BooleanField(default=False)
