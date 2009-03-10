@@ -8,106 +8,36 @@
        <script type="text/javascript">
         $().ready(function(){
             var tab_id = "{{ tab_id }}";
-            $("#"+tab_id).attr('className',"youarehere");
+            $("#"+tab_id).attr('className',"on");
         });
 
         </script>
 {% endblock %}
 {% block content %}
-<div id="main-bar" class="">
-    <h3>
-        问题列表
-    </h3>
-    <div id="tab" class="">
-        <a id="latest" href="?sort=latest" title="最新更新的问题">最新问题</a>
-        <a id="hottest" href="?sort=hottest" title="被回复最多的问题">热门问题</a>
-        <a id="mostvoted" href="?sort=mostvoted" title="投票次数最多的问题">最有价值问题</a>
-        <a id="trans" href="?sort=trans" title="外文翻译的经典问题">翻译问题</a>
-    </div>
-
+<div class="tabsA">
+	<span class="headQuestions">问题列表</span>
+	<a id="latest" href="?sort=latest" title="最新更新的问题" class="off">最新问题</a>
+    <a id="hottest" href="?sort=hottest" title="被回复最多的问题" class="off">热门问题</a>
+    <a id="mostvoted" href="?sort=mostvoted" title="投票次数最多的问题" class="off">最有价值的问题</a>
+    <a id="trans" href="?sort=trans" title="外文翻译的经典问题" class="off">翻译问题</a>
 </div>
-<div id="main-body" class="">
+<!-- 问题列表 -->
+<div id="listA">
     {% for question in questions %}
-    <div class="question-item">
-
-        <div class="boxes">
-            <table height="100%">
-                <tr>
-                    <td width="50px" class="boxes-cell">
-                        <div class="vote" style="padding:5px">
-                            <table style="padding:5px;text-align:center;width:100%">
-                                <tr>
-                                    <td>
-                                        <span class="box-number">{{ question.score|intcomma }}</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="box-unit">票</div>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </td>
-                    <td width="50px" class="boxes-cell">
-                        <div {% if question.answer_accepted %}class="answered-accepted"{% else %}{% ifequal question.answer_count 0 %}class="unanswered"{% else %}class="answered"{% endifequal %}{% endif %}  style="padding:5px;">
-                            <table style="padding:5px;text-align:center;width:100%">
-                                <tr>
-                                    <td>
-                                        <span class="box-number">{{ question.answer_count|intcomma }}</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="box-unit">回答</div>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </td>
-                    <td width="50px" class="boxes-cell">
-                        <div class="view" style="padding:5px">
-                            <table style="padding:5px;text-align:center;width:100%">
-                                <tr>
-                                    <td>
-                                        <span class="box-number">{{ question.view_count|intcomma }}</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="box-unit">浏览</div>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </td>
-                </tr>
-            </table>
-        </div>
-        <div class="summary">
-            <div class="qustion-title">
-                <h3>
-                    <a href="{{ question.get_absolute_url }}" title="{{ question.summary }}...">
-                        {{ question.get_question_title }}
-                    </a>
-                </h3>
-
-            </div>
-
-            <div class="question-tag">
-                {% for tag in question.tagname_list %}
-                    <a href="{% url forum.views.tag tag|urlencode %}" class="post-tag" title="查看有关'{{ tag }}'的问题" rel="tag">{{ tag }}</a>
-                {% endfor %}
-            </div>
-            <div class="question-started">
-                    {% if question.wiki %}
-                    <span class="gray">社区Wiki</span>
-                    {% else %}
-                    <span class="updatedtime" title="{{ question.last_activity_at }}"><strong>{% diff_date question.last_activity_at %}</strong></span> <span class="big"><a href="{{ question.last_activity_by.get_profile_url }}">{{ question.last_activity_by }}</a></span>&nbsp;{% get_score_badge question.last_activity_by %}
-                    {% endif %}
-            </div>
-
-        </div>
+    <div class="qstA">
+        {% if question.wiki %}
+        <span class="from">社区Wiki</span>
+        {% else %}
+        <span class="from"><a href="{{ question.last_activity_by.get_profile_url }}">{{ question.last_activity_by }}</a>
+        {% get_score_badge question.last_activity_by %} <br>更新于<span title="{{ question.last_activity_at }}">{% diff_date question.last_activity_at %}</span></span>
+        {% endif %}
+        <h2><a href="{{ question.get_absolute_url }}" title="{{ question.summary }}...">{{ question.get_question_title }}</a></h2>
+        <span class="stat">回答:<span class="num">{{ question.answer_count|intcomma }}</span> 票数:<span class="num">{{ question.score|intcomma }}</span> 浏览:<span class="num">{{ question.view_count|intcomma }}</span> 标签: </span>
+        <span class="tags">
+        {% for tag in question.tagname_list %}
+        <a href="{% url forum.views.tag tag|urlencode %}" title="查看有关'{{ tag }}'的问题" rel="tag">{{ tag }}</a>
+        {% endfor %}
+        </span>
     </div>
     {% endfor %}
 </div>
@@ -115,57 +45,45 @@
 
 {% block sidebar %}
 {% if not request.user.is_authenticated %}
-<div class="yellow-box">
-    <h3 class="darkred">CNPROG.COM 欢迎您 !</h3>
-    <div class="highlight-box">
-        <span class="darkred">CNProg</span>是一个<strong>面向程序员</strong>的<strong>可协作编辑</strong>的<strong>问答社区</strong>。<br>
-        <p>
-        您可以在这里提问各类<strong>程序技术问题</strong> - 问题不分语言和平台。
-        同时也希望您对力所能及的其他问题，给予您的宝贵答案。
-        </p>
-        <div style="text-align:right">
-            <a href="/about">关于本站 »</a>
-            <br>
-            <a href="/faq">faq »</a>
-            <br>
-        </div>
-    </div>
+<div class="boxA">
+	<h3>CNProg欢迎您!</h3>
+	<div class="body">
+	  <p>CNProg是一个<strong>面向程序员</strong>的可协作编辑的问答社区。</p>
+	  <p> 您可以在这里提问各类<strong>程序技术问题</strong>题 - 问题不分语言和平台。 同时也希望您对力所能及的问题，给予您的宝贵答案。</p>
+	  <div class="more"><a href="/about">关于本站 »</a></div>
+	  <div class="more"><a href="/faq">FAQ »</a></div>
+	</div>
 </div>
 {% endif %}
-<div class="gray-box">
-    <h3>最新标签</h3>
-    <div id="recent-tags">
+<div class="boxB">
+	<h3>最新标签</h3>
+	<div class="body">
+         <p class="tags">
         {% for tag in tags %}
-            <a class="post-tag" rel="tag" title="查看有关'{{ tag.name }}'的问题" style="font-size:{% tag_font_size max min tag.used_count %}px;" href="{% url forum.views.tag tag.name|urlencode %}">{{ tag.name }}</a><span class="gray small" >({{ tag.used_count|intcomma }})</span>
+            <a rel="tag" title="查看有关'{{ tag.name }}'的问题" href="{% url forum.views.tag tag.name|urlencode %}">{{ tag.name }}</a>
         {% endfor %}
-        <br>
-        <a href="/tags" style="float:right;position:relative">受欢迎的标签 »</a>
-         <br>
+        </p>
+        <div class="more"><a href="/tags">受欢迎的标签 »</a> </div>
     </div>
 </div>
-<div class="gray-box">
+<div class="boxB">
     <h3>最新奖牌</h3>
-    {% for award in awards %}
-    <div style="clear:both;line-height:35px">
-        <a href="/badges/{{award.badge_id}}/{{award.badge_name}}" title="{{ award.badge_description }}" class="badge">
-        <span class="badge{{ award.badge_type }}">&#9679;</span>&nbsp;{{ award.badge_name }}</a> 授予
-        <a href="/users/{{award.user_id}}/{{award.user_name}}">{{ award.user_name }}</a>
-    </div>
-    {% endfor %}
-    <a href="{% url badges %}" style="float:right;position:relative">所有奖牌 »</a>
-    <br>
+        <div class="body">
+             <ul>
+             {% for award in awards %}
+                <li>
+                <a href="/badges/{{award.badge_id}}/{{award.badge_name}}" title="{{ award.badge_description }}" class="medal">
+                <span class="badge{{ award.badge_type }}">&#9679;</span>&nbsp;{{ award.badge_name }}</a> 授予
+                <a href="/users/{{award.user_id}}/{{award.user_name}}">{{ award.user_name }}</a>
+                </li>
+            {% endfor %}
+            </ul>
+        	<div class="more"><a href="/badges/">所有奖牌 »</a> </div>
+         </div>
 </div>
 {% endblock %}
 {% block tail %}
-<div>
-    <h3>在寻找更多问题吗？请查阅<a href="/questions">完整问题列表</a>，或者
-    <a href="/tags">受欢迎的标签</a>。请帮助我们回答<a href="/questions/unanswered">没有回答的问题</a>。
-    </h3>
-</div>
-<div style="float:right">
-<span>
-<img src="/content/images/feed-icon-small.png" style="vertical-align:bottom"
-     title="RSS订阅CNProg最新30个问题" height="14" width="14" border="0">
-<a href="/feeds/rss" title="RSS订阅CNProg最新30个问题">最新问题</a></span>
-</div>
+<div id="evenMore">在寻找更多问题吗？请查阅<a href="/questions">完整问题列表</a>，或者 <a href="/tags">受欢迎的标签</a>。请帮助我们回答<a href="/questions/unanswered">没有回答的问题</a>。</div>
+<div id="newestFeed"><a href="/feeds/rss" title="RSS订阅CNProg最新30个问题">订阅最新问题</a></div>
+
 {% endblock %}

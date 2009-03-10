@@ -1,0 +1,143 @@
+/* 公用 */
+body{background:#fff; font-size:12px; line-height:150%; margin:0; padding:0; color:#000; font-family: "segoe ui",Helvetica,"Microsoft YaHei",宋体,Tahoma,Verdana,MingLiu,PMingLiu,Arial,sans-serif; border-top:3px solid #007DA2;
+}
+div{margin:0 auto; padding:0;}
+h1,h2,h3,h4,h5,h6,ul,li,dl,dt,dd,form,img,p{margin:0; padding:0; border:none; list-style-type:none;}
+p{margin-bottom:4px; font-size:13px; line-height:160%;}
+a {color:#0077CC; text-decoration:none;}
+a:hover {text-decoration:underline;}
+.block{width:960px; height:auto;}
+.fleft{float:left;}
+.fright{float:right;}
+.tleft{text-align:left;}
+.tcenter{text-align:center;}
+.tright{text-align:right;}
+.dis{display:block;}
+.inline{display:inline;}
+.none{display:none;}
+.red{color:#CC0000;}
+.b{font-weight:bold;}
+.f10{font-size:10px;}
+.f11{font-size:11px;}
+.f12{font-size:12px;}
+.f13{font-size:13px;}
+.f14{font-size:14px;}
+.white{color:#FFFFFF;}
+.u{text-decoration:underline;}
+.spacer1{height:6px; line-height:6px; clear:both; visibility:hidden;}
+.spacer3{height:30px; line-height:30px; clear:both; visibility:hidden;}
+
+/*页面布局*/
+#wrapper {width:960px;margin:auto;padding:0;}
+#roof {margin-top:0px;}
+#room {margin-top:20px;}
+#CALeft{width:670px; float:left; position:relative;}
+#CARight{width:270px; float:right;}
+#CAFull{width:960px;}
+#ground {clear:both;border-top:6px solid #375874; padding-top:6px; padding-bottom:50px; text-align:center; padding-bottom:100px; background:#84A7C5;}
+
+/*顶部及导航栏*/
+#logo {margin-bottom:6px;}
+.topBar {background:url(/content/images/top_l.gif) no-repeat left top; padding-left:32px;}
+.topBar .body {background:url(/content/images/top_r.gif) no-repeat right top; height:24px; padding-right:32px; padding-top:1px;}
+#navBar .nav {position:relative; margin:16px;}
+#navBar .nav a {color:#000; padding:3px 12px 2px 12px; border:2px solid #9BCAC8; background:#EBF3F3; margin-left:10px; font-size:15px; font-weight:bold; text-decoration:none}
+#navBar .nav a:hover {border:2px solid #FF9900; background:#FFE2A6; text-decoration:none}
+#navBar .nav a.on {border:2px solid #FF9900; background:#FFE2A6; text-decoration:none}
+
+/*搜索栏*/
+#searchBar {background:url(/content/images/sbg_a.gif) repeat-y left top;}
+#searchBar .content { background:url(/content/images/sbg_b.gif) no-repeat left bottom;}
+#searchBar .searchInput {font-size:13px; height:18px; width:300px;}
+#searchBar .searchBtn {font-size:14px; height:24px;}
+
+/*问题列表*/
+#listA {}
+#listA .qstA {padding-bottom:16px; margin-bottom:16px; background:url(/content/images/dash.gif) repeat-x bottom;}
+#listA .qstA thumb {float:left; }
+#listA .qstA H2 {font-size:16px; color:#0077CC; font-weight:800; margin:8px auto;}
+#listA .qstA H2 a {color:#0077CC;}
+#listA .qstA .stat {font-size:13px;}
+#listA .qstA .stat .num {color:#905213; font-size:14px; font-weight:800;}
+#listA .qstA .from {float:right; margin-top:4px; font-size:13px; text-align:right;}
+#listA .qstA .from a {}
+#listA .qstA .author{float:right;width:150px}
+#listA .qstA .summary{margin-right:5px;}
+#evenMore {font-size:14px; font-weight:800;}
+
+/*内容块*/
+.boxA {background:#FFEECA; padding:6px; margin-bottom:8px;}
+.boxA H3 {font-size:13px; font-weight:800; color:#990000; margin:0; padding:0; margin-bottom:4px;}
+.boxA .body {border:1px solid #FFCC33; padding:8px; background:#FFF; font-size:13px;}
+.boxA .more {padding:2px; text-align:right; font-weight:800;}
+.boxB {background:#E2F1F1; padding:6px; margin-bottom:8px;}
+.boxB H3 {font-size:13px; font-weight:800; color:#0E66AC; margin:0; padding:0; margin-bottom:4px;}
+.boxB .body {border:1px solid #ADD3D1; padding:8px; background:#FFF; font-size:13px; line-height:160%;}
+.boxB .more {padding:1px; text-align:right; font-weight:800;}
+
+/*分页*/
+.pager {margin-top:16px; margin-bottom:16px; float:right;}
+.pager a{padding:1px 5px;border:1px solid #CCC; font-size:12px; line-height:22px; margin-left:8px; color:#333333;}
+.pager a:hover{border:1px solid #999;background:#EEE; color:#333333; text-decoration:none;}
+.pager a.on{border:1px solid #666;background:#DDD;}
+
+/*标签*/
+.tags {font-family:arial; font-size:14px; line-height:200%;  font-weight:800;color:#666;}
+.tags a { font-size:12px; font-weight:normal; color:#333; text-decoration:none; background:url(/content/images/taga.gif) no-repeat; border-left:1px solid #EEE; border-top:1px solid #EEE; border-bottom:1px solid #CCC; border-right:1px solid #CCC; padding:2px 12px 2px 12px;}
+.tags a:hover {color:#37571A; text-decoration:none; background:url(/content/images/taga_on.gif) no-repeat; border-left:1px solid #DEF0CE; border-top:1px solid #DEF0CE; border-bottom:1px solid #A6D779; border-right:1px solid #A6D779;}
+
+/*奖牌*/
+a.medal  { font-size:14px; line-height:250%; font-weight:800; color:#333; text-decoration:none; background:url(/content/images/medala.gif) no-repeat; border-left:1px solid #EEE; border-top:1px solid #EEE; border-bottom:1px solid #CCC; border-right:1px solid #CCC; padding:4px 12px 4px 6px;}
+a:hover.medal  {color:#333; text-decoration:none; background:url(/content/images/medala_on.gif) no-repeat; border-left:1px solid #E7E296; border-top:1px solid #E7E296; border-bottom:1px solid #D1CA3D; border-right:1px solid #D1CA3D;}
+
+/*Tab栏*/
+.tabsA {font-size:13px; border-bottom:1px solid #0E88AB; padding-bottom:2px; font-weight:800; margin-bottom:12px; text-align:right;}
+.tabsA a.on {font-size:14px;background:#0E88AB url(/content/images/tab_on.gif) left top no-repeat; padding:5px 15px 4px 35px; color:#FFF; line-height:24px; font-weight:800;}
+.tabsA a.off {background:#C6C6C6 url(/content/images/tab_off.gif) left top no-repeat; padding:5px 15px 4px 35px; color:#333; line-height:24px;}
+.headlineA {font-size:13px; border-bottom:1px solid #0E88AB; padding-bottom:2px; font-weight:800; margin-bottom:12px; text-align:right; height:30px;}
+.headQuestions {float:left; padding:3px; font-size:18px; font-weight:800; background:url(/content/images/ico_questions.png) no-repeat; padding-left:24px;}
+.headAnswers {float:left; padding:3px; font-size:18px; font-weight:800; background:url(/content/images/ico_answers.gif) left 2px no-repeat; padding-left:24px;}
+.headTags {float:left; padding:3px; font-size:18px; font-weight:800; background:url(/content/images/ico_tags.gif) no-repeat; padding-left:24px;}
+.headUsers {float:left; padding:3px; font-size:18px; font-weight:800; background:url(/content/images/ico_users.gif) no-repeat; padding-left:24px;}
+.headMedals {float:left; padding:3px; font-size:18px; font-weight:800; background:url(/content/images/ico_medals.gif) no-repeat; padding-left:24px;}
+.headLogin {float:left; padding:3px; font-size:18px; font-weight:800; background:url(/content/images/ico_login.gif) no-repeat; padding-left:24px;}
+.headNormal {text-align:left;padding:3px; font-size:18px; margin-bottom:12px; font-weight:800;border-bottom:1px solid #0E88AB;}
+/*RSS订阅*/
+#newestFeed {margin:8px 0;}
+#newestFeed a {background:url(/content/images/feed-icon-small.png) no-repeat 0; padding-left:18px; font-weight:800; font-size:14px; }
+
+/*问题*/
+#question {margin-bottom:30px;}
+#question h1{font-size:15px;background:#CCC; padding:6px 8px;;}
+#question .body{background:#F7F7F7; padding:20px 10px;}
+.starter {padding:10px; background:#E0EAF1;}
+.vote {font-size:20px; color:#666; font-weight:800;}
+
+/*回答*/
+#answers {}
+.answer {margin-bottom:20px; background:url(/content/images/dash.gif) repeat-x bottom;}
+.answer .body{padding:20px 10px;}
+.firstAnswer {background:#E0EAF1 url(/content/images/dash.gif) repeat-x bottom;}
+.bestAnswer {background:#F2FFCA url(/content/images/dash.gif) repeat-x bottom;}
+.replyer {padding:10px; background:none;}
+
+/*标签列表*/
+.tagsList li {width:240px; float:left;}
+
+/*其他全局样式*/
+.userStatus {margin-left:12px; color:#FFF; float:right;}
+.userStatus a {color:#FFF;}
+.gold, .badge1 {color:#FFCC00;}
+.silver, .badge2 {color:#CCCCCC;}
+.bronze, .badge3 {color:#CC9933;}
+.score {font-weight:800; color:#333;}
+.footerLinks {color:#EEE; font-size:13px;}
+.footerLinks a {color:#FFF; font-size:13px;}
+.subSearch {margin-bottom:12px; padding:4px;}
+a.comment {background:#EEE; color:#993300; padding:4px;}
+a.permLink {padding:2px;}
+a.offensive {color:#999;}
+ul.bulleta li {background:url(/content/images/bullet_green.gif) no-repeat 0px 2px; padding-left:16px; margin-bottom:4px;}
+.user {padding:5px; line-height:140%; width:160px;}
+.user .thumb{clear:both;float:left; margin-right:4px; display:inline;}
+.content h3{font-size:16px;}

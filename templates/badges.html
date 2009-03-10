@@ -11,17 +11,16 @@
         </script>
 {% endblock %}
 {% block content %}
-<div id="main-bar" class="">
-    <h3>
-        奖牌列表
-    </h3>
+<div class="headlineA">
+        <span class="headMedals">奖牌榜</span>
 </div>
 <div id="main-body" style="width:100%">
-    <div style="" class="paragraph">
+    <p>
     提出问题，给予回答，投出你的票 - CNProg 会针对你在社区的表现，授予你各类奖牌。<br>
     这里列出社区所有的奖牌，以及到目前为此，每个奖牌被授予的用户人数。
-    </div>
-    <div id="badge-list">
+    </p>
+    <br>
+    <div id="medalList">
         {% for badge in badges %}
         <div style="clear:both;line-height:30px">
             <div style="float:left;min-width:30px;text-align:right;height:30px">
@@ -32,11 +31,11 @@
             {% endfor %}
             </div>
             <div style="float:left;width:180px;">
-                <a href="{{badge.get_absolute_url}}" title="{{ badge.get_type_display }} : {{ badge.description }}" class="badge"><span class="badge{{ badge.type }}">&#9679;</span>&nbsp;{{ badge.name }}</a><span class="tag-number"> × {{ badge.awarded_count|intcomma }}</span>
+                <a href="{{badge.get_absolute_url}}" title="{{ badge.get_type_display }} : {{ badge.description }}" class="medal"><span class="badge{{ badge.type }}">&#9679;</span>&nbsp;{{ badge.name }}</a><strong> × {{ badge.awarded_count|intcomma }}</strong>
             </div>
-            <div style="float:left;width:350px;">
+            <p style="float:left;width:350px;">
                 {{ badge.description }}
-            </div>
+            </p>
         </div>
         {% endfor %}
     </div>
@@ -44,25 +43,27 @@
 {% endblock %}
 {% block sidebar %}
 
-<div class="gray-box" style="margin-top:50px">
+<div class="boxB">
     <h3>社区奖牌</h3>
-    <div class="paragraph">
-        <a style="cursor:default;" title="金牌:十分罕见之最高荣耀" class="badge"><span class="badge1">&#9679;</span>&nbsp;金牌</a>
-    </div>
-    <div class="paragraph">
+    <div class="body">
+    <p>
+        <a style="cursor:default;" title="金牌:十分罕见之最高荣耀" class="medal"><span class="badge1">&#9679;</span>&nbsp;金牌</a>
+    </p>
+    <p>
     金牌是十分罕见的。你不仅要参与社区的提问、回答、投票等活动，而且需要有高深的知识和能力才能获得。获得金牌意味着你在某个层次上已经达到了顶峰。
-    </div>
-    <div class="paragraph">
-        <a style="cursor:default;" title="银牌:偶尔颁发之优质奖章" class="badge"><span class="badge2">&#9679;</span>&nbsp;银牌</a>
-    </div>
-    <div class="paragraph">
+    </p>
+    <p>
+        <a style="cursor:default;" title="银牌:偶尔颁发之优质奖章" class="medal"><span class="badge2">&#9679;</span>&nbsp;银牌</a>
+    </p>
+    <p>
     银牌需要经过长时间的奋斗才能获得。它是不同寻常的荣誉，只要你付出足够的努力就会得到。
-    </div>
-    <div class="paragraph">
-        <a style="cursor:default;" title="铜牌:时常授予之特殊荣誉" class="badge"><span class="badge3">&#9679;</span>&nbsp;铜牌</a>
-    </div>
-    <div class="paragraph">
+    </p>
+    <p>
+        <a style="cursor:default;" title="铜牌:时常授予之特殊荣誉" class="medal"><span class="badge3">&#9679;</span>&nbsp;铜牌</a>
+    </p>
+    <p>
     铜牌会在你活跃于社区时产生，它相对容易获得，但也是一种特殊的荣誉。
+    </p>
     </div>
 </div>
 {% endblock %}

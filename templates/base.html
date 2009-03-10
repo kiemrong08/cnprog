@@ -1,6 +1,6 @@
 ﻿{% load extra_filters %}
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <title>{% block title %}{% endblock %} - CNProg.com 程序员问答社区</title>
         {% spaceless %}
@@ -9,7 +9,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="verify-v1" content="55uGNnQVJW8p1bbXeF/Xbh9I7nZBM/wLhRz6N/I1kkA=" />
         <link rel="shortcut icon" href="/content/images/favicon.ico" >
-        <link href="/content/style/default.css" rel="stylesheet" type="text/css" />
+        <link href="/content/style/style.css" rel="stylesheet" type="text/css" />
         <script type='text/javascript' src='/content/js/com.cnprog.utils.js'></script>
         <script src="http://www.google.com/jsapi"></script>
         <script>google.load("jquery", "1.2.6");</script>
@@ -48,18 +48,15 @@
             <a href="{{ request.user.get_profile_url }}">个人资料</a>{% endif %}</span>
             <a class="close-notify" onclick="notify.close(true)">&times;</a>
         </div>
-        <div id="container">
-             <div id="header">
-                 {% include "header.html" %}
-            </div>
-            <div id="content">
-                <div id="main">
+        <div id="wrapper">{% include "header.html" %}
+            <div id="room">
+                <div id="CALeft">
                     {% block content%}
                     {% endblock%}
 
                 </div>
 
-                <div id="sidebar">
+                <div id="CARight">
                     {% block sidebar%}
                     {% endblock%}
 
@@ -69,6 +66,7 @@
                     {% endblock %}
                 </div>
             </div>
+            <div class="spacer3"></div>
         </div>
         {% include "footer.html" %}
         {% block endjs %}

@@ -342,6 +342,9 @@ class Award(models.Model):
     awarded_at = models.DateTimeField(default=datetime.datetime.now)
     notified   = models.BooleanField(default=False)
 
+    def __unicode__(self):
+        return u'[%s] is awarded a badge [%s] at %s' % (self.user.username, self.badge.name, self.awarded_at)
+
     class Meta:
         db_table = u'award'
 
@@ -355,6 +358,9 @@ class Repute(models.Model):
     reputation_type = models.SmallIntegerField(choices=TYPE_REPUTATION)
     reputation = models.IntegerField(default=1)
     objects = ReputeManager()
+
+    def __unicode__(self):
+        return u'[%s]\' reputation changed at %s' % (self.user.username, self.reputed_at)
 
     class Meta:
         db_table = u'repute'
@@ -370,6 +376,9 @@ class Activity(models.Model):
     object_id      = models.PositiveIntegerField()
     content_object = generic.GenericForeignKey('content_type', 'object_id')
     is_auditted    = models.BooleanField(default=False)
+
+    def __unicode__(self):
+        return u'[%s] was active at %s' % (self.user.username, self.active_at)
 
     class Meta:
         db_table = u'activity'

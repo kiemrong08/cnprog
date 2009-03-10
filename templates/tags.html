@@ -5,72 +5,50 @@
 {% block forejs %}
        <script type="text/javascript">
         $().ready(function(){
-            $("#nav_tags").attr('className',"youarehere");
+            $("#nav_tags").attr('className',"on");
             $("#ipSearchTag").focus();
-            
+
             var orderby = "{{ tab_id }}";
             if(orderby != "used" && orderby != "name")
                 orderby = "used";
-            $("#sort_" + orderby).attr('className',"youarehere");
+            $("#sort_" + orderby).attr('className',"on");
         });
-         
+
         </script>
 {% endblock %}
 {% block content %}
-<div id="main-bar" class="">
-    <h3>
-        标签列表
-    </h3>
-    <div id="tab" class="">
-        <a id="sort_name" href="?sort=name" title="按名称的字母先后顺序排序">按名称排序</a>
-        <a id="sort_used" href="?sort=used" title="按标签被使用的次数排序">按流行程度排序</a>
-    </div>
+<!-- Tabs -->
+<div class="tabsA">
+		<span class="headTags">标签列表</span>
+		<a id="sort_name" href="?sort=name" class="off" title="按名称的字母先后顺序排序">按名称排序</a>
+        <a id="sort_used" href="?sort=used" class="off" title="按标签被使用的次数排序">按流行程度排序</a>
 </div>
-<div id="main-body" style="width:100%">
-    <div class="paragraph">
-        <form action="/tags/" method="post">
-            <table>
-    	        <tr>
-    	        	<td>输入需要查找的标签：</td>
-    	        	<td width="310px"><input id="ipSearchTag" name="ipSearchTag" autocomplete="off" size="40" ></td>
-                  <td><input id="btSearchTag" type="submit" class="submit" value="搜 索" /></td>
-    	        </tr>
-    	        
-            </table>
-        </form>
-        {% if stag %}
-            匹配查询 '<span class="darkred"><strong>{{ stag }}</strong></span>' 的所有标签： 
-        {% endif %}
-    </div>
-    {% if not tags.object_list %}
-        <span >没有找到相关数据。</span>
-    {% endif %}
-    <table class="list-table">
-        <tr>    
-            <td class="taglist-td">
-            {% for tag in tags.object_list %}
-                <a href="{% url forum.views.tag tag|urlencode %}" class="post-tag" title="查看有关'{{ tag }}'的问题" rel="tag">
-                    {{ tag }}
-                </a> 
-                <span class="tag-number">× {{ tag.used_count|intcomma }}</span>
-                <br>
-                
-                {% if forloop.counter|divisibleby:"13" %}
-                    </td>
-                    <td class="taglist-td">
-                {% endif %}
+<form action="/tags/" method="post">
+<div class="subSearch">输入您要查找的标签
+      <input id="ipSearchTag" name="ipSearchTag" autocomplete="off" size="40" >
+      <input id="btSearchTag" type="submit" class="submit" value="搜 索" />
+</div>
+</form>
+{% if stag %}
+    匹配查询 '<span class="darkred"><strong>{{ stag }}</strong></span>' 的所有标签：
+{% endif %}
+{% if not tags.object_list %}
+    <span >没有找到相关数据。</span>
+{% endif %}
 
-            {% endfor %}
-            </td>
-        </tr>   
-    </table>
-    <div class="paginator-container">
-        {% cnprog_paginator context %}
-    </div>
-    
-    
+<ul class="tagsList tags">
+{% for tag in tags.object_list %}
+   <li>
+    <a href="{% url forum.views.tag tag|urlencode %}" title="查看有关'{{ tag }}'的问题" rel="tag">
+        {{ tag }}
+    </a>&nbsp;
+    <span class="tag-number">× {{ tag.used_count|intcomma }}</span>
+    <br>
+
+    </li>
+{% endfor %}
+</ul>
+<div class="pager">
+    {% cnprog_paginator context %}
 </div>
 {% endblock %}
-
-
-

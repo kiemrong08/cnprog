@@ -5,58 +5,50 @@
 {% block forejs %}
        <script type="text/javascript">
         $().ready(function(){
-            $("#nav_users").attr('className',"youarehere");
+            $("#nav_users").attr('className',"on");
             $("#ipSearchUser").focus();
             
             var orderby = "{{ tab_id }}";
-            $("#sort_" + orderby).attr('className',"youarehere");
+            $("#sort_" + orderby).attr('className',"on");
         });
          
         </script>
 {% endblock %}
 {% block content %}
-<div id="main-bar" class="">
-    <h3>
-        用户列表
-    </h3>
-    <div id="tab" class="">
-        <a id="sort_reputation" href="?sort=reputation" title="积分">积分</a>
-        <a id="sort_newest" href="?sort=newest" title="最新加入">最新加入</a>
-        <a id="sort_last" href="?sort=last" title="最先加入">最先加入</a>
-        <a id="sort_user" href="?sort=user" title="用户名">用户名</a>
-    </div>
+<div class="tabsA">
+    <span class="headUsers">用户列表</span>
+    <a id="sort_reputation" href="?sort=reputation" class="off" title="积分">积分</a>
+    <a id="sort_newest" href="?sort=newest" class="off" title="最新加入">最新加入</a>
+    <a id="sort_last" href="?sort=last" class="off" title="最先加入">最先加入</a>
+    <a id="sort_user" href="?sort=user" class="off" title="用户名">用户名</a>
 </div>
 <div id="main-body" style="width:100%">
-    <div class="paragraph">
-        <form action="/users/" method="post">
-            <table>
-    	        <tr>
-    	        	<td>输入需要查找的用户：</td>
-    	        	<td width="310px"><input id="name" name="name" autocomplete="off" size="40"></td>
-                  <td><input id="btSearchTag" type="submit" class="submit" value="搜 索" /></td>
-    	        </tr>
-    	        
-            </table>
-        </form>
+    <form action="/users/" method="post">
+    <div class="subSearch">
+        
+            输入需要查找的用户：<input id="name" name="name" autocomplete="off" size="40">
+            <input id="btSearchTag" type="submit" class="submit" value="搜 索" />
+        
         {% if suser %}
             匹配查询 '<span class="darkred"><strong>{{ suser }}</strong></span>' 的所有用户名： 
         {% endif %}
     </div>
+    </form>
     {% if not users.object_list %}
         <span >没有找到相关数据。</span>
     {% endif %}
-		<div id="user-list">
+		<div class="userList">
         	<table class="list-table">
     	        <tr>    
     	            <td class="list-td">
     	            	{% for user in users.object_list %}
                         
-                        <div class="user-info">
-                            <div class="user-gravatar32"><a href="{{ user.get_profile_url }}">{% gravatar user 32 %}</a></div>
-                            <div class="user-details">
-                                <a href="{{ user.get_profile_url }}">{{user.username}}</a><br>{% get_score_badge user %}
-                            
-                            </div>
+                        <div class="user">
+                            <ul>
+        							<li class="thumb"><a href="{{ user.get_profile_url }}">{% gravatar user 32 %}</a></li>
+        							<li><a href="{{ user.get_profile_url }}">{{user.username}}</a></li>
+        							<li>{% get_score_badge user %}</li>
+        						</ul>
                         </div>
                         
                 {% if forloop.counter|divisibleby:"7" %}

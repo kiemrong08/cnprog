@@ -6,133 +6,83 @@
        <script type="text/javascript">
         $().ready(function(){
             var tab_id = "{{ tab_id }}";
-            $("#"+tab_id).attr('className',"youarehere");
-            $("#nav_questions").attr('className',"youarehere");
+            $("#"+tab_id).attr('className',"on");
+            $("#nav_questions").attr('className',"on");
         });
          
         </script>
 {% endblock %}
 {% block content %}
-<div id="main-bar" class="">
-    <h3>{% if searchtag %}标签问题{% else %}所有问题{% endif %}
-    </h3>
-    <div id="tab" class="">
-        <a id="latest" href="?sort=latest" title="最新加入系统的问题">最新问题</a>
-        <a id="active" href="?sort=active" title="最近被更新的问题">活跃问题</a>
-        <a id="hottest" href="?sort=hottest" title="被回复最多的问题">热门问题</a>
-        <a id="mostvoted" href="?sort=mostvoted" title="投票次数最多的问题">最有价值问题</a>
-    </div>
-    
+<div class="tabsA">
+	<span class="headQuestions">{% if searchtag %}标签问题{% else %}所有问题{% endif %}</span>
+    <a id="latest" href="?sort=latest" class="off" title="最新加入系统的问题">最新问题</a>
+    <a id="active" href="?sort=active" class="off" title="最近被更新的问题">活跃问题</a>
+    <a id="hottest" href="?sort=hottest" class="off" title="被回复最多的问题">热门问题</a>
+    <a id="mostvoted" href="?sort=mostvoted" class="off" title="投票次数最多的问题">最有价值问题</a>    
 </div>
-<div id="main-body" class="">
+<div id="listA">
     {% for question in questions.object_list %}
-    <div class="question-item">
-        <table class="questions-boxes-container">
-            <tr>
-                <td>
-                    <div class="questions-boxes">
-                        <div class="vote" style="text-align:center">
-                            <div class="questions-votebox">
-                                 <span class="questions-vote-number">{{ question.score|intcomma }}</span><br>
-                                 <span class="box-unit">票</span>
-                            </div>
-                            <div class="questions-answerbox">
-                                <div {% if question.answer_accepted %}class="answered-accepted"{% else %}{% ifequal question.answer_count 0 %}class="unanswered"{% else %}class="answered"{% endifequal %}{% endif %} id="questions-answerbox-cell">
-                                    <span class="questions-answer-number">{{ question.answer_count|intcomma }}</span><br>
-                                    <span class="box-unit">回答</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="questions-viewbox">
-                            <span class="box-unit">{{ question.view_count|intcomma }} 浏览</span>
-                        </div>
-                    </div>
-                </td>
-                <td class="questions-boxicon">
-                <img src="/content/images/box-arrow.gif">
-                </td>
-            </tr>
-	        
-        </table>
-        
-        <div class="questions-summary-container">
-            <div class="qustion-title">
-                <h3>
-                    <a href="{{ question.get_absolute_url }}" title="{{ question.summary }}...">
-                        {{ question.get_question_title }}
-                    </a>
-                </h3>
-                
+    <div class="qstA">
+        {% ifequal tab_id 'active'%}
+        <div class="author">
+            <div style="float:left;padding:3px">
+                {% gravatar question.last_activity_by 32 %}
             </div>
-            <div class="qustions-summary">
-                {{ question.summary }}...                
+            <div>
+                <a href="{{ question.last_activity_by.get_profile_url }}">
+                {{ question.last_activity_by }}</a>
+                <br>
+                {% get_score_badge question.last_activity_by %} 
             </div>
-            <div class="question-tag">
-                {% for tag in question.tagname_list %}
-                    <a href="{% url forum.views.tag tag|urlencode %}" class="post-tag" title="查看有关'{{ tag }}'的问题" rel="tag">{{ tag }}</a>
-                {% endfor %}
+            <div style="float:left;">
+            更新于<span title="{{ question.last_activity_at }}">{% diff_date question.last_activity_at %}</span>
             </div>
-            <div class="questions-mark">
-                {% ifequal tab_id 'active'%}
-                <table width="100%">
-                    <tr>
-                        <td colspan="2" class="gray"> 
-                        最后更新于<span title="{{ question.last_activity_at }}"><strong>{% diff_date question.last_activity_at %}</strong></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="width:40px;vertical-align:bottom">
-                        {% gravatar question.last_activity_by 32 %}
-                        </td>
-                        <td style="width:120px;vertical-align:top">
-                            <div><a href="/users/{{ question.last_activity_by.id }}/{{ question.last_activity_by.username }}"><span class="big">{{ question.last_activity_by.username }}</span></a></div>
-                            <div>
-                            {% get_score_badge question.last_activity_by %}
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-                {% else %}
-                {% if question.wiki %}
-                <span class="gray">社区Wiki</span>
-                {% else %}
-                <table width="100%">
-                    <tr>
-                        <td colspan="2" class="gray"> 
-                        提问于<span title="{{ question.added_at }}"><strong>{% diff_date question.added_at %}</strong></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="width:40px;vertical-align:bottom">
-                        {% gravatar question.author 32 %}
-                        </td>
-                        <td style="width:120px;vertical-align:top">
-                            <div><a href="/users/{{ question.author.id }}/{{ question.author }}"><span class="big">{{ question.author }}</span></a></div>
-                            <div>
-                            {% get_score_badge question.author %}
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-                {% endif %}
-                {% endifequal %}
-            </div>
-            
         </div>
+        {% else %}
+        {% if question.wiki %}
+        <span class="from">社区Wiki</span>
+        {% else %}
+        <div class="author">
+            <div style="float:left;padding:3px">
+                {% gravatar question.author 32 %}
+            </div>
+            <div>
+                <a href="{{ question.author.get_profile_url }}">
+                {{ question.last_activity_by }}</a>
+                <br>
+                {% get_score_badge question.author %} 
+            </div>
+            <div style="float:left;">
+            提问于<span title="{{ question.added_at }}">{% diff_date question.added_at %}</span>
+            </div>
+        </div>
+        {% endif %}
+        {% endifequal %}
+        <h2><a href="{{ question.get_absolute_url }}">{{ question.get_question_title }}</a></h2>
+        <div class="summary">
+            {{ question.summary }}...                
+        </div>
+        <span class="stat">回答:<span class="num">{{ question.answer_count|intcomma }}</span> 票数:<span class="num">{{ question.score|intcomma }}</span> 浏览:<span class="num">{{ question.view_count|intcomma }}</span> 标签: </span>
+        <span class="tags">
+        {% for tag in question.tagname_list %}
+        <a href="{% url forum.views.tag tag|urlencode %}" title="查看有关'{{ tag }}'的问题" rel="tag">{{ tag }}</a>
+        {% endfor %}
+        </span>
     </div>
     {% endfor %}
 </div>
+
 {% endblock %}
 
 {% block tail %}
                             {% cnprog_paginator context %}
-                        <div class="paginator-container">
+                        <div class="pager">
                             {% cnprog_pagesize context %}
                         </div>
 {% endblock %}
 
 {% block sidebar %}
-<div class="gray-box">
+<div class="boxB">
     <div>
         您正在浏览所有<br><div class="questions-count">{{ questions_count|intcomma }}</div>
         <div class="paragraph">个
@@ -162,11 +112,11 @@
         <div class="paragraph">您也可以通过<a href="/tags/" title="查看所有标签"><strong>标签</strong></a>和<a href="#" title="搜索问题"><strong>搜索</strong></a>来查找问题。</div>
     </div>
 </div>
-<div class="gray-box">
-    <h3>相关标签</h3>
-    <div id="related-tags">
+<div class="boxB">
+	<h3>相关标签</h3>
+    <div class="tags">
         {% for tag in tags %}
-            <a class="post-tag" rel="tag" title="查看有关'{{ tag.name }}'的问题"  href="{% url forum.views.tag tag.name|urlencode %}">{{ tag.name }}</a>
+            <a rel="tag" title="查看有关'{{ tag.name }}'的问题"  href="{% url forum.views.tag tag.name|urlencode %}">{{ tag.name }}</a>
             <span class="tag-number">× {{ tag.used_count|intcomma }}</span>
             <br>
         {% endfor %}

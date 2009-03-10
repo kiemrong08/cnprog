@@ -5,91 +5,65 @@
 {% block forejs %}
        <script type="text/javascript">
         $().ready(function(){
-            $("#nav_unanswered").attr('className',"youarehere");
+            $("#nav_unanswered").attr('className',"on");
         });
          
         </script>
 {% endblock %}
 {% block content %}
-<div id="main-bar" class="">
-    <h3>
-        没有回答的问题
-    </h3>
-    <div id="tab" >
-        <a id="latest" class="youarehere" href="?sort=latest" title="最新加入系统的问题">最新问题</a>
-    </div>
+<div class="tabsA">
+	<span class="headQuestions">没有回答的问题</span>
+    <a id="latest" class="on" href="?sort=latest" title="最新加入系统的问题">最新问题</a>
     
 </div>
-<div id="main-body" class="">
+<div id="listA">
     {% for question in questions.object_list %}
-    <div class="question-item">
-        <table class="questions-boxes-container">
-            <tr>
-                <td>
-                    <div class="questions-boxes">
-                        <div class="vote" style="text-align:center">
-                            <div class="questions-votebox">
-                                 <span class="questions-vote-number">{{ question.score|intcomma }}</span><br>
-                                 <span class="box-unit">票</span>
-                            </div>
-                            <div class="questions-answerbox">
-                                <div {% if question.answer_accepted %}class="answered-accepted"{% else %}{% ifequal question.answer_count 0 %}class="unanswered"{% else %}class="answered"{% endifequal %}{% endif %} id="questions-answerbox-cell">
-                                    <span class="questions-answer-number">{{ question.answer_count|intcomma }}</span><br>
-                                    <span class="box-unit">回答</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="questions-viewbox">
-                            <span class="box-unit">{{ question.view_count|intcomma }} 浏览</span>
-                        </div>
-                    </div>
-                </td>
-                <td class="questions-boxicon">
-                <img src="/content/images/box-arrow.gif">
-                </td>
-            </tr>
-	        
-        </table>
-        
-        <div class="questions-summary-container">
-            <div class="qustion-title">
-                <h3>
-                    <a href="{{ question.get_absolute_url }}" title="{{ question.summary }}...">
-                        {{ question.get_question_title }}
-                    </a>
-                </h3>
-                
+    <div class="qstA">
+        {% ifequal tab_id 'active'%}
+        <div class="author">
+            <div style="float:left;padding:3px">
+                {% gravatar question.last_activity_by 32 %}
             </div>
-            <div class="qustions-summary">
-                {{ question.summary }}...                
+            <div>
+                <a href="{{ question.last_activity_by.get_profile_url }}">
+                {{ question.last_activity_by }}</a>
+                <br>
+                {% get_score_badge question.last_activity_by %} 
             </div>
-            <div class="question-tag">
-                {% for tag in question.tagname_list %}
-                    <a href="{% url forum.views.tag tag|urlencode %}" class="post-tag" title="查看有关'{{ tag }}'的问题" rel="tag">{{ tag }}</a>
-                {% endfor %}
+            <div style="float:left;">
+            更新于<span title="{{ question.last_activity_at }}">{% diff_date question.last_activity_at %}</span>
             </div>
-            <div  class="questions-mark">
-                <table width="100%">
-                    <tr>
-                        <td colspan="2" class="gray"> 
-                            提问于<strong>{{ question.added_at|timesince }}</strong>前
-                        </td>
-                    </tr>
-                    <tr>
-                        <td width="40px" style="vertical-align:bottom">
-                        {% gravatar question.author 32 %}
-                        </td>
-                        <td style="width:120px; vertical-align:top">
-                            <div><a href="/users/{{ question.author.id }}/{{ question.author }}"><span class="big">{{ question.author }}</span></a></div>
-                            <div>
-                            {% get_score_badge question.author %}
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-            
         </div>
+        {% else %}
+        {% if question.wiki %}
+        <span class="from">社区Wiki</span>
+        {% else %}
+        <div class="author">
+            <div style="float:left;padding:3px">
+                {% gravatar question.author 32 %}
+            </div>
+            <div>
+                <a href="{{ question.author.get_profile_url }}">
+                {{ question.last_activity_by }}</a>
+                <br>
+                {% get_score_badge question.author %} 
+            </div>
+            <div style="float:left;">
+            提问于<span title="{{ question.added_at }}">{% diff_date question.added_at %}</span>
+            </div>
+        </div>
+        {% endif %}
+        {% endifequal %}
+        <h2><a href="{{ question.get_absolute_url }}">{{ question.get_question_title }}</a></h2>
+        <div class="summary">
+            {{ question.summary }}...                
+        </div>
+        <span class="stat">回答:<span class="num">{{ question.answer_count|intcomma }}</span> 票数:<span class="num">{{ question.score|intcomma }}</span> 浏览:<span class="num">{{ question.view_count|intcomma }}</span> 标签: </span>
+        <span class="tags">
+        {% for tag in question.tagname_list %}
+        <a href="{% url forum.views.tag tag|urlencode %}" title="查看有关'{{ tag }}'的问题" rel="tag">{{ tag }}</a>
+        {% endfor %}
+        </span>
     </div>
     {% endfor %}
 </div>
@@ -97,13 +71,13 @@
 
 {% block tail %}
                             {% cnprog_paginator context %}
-                        <div class="paginator-container">
+                        <div class="pager">
                             {% cnprog_pagesize context %}
                         </div>
 {% endblock %}
 
 {% block sidebar %}
-<div class="gray-box">
+<div class="boxB">
     <div>
         您正在浏览所有<br><div class="questions-count">{{ questions_count|intcomma }}</div>
         <div class="paragraph">个<span class="darkred"><strong> 没有回答的 </strong></span>问题。</div>
@@ -112,15 +86,17 @@
 
     </div>
 </div>
-<div class="gray-box">
-    <h3>相关标签</h3>
-    <div id="related-tags">
+<div class="boxB">
+	<h3>相关标签</h3>
+    <div class="body">
+    <div class="tags">
         {% for tag in tags %}
-            <a class="post-tag" rel="tag" title="查看有关'{{ tag.name }}'的问题"  href="{% url forum.views.tag tag.name|urlencode %}">{{ tag.name }}</a>
+            <a rel="tag" title="查看有关'{{ tag.name }}'的问题"  href="{% url forum.views.tag tag.name|urlencode %}">{{ tag.name }}</a>
             <span class="tag-number">× {{ tag.used_count|intcomma }}</span>
             <br>
         {% endfor %}
         <br>
+    </div>
     </div>
 </div>
 
