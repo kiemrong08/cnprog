@@ -255,6 +255,7 @@ CREATE TABLE book
 (
 	id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	title VARCHAR(255) NOT NULL,
+	short_name VARCHAR(255) NOT NULL,
 	author VARCHAR(255) NOT NULL,
 	user_id INTEGER NULL,
 	price DECIMAL(10, 2) NULL,
@@ -265,11 +266,12 @@ CREATE TABLE book
 	tagnames VARCHAR(125) NULL,
 	added_at DATETIME NOT NULL,
 	last_edited_at DATETIME NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) TYPE=InnoDB;
 
 /* Table Items: book */
 
 /* Add Indexes for: book */
+CREATE UNIQUE INDEX book_short_name_Idx ON book (short_name);
 CREATE INDEX fk_books_auth_user ON book (user_id);
 
 /******************** Add Table: book_author_info ************************/
@@ -282,7 +284,7 @@ CREATE TABLE book_author_info
 	user_id INTEGER NOT NULL,
 	added_at DATETIME NOT NULL,
 	last_edited_at DATETIME NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) TYPE=InnoDB;
 
 /* Table Items: book_author_info */
 
@@ -300,7 +302,7 @@ CREATE TABLE book_author_rss
 	rss_created_at DATETIME NOT NULL,
 	user_id INTEGER NOT NULL,
 	added_at DATETIME NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) TYPE=InnoDB;
 
 /* Table Items: book_author_rss */
 
@@ -315,7 +317,7 @@ CREATE TABLE book_question
 	id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	book_id INTEGER NOT NULL,
 	question_id INTEGER NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) TYPE=InnoDB;
 
 /* Table Items: book_question */
 

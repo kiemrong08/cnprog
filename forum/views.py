@@ -1764,3 +1764,7 @@ def upload(request):
         result = xml_template % ('', u"在文件上传过程中产生了错误，请联系管理员，谢谢^_^", '')
 
     return HttpResponse(result, mimetype="application/xml")
+
+def book(request, short_name):
+    """docstring for book"""
+    pass
