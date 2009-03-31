@@ -383,6 +383,51 @@ class Activity(models.Model):
     class Meta:
         db_table = u'activity'
 
+class Book(models.Model):
+    """
+    Model for book info
+    """
+    user = models.ForeignKey(User)
+    title = models.CharField(max_length=255)
+    author = models.CharField(max_length=255)
+    price = models.DecimalField(max_digits=6, decimal_places=2)
+    pages = models.SmallIntegerField()
+    published_at = models.DateTimeField()
+    publication = models.CharField(max_length=255)
+    cover_img = models.CharField(max_length=255)
+    tagnames = models.CharField(max_length=125)
+    added_at = models.DateTimeField()
+    last_edited_at = models.DateTimeField()
+    questions = models.ManyToManyField(Question, related_name='book')
+    
+    class Meta:
+        db_table = u'book'
+
+class BookAuthorInfo(models.Model):
+    """
+    Model for book author info
+    """
+    user = models.ForeignKey(User)
+    blog_url = models.CharField(max_length=255)
+    added_at = models.DateTimeField()
+    last_edited_at = models.DateTimeField()
+    
+    class Meta:
+        db_table = u'book_author_info'
+    
+class BookAuthorRss(models.Model):
+    """
+    Model for book author blog rss
+    """
+    user = models.ForeignKey(User)
+    title = models.CharField(max_length=255)
+    url = models.CharField(max_length=255)
+    rss_created_at = models.DateTimeField()
+    added_at = models.DateTimeField()
+    
+    class Meta:
+        db_table = u'book_author_rss'
+
 # User extend properties
 QUESTIONS_PER_PAGE_CHOICES = (
    (10, u'10'),

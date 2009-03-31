@@ -15,7 +15,7 @@ CREATE TABLE activity
 	content_type_id INTEGER NOT NULL,
 	object_id INTEGER UNSIGNED NOT NULL,
 	is_auditted TINYINT NULL DEFAULT 0
-) ENGINE=MyISAM AUTO_INCREMENT=103 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=103 DEFAULT CHARSET=latin1;
 
 /* Table Items: activity */
 
@@ -265,7 +265,7 @@ CREATE TABLE book
 	tagnames VARCHAR(125) NULL,
 	added_at DATETIME NOT NULL,
 	last_edited_at DATETIME NOT NULL
-) TYPE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /* Table Items: book */
 
@@ -278,11 +278,11 @@ CREATE INDEX fk_books_auth_user ON book (user_id);
 CREATE TABLE book_author_info
 (
 	id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	blog_url TEXT NULL,
+	blog_url VARCHAR(255) NULL,
 	user_id INTEGER NOT NULL,
 	added_at DATETIME NOT NULL,
 	last_edited_at DATETIME NOT NULL
-) TYPE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /* Table Items: book_author_info */
 
@@ -295,17 +295,17 @@ CREATE INDEX fk_book_author_info_auth_user ON book_author_info (user_id);
 CREATE TABLE book_author_rss
 (
 	id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	title TEXT NOT NULL,
-	url TEXT NOT NULL,
+	title VARCHAR(255) NOT NULL,
+	url VARCHAR(255) NOT NULL,
 	rss_created_at DATETIME NOT NULL,
-	book_author_id INTEGER NOT NULL,
+	user_id INTEGER NOT NULL,
 	added_at DATETIME NOT NULL
-) TYPE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /* Table Items: book_author_rss */
 
 /* Add Indexes for: book_author_rss */
-CREATE INDEX fk_book_author_rss_auth_user ON book_author_rss (book_author_id);
+CREATE INDEX fk_book_author_rss_auth_user ON book_author_rss (user_id);
 
 /******************** Add Table: book_question ************************/
 
@@ -315,7 +315,7 @@ CREATE TABLE book_question
 	id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	book_id INTEGER NOT NULL,
 	question_id INTEGER NOT NULL
-) TYPE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /* Table Items: book_question */
 
@@ -559,7 +559,7 @@ CREATE TABLE question_revision
 	tagnames VARCHAR(125) NOT NULL,
 	summary TEXT NOT NULL,
 	`text` LONGTEXT NOT NULL
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 
 /* Table Items: question_revision */
 
@@ -596,7 +596,7 @@ CREATE TABLE repute
 	reputed_at DATETIME NOT NULL,
 	reputation_type SMALLINT NOT NULL,
 	reputation INTEGER NOT NULL
-) ENGINE=MyISAM AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=17 DEFAULT CHARSET=latin1;
 
 /* Table Items: repute */
 
@@ -762,7 +762,7 @@ ALTER TABLE book_author_info ADD CONSTRAINT fk_book_author_info_auth_user
 
 /************ Foreign Key: fk_book_author_rss_auth_user ***************/
 ALTER TABLE book_author_rss ADD CONSTRAINT fk_book_author_rss_auth_user
-	FOREIGN KEY (book_author_id) REFERENCES auth_user (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+	FOREIGN KEY (user_id) REFERENCES auth_user (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 /************ Foreign Key: fk_book_question_book ***************/
 ALTER TABLE book_question ADD CONSTRAINT fk_book_question_book
