@@ -5,35 +5,19 @@
 		<div id="navBar">
 			<table width="100%" border="0" cellspacing="0" cellpadding="0">
 			  <tr>
-				<td width="23%"><span class="red"><a href="/"><img src="/content/images/logo.png" title="回到首页" /></a></span></td>
-				<td width="77%" valign="top">
-				  <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                  <tr>
-                    <td valign="top">
-                	<div class="topBar">
-                		<div class="body">
-                		<span class="userStatus">
-                        {% if request.user.is_authenticated %}
-                            <a href="/users/{{ request.user.id }}/{{ request.user.username }}/">{{ request.user.username }}</a> {% get_score_badge request.user %} <span class="link-separator">|</span><a href="/logout/">退出登录</a>
-                        {% else %}
-                            <a href="/account/signin">登录</a>
-                        {% endif %} | <a href="/about/">关于本站</a> | <a href="/faq/">FAQ</a></span>
-                		<span class="white">Beta阶段，报告bug？提新的需求？好的想法？</span><a href="http://cnprog.uservoice.com" target="_blank" class="white u">cnprog.uservoice.com</a>		</div>
-                	</div>
-                	</td>
-                  </tr>
-                  <tr>
-                    <td valign="top">
-                	<div class="nav">
-                		<a id="nav_questions" href="/questions/" class="off">问题</a>
-                		<a id="nav_tags" href="/tags/">标签</a>
-                		<a id="nav_users" href="/users/">用户</a>
-                		<a id="nav_badges" href="/badges/">奖牌榜</a>
-                		<a id="nav_unanswered" href="/questions/unanswered/">没有回答的问题</a>
-                	 </div>
-                	</td>
-                  </tr>
-                </table>
+				<td width="23%"><span class="red"><a href="/"><img src="/content/images/logo2.png" title="回到首页" /></a></span></td>
+				<td width="77%" valign="bottom">
+                <div class="nav">
+                    <a id="nav_questions" href="/questions/" >问题</a>
+                    <a id="nav_tags" href="/tags/">标签</a>
+                    <a id="nav_users" href="/users/">用户</a>
+                    <a id="nav_badges" href="/badges/">奖牌榜</a>
+                    <a id="nav_unanswered" href="/questions/unanswered/">没有回答的问题</a>
+                    <div class="focus">
+                    <a id="nav_ask" href="/questions/ask/" class="special">我要提问</a>
+                    </div>
+                </div>
+
               </td>
 			  </tr>
 			</table>
@@ -41,13 +25,19 @@
 		<!-- 搜索 -->
 		<div id="searchBar">
 			<table width="100%" height="60" border="0" cellpadding="0" cellspacing="0" class="content">
-			  <tr>
-				<td align="center" valign="middle">
-							<input type="text" class="searchInput" value="输入问题" />
-							<input type="submit" name="Submit" value="寻找解答" class="searchBtn" />
-							<input type="submit" name="Submit2" value="我要提问" class="searchBtn" />
-					</td>
-			  </tr>
+            <tr>
+                <td align="center" valign="middle">
+                    <div>
+                        <input type="text" class="searchInput" value="" >
+                        <input type="submit" name="Submit" value="搜索" class="searchBtn" >
+                    </div>
+                    <div class="options">
+                        <input type="radio" class="" value="" name="type" checked >问题 
+                        <input type="radio" class="" value="" name="type" >标签 
+                        <input type="radio" class="" value="" name="type" >用户
+                    </div>
+                </td>
+            </tr>
 			</table>
 		</div>
 	</div>

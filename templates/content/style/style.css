@@ -40,19 +40,25 @@ a:hover {text-decoration:underline;}
 #logo {margin-bottom:6px;}
 .topBar {background:url(/content/images/top_l.gif) no-repeat left top; padding-left:32px;}
 .topBar .body {background:url(/content/images/top_r.gif) no-repeat right top; height:24px; padding-right:32px; padding-top:1px;}
-#navBar .nav {position:relative; margin:16px;}
-#navBar .nav a {color:#000; padding:3px 12px 2px 12px; border:2px solid #9BCAC8; background:#EBF3F3; margin-left:10px; font-size:15px; font-weight:bold; text-decoration:none}
-#navBar .nav a:hover {border:2px solid #FF9900; background:#FFE2A6; text-decoration:none}
-#navBar .nav a.on {border:2px solid #FF9900; background:#FFE2A6; text-decoration:none}
-
+#navBar {float:clear;position:relative;display:block;}
+#navBar .nav {margin:20px 0px 0px 16px;letter-spacing:1px; }
+#navBar .nav a {color:navy; background-color:#EEE; padding:0px 8px 3px 8px; height:25px; line-height:30px;margin-left:2px; font-size:15px; font-weight:400; text-decoration:none;display: block;float: left;}
+#navBar .nav a:hover {text-decoration:underline}
+#navBar .nav a.on {height:24px;line-height:28px;border-left:1px solid #515656;border-top:1px solid #515656;border-right:1px solid #515656; border-bottom:1px solid #92B4DE; background:#92B4DE; color:navy; font-weight:600; text-decoration:none}
+#navBar .nav a.special {font-size:15px; color:navy; font-weight:bold; text-decoration:none;background-color:#EEE }
+#navBar .nav a.special:hover {text-decoration:underline}
+#navBar .nav div.focus {float:right; padding-right:0px;}
 /*搜索栏*/
-#searchBar {background:url(/content/images/sbg_a.gif) repeat-y left top;}
-#searchBar .content { background:url(/content/images/sbg_b.gif) no-repeat left bottom;}
-#searchBar .searchInput {font-size:13px; height:18px; width:300px;}
-#searchBar .searchBtn {font-size:14px; height:24px;}
+#searchBar {background-color:#92B4DE;padding:5px;}
+#searchBar .content { }
+#searchBar .searchInput {font-size:13px; height:18px; width:400px;}
+#searchBar .searchBtn {font-size:14px; height:26px; width:80px;}
+#searchBar .options {padding-top:5px; font-size:100%;}
+#searchBar .options INPUT {margin-left:15px;}
+#searchBar .options INPUT:hover {cursor:pointer}
 
 /*问题列表*/
-#listA {}
+#listA {float:left}
 #listA .qstA {padding-bottom:16px; margin-bottom:16px; background:url(/content/images/dash.gif) repeat-x bottom;}
 #listA .qstA thumb {float:left; }
 #listA .qstA H2 {font-size:16px; color:#0077CC; font-weight:800; margin:8px auto;}
@@ -82,20 +88,43 @@ a:hover {text-decoration:underline;}
 .pager a.on{border:1px solid #666;background:#DDD;}
 
 /*标签*/
-.tags {font-family:arial; font-size:14px; line-height:200%;  font-weight:800;color:#666;}
-.tags a { font-size:12px; font-weight:normal; color:#333; text-decoration:none; background:url(/content/images/taga.gif) no-repeat; border-left:1px solid #EEE; border-top:1px solid #EEE; border-bottom:1px solid #CCC; border-right:1px solid #CCC; padding:2px 12px 2px 12px;}
-.tags a:hover {color:#37571A; text-decoration:none; background:url(/content/images/taga_on.gif) no-repeat; border-left:1px solid #DEF0CE; border-top:1px solid #DEF0CE; border-bottom:1px solid #A6D779; border-right:1px solid #A6D779;}
+.tags {font-family:arial; font-size:14px; line-height:200%;  font-weight:800;color:#666;display:block;}
+.tags a {font-size:12px; font-weight:normal; color:navy; text-decoration:none;background-color:#F5F5F5; border-left:3px solid #92B4DE; border-top:1px solid #EEE; border-bottom:1px solid #CCC; border-right:1px solid #CCC; padding:2px 12px 2px 12px;}
+.tags a:hover {background-color:#92B4DE;color:#000}
 
 /*奖牌*/
 a.medal  { font-size:14px; line-height:250%; font-weight:800; color:#333; text-decoration:none; background:url(/content/images/medala.gif) no-repeat; border-left:1px solid #EEE; border-top:1px solid #EEE; border-bottom:1px solid #CCC; border-right:1px solid #CCC; padding:4px 12px 4px 6px;}
 a:hover.medal  {color:#333; text-decoration:none; background:url(/content/images/medala_on.gif) no-repeat; border-left:1px solid #E7E296; border-top:1px solid #E7E296; border-bottom:1px solid #D1CA3D; border-right:1px solid #D1CA3D;}
 
 /*Tab栏*/
-.tabsA {font-size:13px; border-bottom:1px solid #0E88AB; padding-bottom:2px; font-weight:800; margin-bottom:12px; text-align:right;}
-.tabsA a.on {font-size:14px;background:#0E88AB url(/content/images/tab_on.gif) left top no-repeat; padding:5px 15px 4px 35px; color:#FFF; line-height:24px; font-weight:800;}
-.tabsA a.off {background:#C6C6C6 url(/content/images/tab_off.gif) left top no-repeat; padding:5px 15px 4px 35px; color:#333; line-height:24px;}
+.tabBar{border-bottom: 1px solid #666;height: 30px;width: 100%;clear:both;margin-bottom:3px;}
+.tabsA {float:right;position:relative;display:block;font-weight:bold;}
+.tabsA a.on, .tabsA a.on:hover {background: #fff;
+    color:#333;
+	border: 1px solid #777;
+	border-bottom-color: #fff;
+	height: 24px;
+	line-height: 28px;
+	margin-top: 5px;
+	padding: 0px 11px 0px 11px;}
+
+.tabsA a {background: #eee;
+	border: 1px solid #eee;
+	color: #777;
+	display: block;
+	float: left;
+	height: 20px;
+	line-height: 25px;
+	margin: 8px 4px 0 0;
+	padding: 0 11px 0 11px;
+	text-decoration: none;}
+.tabsA a:hover {background: #fff;
+	border: 1px solid #777;
+	border-bottom-color: #fff;
+	line-height: 24px;
+	margin-top: 9px;}
 .headlineA {font-size:13px; border-bottom:1px solid #0E88AB; padding-bottom:2px; font-weight:800; margin-bottom:12px; text-align:right; height:30px;}
-.headQuestions {float:left; padding:3px; font-size:18px; font-weight:800; background:url(/content/images/ico_questions.png) no-repeat; padding-left:24px;}
+.headQuestions {float:left; padding:3px; font-size:15px; font-weight:800; background:url(/content/images/ico_questions.png) no-repeat; padding-left:24px;}
 .headAnswers {float:left; padding:3px; font-size:18px; font-weight:800; background:url(/content/images/ico_answers.gif) left 2px no-repeat; padding-left:24px;}
 .headTags {float:left; padding:3px; font-size:18px; font-weight:800; background:url(/content/images/ico_tags.gif) no-repeat; padding-left:24px;}
 .headUsers {float:left; padding:3px; font-size:18px; font-weight:800; background:url(/content/images/ico_users.gif) no-repeat; padding-left:24px;}

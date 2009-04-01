@@ -9,17 +9,20 @@
         $().ready(function(){
             var tab_id = "{{ tab_id }}";
             $("#"+tab_id).attr('className',"on");
+            $("#nav_questions").attr('className',"on");
         });
 
         </script>
 {% endblock %}
 {% block content %}
-<div class="tabsA">
-	<span class="headQuestions">问题列表</span>
-	<a id="latest" href="?sort=latest" title="最新更新的问题" class="off">最新问题</a>
-    <a id="hottest" href="?sort=hottest" title="被回复最多的问题" class="off">热门问题</a>
-    <a id="mostvoted" href="?sort=mostvoted" title="投票次数最多的问题" class="off">最有价值的问题</a>
-    <a id="trans" href="?sort=trans" title="外文翻译的经典问题" class="off">翻译问题</a>
+<div class="tabBar">
+    <span class="headQuestions">问题列表</span>
+    <div class="tabsA">
+    	<a id="latest" href="?sort=latest" title="最新更新的问题" >最新问题</a>
+        <a id="hottest" href="?sort=hottest" title="被回复最多的问题" >热门问题</a>
+        <a id="mostvoted" href="?sort=mostvoted" title="投票次数最多的问题" >最有价值的问题</a>
+        <a id="trans" href="?sort=trans" title="外文翻译的经典问题" >翻译问题</a>
+    </div>
 </div>
 <!-- 问题列表 -->
 <div id="listA">
