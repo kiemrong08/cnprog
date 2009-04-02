@@ -18,17 +18,14 @@
 {% endblock %}
 {% block content %}
 <!-- Tabs -->
-<div class="tabsA">
-		<span class="headTags">标签列表</span>
-		<a id="sort_name" href="?sort=name" class="off" title="按名称的字母先后顺序排序">按名称排序</a>
+<div class="tabBar">
+    <div class="headQuestions">标签列表</div>
+    <div class="tabsA">
+        <a id="sort_name" href="?sort=name" class="off" title="按名称的字母先后顺序排序">按名称排序</a>
         <a id="sort_used" href="?sort=used" class="off" title="按标签被使用的次数排序">按流行程度排序</a>
+    </div>
 </div>
-<form action="/tags/" method="post">
-<div class="subSearch">输入您要查找的标签
-      <input id="ipSearchTag" name="ipSearchTag" autocomplete="off" size="40" >
-      <input id="btSearchTag" type="submit" class="submit" value="搜 索" />
-</div>
-</form>
+<div>
 {% if stag %}
     匹配查询 '<span class="darkred"><strong>{{ stag }}</strong></span>' 的所有标签：
 {% endif %}
@@ -48,6 +45,7 @@
     </li>
 {% endfor %}
 </ul>
+</div>
 <div class="pager">
     {% cnprog_paginator context %}
 </div>

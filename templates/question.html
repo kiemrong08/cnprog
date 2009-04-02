@@ -71,10 +71,10 @@
                             <img id="question-img-downvote-{{ question.id }}" class="question-img-downvote" src="/content/images/vote-arrow-down.png" title="这篇帖子没有价值（再次点击取消操作）" >    
                             {% endif %}
                             {% if favorited %}
-                            <img class="question-img-favorite" src="/content/images/vote-favorite-on.png" title="我要收藏这个问题（再次点击取消操作）" >
+                            <img class="question-img-favorite" src="/content/images/vote-favorite-on.gif" title="我要收藏这个问题（再次点击取消操作）" >
                             <div id="favorite-number" class="favorite-number my-favorite-number">{{ question.favourite_count }}</div>
                             {% else %}
-                            <img class="question-img-favorite" src="/content/images/vote-favorite-off.png" title="我要收藏这个问题（再次点击取消操作）" >   
+                            <img class="question-img-favorite" src="/content/images/vote-favorite-off.gif" title="我要收藏这个问题（再次点击取消操作）" >   
                                 
                             <div id="favorite-number" class="favorite-number">{% ifnotequal question.favourite_count 0 %}{{ question.favourite_count }}{% endifnotequal %}</div>
                         

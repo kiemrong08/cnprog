@@ -4,7 +4,7 @@ body{background:#EEE; font-size:12px; line-height:150%; margin:0; padding:0; col
 div{margin:0 auto; padding:0;}
 h1,h2,h3,h4,h5,h6,ul,li,dl,dt,dd,form,img,p{margin:0; padding:0; border:none; list-style-type:none;}
 p{margin-bottom:4px; font-size:13px; line-height:160%;}
-a {color:#333; text-decoration:none;}
+a {color:#663333; text-decoration:none;}
 a:hover {text-decoration:underline;}
 .block{width:960px; height:auto;}
 .fleft{float:left;}
@@ -30,10 +30,10 @@ a:hover {text-decoration:underline;}
 /*页面布局*/
 #wrapper {width:960px;margin:auto;padding:0;}
 #roof {margin-top:0px;background:#FFF;}
-#room {padding-top:10px;background-color:#FFF;}
-#CALeft{width:670px; float:left; position:relative;}
-#CARight{width:270px; float:right;}
-#CAFull{width:960px;}
+#room {padding-top:10px;background-color:#FFF;border-bottom:1px solid #777;}
+#CALeft{width:700px; float:left; position:relative;padding-left:5px}
+#CARight{width:240px; float:right; padding-right:5px}
+#CAFull{width:960px;padding:0 10px 0 10px;}
 #ground {clear:both;border-top:6px solid #000; padding-top:6px; padding-bottom:50px; text-align:center; padding-bottom:100px; background:#777;}
 #header{background:url(/content/images/header.png); height:107px;}
 /*顶部及导航栏*/
@@ -46,7 +46,7 @@ a:hover {text-decoration:underline;}
 #navBar .nav a:hover {text-decoration:underline}
 #navBar .nav a.on {height:24px;line-height:28px;border-left:1px solid #515656;border-top:1px solid #515656;border-right:1px solid #515656; border-bottom:1px solid #515656; background:#515656; color:#FFF; font-weight:600; text-decoration:none}
 #navBar .nav a.special {font-size:15px; color:#FFF; font-weight:bold; text-decoration:none;background-color:Darkred }
-#navBar .nav a.special:hover {text-decoration:none}
+#navBar .nav a.special:hover {text-decoration:none; background-color:#515656}
 #navBar .nav div.focus {float:right; padding-right:0px;}
 /*搜索栏*/
 #searchBar {background-color:#515656;padding:5px;}
@@ -58,28 +58,33 @@ a:hover {text-decoration:underline;}
 #searchBar .options INPUT:hover {cursor:pointer}
 
 /*问题列表*/
-#listA {float:left; background-color:#FFF;padding-left:10px;}
-#listA .qstA {padding-bottom:16px; margin-bottom:16px; background:url(/content/images/dash.gif) repeat-x bottom;}
+#listA {float:left; background-color:#FFF;padding:0 0px 0 0px; width:100%;}
+#listA .qstA {padding:3px 5px 0 5px; margin:0 0px 10px 0px; background:url(/content/images/quest-bg.gif) repeat-x top;}
 #listA .qstA thumb {float:left; }
-#listA .qstA H2 {font-size:14px; color:#0077CC; font-weight:800; margin:8px auto;}
-#listA .qstA H2 a {color:#333;}
-#listA .qstA .stat {font-size:13px;letter-spacing:1px;}
+#listA .qstA H2 {font-size:15px; color:#0077CC; font-weight:800; margin:8px auto;}
+#listA .qstA H2 a {color:#663333;}
+#listA .qstA .stat {font-size:13px;letter-spacing:1px;float:right;}
 #listA .qstA .stat span {margin-right:5px;}
-#listA .qstA .stat .num {color:#905213; font-size:14px; font-weight:800;}
-#listA .qstA .from {float:right; margin-top:4px; font-size:13px; text-align:right;}
+#listA .qstA .stat td {min-width:40px;text-align:center;}
+#listA .qstA .stat .num {font-family:arial;color:#905213; font-size:20px; font-weight:800;}
+#listA .qstA .stat .unit {color:#777;}
+#listA .qstA .from {margin-top:5px; font-size:13px;}
+#listA .qstA .from .score {font-family:arial;}
+#listA .qstA .date {margin-left:20px; color:#777;}
 #listA .qstA .from a {}
-#listA .qstA .author{float:right;width:150px}
+#listA .qstA .author {font-weight:400; }
+#listA .qstA .author a{ }
 #listA .qstA .summary{margin-right:5px;}
 #evenMore {font-size:14px; font-weight:800;}
 
 /*内容块*/
-.boxA {background:#FFEECA; padding:6px; margin-bottom:8px;}
-.boxA H3 {font-size:13px; font-weight:800; color:#990000; margin:0; padding:0; margin-bottom:4px;}
-.boxA .body {border:1px solid #FFCC33; padding:8px; background:#FFF; font-size:13px;}
+.boxA {background:#777; padding:6px; margin-bottom:8px;}
+.boxA H3 {font-size:13px; font-weight:800; color:#FFF; margin:0; padding:0; margin-bottom:4px;}
+.boxA .body {border:1px solid #999; padding:8px; background:#FFF; font-size:13px;}
 .boxA .more {padding:2px; text-align:right; font-weight:800;}
 .boxB {background:#CCC; padding:6px; margin-bottom:8px;}
-.boxB H3 {font-size:13px; font-weight:800; color:#000; margin:0; padding:0; margin-bottom:4px;}
-.boxB .body {border:1px solid #777; padding:8px; background:#F5F5F5; font-size:13px; line-height:160%;}
+.boxB H3 {font-size:13px; font-weight:800; color:#000; margin:0; padding:0 0 0 15px; margin-bottom:4px; background:url(/content/images/dot-g.gif) no-repeat left center;}
+.boxB .body {border:1px solid #999; padding:8px; background:#FFF; font-size:13px; line-height:160%;}
 .boxB .more {padding:1px; text-align:right; font-weight:800;}
 
 /*分页*/
@@ -89,9 +94,9 @@ a:hover {text-decoration:underline;}
 .pager a.on{border:1px solid #666;background:#DDD;}
 
 /*标签*/
-.tags {font-family:arial; font-size:14px; line-height:200%;  font-weight:800;color:#666;display:block;}
-.tags a {font-size:90%; font-weight:normal; color:#333; text-decoration:none;background-color:#F5F5F5; border-left:3px solid #777; border-top:1px solid #EEE; border-bottom:1px solid #CCC; border-right:1px solid #CCC; padding:1px 12px 1px 12px;}
-.tags a:hover {background-color:#CCC;}
+.tags {font-family:arial; line-height:200%; display:block; margin-top:5px;}
+.tags a {font-size:100%; font-weight:normal; color:#333; text-decoration:none;background-color:#EEE; border-left:3px solid #777; border-top:1px solid #EEE; border-bottom:1px solid #CCC; border-right:1px solid #CCC; padding:1px 8px 1px 8px;}
+.tags a:hover {background-color:#F5F5F5;color:#333;}
 
 /*奖牌*/
 a.medal  { font-size:14px; line-height:250%; font-weight:800; color:#333; text-decoration:none; background:url(/content/images/medala.gif) no-repeat; border-left:1px solid #EEE; border-top:1px solid #EEE; border-bottom:1px solid #CCC; border-right:1px solid #CCC; padding:4px 12px 4px 6px;}
@@ -123,7 +128,7 @@ a:hover.medal  {color:#333; text-decoration:none; background:url(/content/images
 	border: 1px solid #777;
 	border-bottom-color: #fff;}
 .headlineA {font-size:13px; border-bottom:1px solid #0E88AB; padding-bottom:2px; font-weight:800; margin-bottom:12px; text-align:right; height:30px;}
-.headQuestions {float:left; height:25px; line-height:26px; margin:5px 0 0 5px;padding:0px 6px 0px 6px; font-size:15px; font-weight:700; border-bottom:0px solid #777;background-color:#CCC;}
+.headQuestions {float:left; height:23px; line-height:23px; margin:5px 0 0 5px;padding:0px 6px 0px 15px; font-size:15px; font-weight:700; border-bottom:0px solid #777; border-left:0px solid #darkred; background-color:#FFF;background:url(/content/images/dot-list.gif) no-repeat left center;}
 .headAnswers {float:left; padding:3px; font-size:18px; font-weight:800; background:url(/content/images/ico_answers.gif) left 2px no-repeat; padding-left:24px;}
 .headTags {float:left; padding:3px; font-size:18px; font-weight:800; background:url(/content/images/ico_tags.gif) no-repeat; padding-left:24px;}
 .headUsers {float:left; padding:3px; font-size:18px; font-weight:800; background:url(/content/images/ico_users.gif) no-repeat; padding-left:24px;}
@@ -131,8 +136,8 @@ a:hover.medal  {color:#333; text-decoration:none; background:url(/content/images
 .headLogin {float:left; padding:3px; font-size:18px; font-weight:800; background:url(/content/images/ico_login.gif) no-repeat; padding-left:24px;}
 .headNormal {text-align:left;padding:3px; font-size:18px; margin-bottom:12px; font-weight:800;border-bottom:1px solid #0E88AB;}
 /*RSS订阅*/
-#newestFeed {margin:8px 0;}
-#newestFeed a {background:url(/content/images/feed-icon-small.png) no-repeat 0; padding-left:18px; font-weight:800; font-size:14px; }
+#feeds {margin:20px 0; }
+#feeds a {background:url(/content/images/feed-icon-small.png) no-repeat 0; padding-left:18px; font-weight:700; font-size:12px; }
 
 /*问题*/
 #question {margin-bottom:30px;}
@@ -151,7 +156,8 @@ a:hover.medal  {color:#333; text-decoration:none; background:url(/content/images
 
 /*标签列表*/
 .tagsbox {}
-.tagsbox a {color:#000;line-height:30px;margin-right:10px;font-size:90%;}
+.tagsbox a {color:#000;line-height:30px;margin-right:10px;font-size:100%;background-color:#EEE;padding:3px;}
+.tagsbox a:hover {text-decoration:none;background-color:#CCC;}
 .tagsList li {width:240px; float:left;}
 
 /*其他全局样式*/
@@ -161,7 +167,7 @@ a:hover.medal  {color:#333; text-decoration:none; background:url(/content/images
 .silver, .badge2 {color:#CCCCCC;}
 .bronze, .badge3 {color:#CC9933;}
 .score {font-weight:800; color:#333;}
-.footerLinks {color:#EEE; font-size:13px;}
+.footerLinks {color:#EEE; font-size:13px; letter-spacing:1px;}
 .footerLinks a {color:#FFF; font-size:13px;}
 .subSearch {margin-bottom:12px; padding:4px;}
 a.comment {background:#EEE; color:#993300; padding:4px;}

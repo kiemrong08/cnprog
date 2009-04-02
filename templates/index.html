@@ -28,19 +28,42 @@
 <div id="listA">
     {% for question in questions %}
     <div class="qstA">
+        <h2>
+            <a href="{{ question.get_absolute_url }}" title="{{ question.summary }}...">
+            {{ question.get_question_title }}
+            </a>
+        </h2>
+        <div class="stat">
+            <table>
+	            <tr>
+                    <td><span class="num">{{ question.answer_count|intcomma }}</span> </td>
+                    <td><span class="num">{{ question.score|intcomma }}</span> </td>
+                    <td><span class="num">{{ question.view_count|intcomma }}</span> </td>
+	            </tr>  
+                <tr>
+                    <td><span class="unit">回答</span></td>
+                    <td><span class="unit">票数</span></td>
+                    <td><span class="unit">浏览</span></td>
+	            </tr> 
+            </table>
+        </div>
+        <div class="summary">
+            {{ question.summary }}...
+        </div>
         {% if question.wiki %}
-        <span class="from">社区Wiki</span>
+        <div class="from author">[社区Wiki]</div>
         {% else %}
-        <span class="from"><a href="{{ question.last_activity_by.get_profile_url }}">{{ question.last_activity_by }}</a>
-        {% get_score_badge question.last_activity_by %} <br>更新于<span title="{{ question.last_activity_at }}">{% diff_date question.last_activity_at %}</span></span>
+        <div class="from">
+            <span class="author"><a href="{{ question.last_activity_by.get_profile_url }}">{{ question.last_activity_by }}</a></span>
+            <span class="score">{% get_score_badge question.last_activity_by %} </span>
+            <span class="date" title="{{ question.last_activity_at }}">{% diff_date question.last_activity_at %}</span>
+        </div>
         {% endif %}
-        <h2><a href="{{ question.get_absolute_url }}" title="{{ question.summary }}...">{{ question.get_question_title }}</a></h2>
-        <span class="stat">回答:<span class="num">{{ question.answer_count|intcomma }}</span> 票数:<span class="num">{{ question.score|intcomma }}</span> 浏览:<span class="num">{{ question.view_count|intcomma }}</span> 标签: </span>
-        <span class="tags">
+        <div class="tags">
         {% for tag in question.tagname_list %}
         <a href="{% url forum.views.tag tag|urlencode %}" title="查看有关'{{ tag }}'的问题" rel="tag">{{ tag }}</a>
         {% endfor %}
-        </span>
+        </div>
     </div>
     {% endfor %}
 </div>
@@ -51,8 +74,8 @@
 <div class="boxA">
 	<h3>CNProg欢迎您!</h3>
 	<div class="body">
-	  <p>CNProg是一个<strong>面向程序员</strong>的可协作编辑的问答社区。</p>
-	  <p> 您可以在这里提问各类<strong>程序技术问题</strong>题 - 问题不分语言和平台。 同时也希望您对力所能及的问题，给予您的宝贵答案。</p>
+	  <p>CNProg是一个<strong>面向程序员</strong>的可协作编辑的<strong>开放源代码问答社区</strong>。</p>
+	  <p> 您可以在这里提问各类<strong>程序技术问题</strong> - 问题不分语言和平台。 同时也希望您对力所能及的问题，给予您的宝贵答案。谨以此项目向QA社区先驱<strong><a href="http://www.stackoverflow.com">StackOverflow</a></strong>致敬！</p>
 	  <div class="more"><a href="/about">关于本站 »</a></div>
 	  <div class="more"><a href="/faq">FAQ »</a></div>
 	</div>
@@ -84,9 +107,9 @@
         	<div class="more"><a href="/badges/">所有奖牌 »</a> </div>
          </div>
 </div>
+<div id="feeds">
+<a href="/feeds/rss" title="RSS订阅最新30个问题">订阅最新问题</a>
+</div>
 {% endblock %}
 {% block tail %}
-<div id="evenMore">在寻找更多问题吗？请查阅<a href="/questions">完整问题列表</a>，或者 <a href="/tags">受欢迎的标签</a>。请帮助我们回答<a href="/questions/unanswered">没有回答的问题</a>。</div>
-<div id="newestFeed"><a href="/feeds/rss" title="RSS订阅CNProg最新30个问题">订阅最新问题</a></div>
-
 {% endblock %}
