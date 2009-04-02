@@ -38,7 +38,8 @@
             <a href="{{ request.user.get_profile_url }}">个人资料</a>{% endif %}</span>
             <a class="close-notify" onclick="notify.close(true)">&times;</a>
         </div>
-        <div id="wrapper">{% include "header.html" %}
+        {% include "header.html" %}
+        <div id="wrapper">
             <div id="room">
                 <div id="CALeft">
                     {% block content%}

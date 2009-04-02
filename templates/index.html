@@ -16,7 +16,7 @@
 {% endblock %}
 {% block content %}
 <div class="tabBar">
-    <span class="headQuestions">问题列表</span>
+    <div class="headQuestions">问题列表</div>
     <div class="tabsA">
     	<a id="latest" href="?sort=latest" title="最新更新的问题" >最新问题</a>
         <a id="hottest" href="?sort=hottest" title="被回复最多的问题" >热门问题</a>
@@ -61,7 +61,7 @@
 <div class="boxB">
 	<h3>最新标签</h3>
 	<div class="body">
-         <p class="tags">
+         <p class="tagsbox">
         {% for tag in tags %}
             <a rel="tag" title="查看有关'{{ tag.name }}'的问题" href="{% url forum.views.tag tag.name|urlencode %}">{{ tag.name }}</a>
         {% endfor %}

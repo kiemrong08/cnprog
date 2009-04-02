@@ -1,11 +1,23 @@
 {% load extra_tags %}
 <!-- 页面顶部开始：LOGO，导航，搜索 -->
+    <div id="top">
+        <a href="#">登录</a>
+        <a href="#">关于本站</a>
+        <a href="#">常见问题</a>
+    </div>
 	<div id="roof">
 		<!-- 导航 -->
+        
 		<div id="navBar">
 			<table width="100%" border="0" cellspacing="0" cellpadding="0">
 			  <tr>
-				<td width="23%"><span class="red"><a href="/"><img src="/content/images/logo2.png" title="回到首页" /></a></span></td>
+				<td width="23%">
+                <div id="logo">
+                    <a href="/">
+                        <img src="/content/images/logo.png" title="回到首页" />
+                    </a>
+                </div>
+            </td>
 				<td width="77%" valign="bottom">
                 <div class="nav">
                     <a id="nav_questions" href="/questions/" >问题</a>
@@ -40,5 +52,6 @@
             </tr>
 			</table>
 		</div>
+ 
 	</div>
 	<!-- 页面顶部结束 -->
