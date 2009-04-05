@@ -13,9 +13,9 @@
         // define reputation needs for comments
         var repNeededForComments = 50;
         $().ready(function(){
-            $("#nav_questions").attr('className',"youarehere");
+            $("#nav_questions").attr('className',"on");
             var answer_sort_tab = "{{ tab_id }}";
-            $("#" + answer_sort_tab).attr('className',"youarehere");
+            $("#" + answer_sort_tab).attr('className',"on");
             
             Vote.init({{ question.id }}, '{{ question.author.id }}','{{ request.user.id }}');
             
@@ -32,10 +32,10 @@
                              captureLength: 5, callback: lanai.highlightSyntax});
                              
             var display = true;
-            var txt = "禁用预览";
+            var txt = "[禁用预览]";
             $('#pre-collapse').text(txt);
             $('#pre-collapse').bind('click', function(){
-                txt = display ? "启用预览" : "禁用预览";
+                txt = display ? "[启用预览]" : "[禁用预览]";
                 display = !display;
                 $('#previewer').toggle();
                 $('#pre-collapse').text(txt);
@@ -48,35 +48,42 @@
 {% endblock %}
         
 {% block content %}
-<div id="question-title" class="">
-    <h3>
-        <a href="{{ question.get_absolute_url }}">{{ question.get_question_title }}</a>
-    </h3>
-    
+<div class="headNormal">
+    <a href="{{ question.get_absolute_url }}">{{ question.get_question_title }}</a>
 </div>
 <div id="main-body" class="">
     <div id="askform">
         <form id="fmanswer" action="{% url answer question.id %}" method="post">
             <table style="width:100%;" id="question-table" {% if question.deleted %}class="deleted"{%endif%}>
                 <tr>
-                    <td style="width:50px;vertical-align:top">
+                    <td style="width:30px;vertical-align:top">
                         <div class="vote-buttons">
                             {% if question_vote %}
                             <img id="question-img-upvote-{{ question.id }}" class="question-img-upvote" src="/content/images/vote-arrow-up{% if question_vote.is_upvote %}-on{% endif %}.png" title="这篇帖子有价值（再次点击取消操作）" >
-                            <div id="question-vote-number-{{ question.id }}" class="vote-number">{{ question.score }}</div>
+                            <div id="question-vote-number-{{ question.id }}" class="vote-number" title="当前总票数">
+                                {{ question.score }}
+                            </div>
                             <img id="question-img-downvote-{{ question.id }}" class="question-img-downvote" src="/content/images/vote-arrow-down{% if question_vote.is_downvote %}-on{% endif %}.png" title="这篇帖子没有价值（再次点击取消操作）" >
+                           
                             {% else %}
                             <img id="question-img-upvote-{{ question.id }}" class="question-img-upvote" src="/content/images/vote-arrow-up.png" title="这篇帖子有价值（再次点击取消操作）" >
-                            <div id="question-vote-number-{{ question.id }}" class="vote-number">{{ question.score }}</div>
+                            <div id="question-vote-number-{{ question.id }}" class="vote-number" title="当前总票数">
+                                {{ question.score }}
+                            </div>
                             <img id="question-img-downvote-{{ question.id }}" class="question-img-downvote" src="/content/images/vote-arrow-down.png" title="这篇帖子没有价值（再次点击取消操作）" >    
+          
                             {% endif %}
+                            <br><br>
                             {% if favorited %}
-                            <img class="question-img-favorite" src="/content/images/vote-favorite-on.gif" title="我要收藏这个问题（再次点击取消操作）" >
-                            <div id="favorite-number" class="favorite-number my-favorite-number">{{ question.favourite_count }}</div>
+                            <img class="question-img-favorite" src="/content/images/vote-favorite-on.png" title="我要收藏这个问题（再次点击取消操作）" >
+                            <div id="favorite-number" class="favorite-number my-favorite-number">
+                                {{ question.favourite_count }}
+                            </div>
                             {% else %}
-                            <img class="question-img-favorite" src="/content/images/vote-favorite-off.gif" title="我要收藏这个问题（再次点击取消操作）" >   
+                            <img class="question-img-favorite" src="/content/images/vote-favorite-off.png" title="我要收藏这个问题（再次点击取消操作）" >   
                                 
-                            <div id="favorite-number" class="favorite-number">{% ifnotequal question.favourite_count 0 %}{{ question.favourite_count }}{% endifnotequal %}</div>
+                            <div id="favorite-number" class="favorite-number">{% ifnotequal question.favourite_count 0 %}{{ question.favourite_count }}{% endifnotequal %}
+                            </div>
                         
                             {% endif %}
                             
@@ -87,15 +94,15 @@
                             <div class="question-body">
                                 {{ question.html|safe }}
                             </div>
-                            <div id="question-tags" class="question-tag-extra" >
+                            <div id="question-tags" class="tags" >
                                 {% for tag in question.tagname_list %}
                                     <a href="{% url forum.views.tag tag|urlencode %}" class="post-tag" title="查看有关'{{ tag }}'的问题" rel="tag">{{ tag }}</a>
                                 {% endfor %}
                             </div>
                             <div id="question-controls" style="clear:both;">
-                                <table width="585px">
+                                <table width="100%">
                                     <tr>
-                                        <td width="200px" style="vertical-align:top">
+                                        <td width="210px" style="vertical-align:top">
                                             
                                             {% if request.user|can_edit_post:question %}
                                             <span class="action-link"><a href="{% url edit_question question.id %}">编辑</a></span>
@@ -122,10 +129,10 @@
                                             </span>
                                             
                                         </td>
-                                        <td width="200px" style="vertical-align:top">
+                                        <td width="210px" style="vertical-align:top">
                                             {% if question.last_edited_by %}
                                             <div class="question-edit" >
-                                                <table width="100%" >
+                                                <table width="200px" >
                                                     <tr>
                                                         <td colspan="2"> 
                                                          更新于<a href="{% url question_revisions question.id %}"><strong title="{{question.last_edited_at }}">{% diff_date question.last_edited_at  %}</strong></a>
@@ -152,7 +159,7 @@
                                                         <td style="width:40px;vertical-align:bottom">
                                                         {% gravatar question.last_edited_by 32 %}
                                                         </td>
-                                                        <td style="width:120px; vertical-align:top">
+                                                        <td style="width:160px; vertical-align:top">
                                                             <div><a href="/users/{{ question.last_edited_by.id }}/{{ question.last_edited_by.username }}">{{ question.last_edited_by.username }}</a></div>
                                 
                                                             <div>
@@ -174,7 +181,7 @@
                                             <div style="margin-bottom:10px"></div>
                                             {% else %}
                                             <div  class="question-mark">
-                                                <table width="100%">
+                                                <table width="200px">
                                                     <tr>
                                                         <td colspan="2"> 
                                                         提问于<strong title="{{ question.added_at }}">{% diff_date question.added_at %}</strong>
@@ -186,7 +193,7 @@
                                                         <td style="width:40px; vertical-align:bottom">
                                                         {% gravatar question.author 32 %}
                                                         </td>
-                                                        <td style="width:120px; vertical-align:top">
+                                                        <td align="left" style="width:160px;vertical-align:top">
                                                             <div><a href="/users/{{ question.author.id }}/{{ question.author }}">{{ question.author }}</a></div>
                                                             <div>
                                                             {% get_score_badge question.author %}
@@ -218,18 +225,18 @@
             </table>
             {% if question.closed %}
             <div class="question-status" style="margin-bottom:15px">
-            <h3>问题以“{{ question.get_close_reason_display }}”的原因被 <a href="{{ question.closed_by.get_profile_url }}">{{ question.closed_by.username }}</a> 于{% diff_date question.closed_at %}<font class="darkred">关闭</font></h3>
+            <h3>问题以“{{ question.get_close_reason_display }}”的原因已被 <a href="{{ question.closed_by.get_profile_url }}">{{ question.closed_by.username }}</a> 于{% diff_date question.closed_at %}<font class="darkred">关闭</font></h3>
             </div>
             {% endif %}
             
             {% ifnotequal question.answer_count 0 %}
-                <div id="main-bar" class="">
+                <div class="tabBar">
                     <a name="sort-top"></a>
-                    <h3>{{ question.answer_count }}个回答：</h3>
-                    <div id="tab" class="">
-                        <a id="oldest" href="?sort=oldest#sort-top" title="最先回答显示在最前面">最先回答</a>
+                    <div class="headQuestions">{{ question.answer_count }}个回答：</div>
+                    <div class="tabsA">
+                         <a id="oldest" href="?sort=oldest#sort-top" title="最先回答显示在最前面">最先回答</a>
                         <a id="latest" href="?sort=latest#sort-top" title="最晚回答显示在最前面">最近回答</a>
-                        <a id="votes" href="?sort=votes#sort-top" title="投票次数最多的显示在最前面">投票最多</a>
+                        <a id="votes" href="?sort=votes#sort-top" title="投票次数最多的显示在最前面">投票最多</a>   
                     </div>
                 </div>
                 {% cnprog_paginator context %}
@@ -239,11 +246,15 @@
                     <div id="answer-container-{{ answer.id }}" class="answer {% if answer.accepted %}accepted-answer{% endif %}{% if answer.deleted %}deleted{% endif %} {% ifequal answer.author_id question.author_id %} answered-by-owner{% endifequal %}">
                         <table style="width:100%;">
                             <tr>
-                                <td style="width:50px;vertical-align:top">
+                                <td style="width:30px;vertical-align:top">
                                     <div class="vote-buttons">
                                         <img id="answer-img-upvote-{{ answer.id }}" class="answer-img-upvote" src="/content/images/vote-arrow-up{% get_user_vote_image user_answer_votes answer.id 1 %}.png" title="这篇帖子有价值（再次点击取消操作）" >
-                                        <div id="answer-vote-number-{{ answer.id }}" class="vote-number">{{ answer.score }}</div>
+                                        <div id="answer-vote-number-{{ answer.id }}" class="vote-number" title="当前总票数">
+                                            {{ answer.score }}
+                                        </div>
                                         <img id="answer-img-downvote-{{ answer.id }}" class="answer-img-downvote" src="/content/images/vote-arrow-down{% get_user_vote_image user_answer_votes answer.id -1 %}.png" title="这篇帖子没有价值（再次点击取消操作）" >
+                                     
+                                        <br><br>
                                         {% ifequal request.user question.author  %}
                                         <img id="answer-img-accept-{{ answer.id }}" class="answer-img-accept" src="/content/images/vote-accepted{% if answer.accepted %}-on{% endif %}.png" title="最佳答案（再次点击取消操作）" >
                                         {% else %}
@@ -259,9 +270,9 @@
                                             {{ answer.html|safe }}
                                         </div>
                                         <div class="answer-controls" style="clear:both;">
-                                            <table width="585px">
+                                            <table width="100%">
                         	                    <tr>
-                                                    <td width="200px" style="vertical-align:top">
+                                                    <td width="210px" style="vertical-align:top">
                                                         {% if request.user|can_edit_post:answer %}
                                                         <span class="action-link"><a href="{% url edit_answer answer.id %}">编辑</a></span>
                                                         <span class="action-link-separator">|</span>
@@ -272,16 +283,16 @@
                                                         {% endif %}
                                                         <span class="linksopt">
                                                             <a href="#{{ answer.id }}" title="该回答的链接地址">
-                                                            链接
+                                                            永久链接
                                                             </a>
                                                         </span>
                                                         <span class="action-link-separator">|</span>
                                                         <span id="answer-offensive-flag-{{ answer.id }}" class="offensive-flag" title="检举该帖为垃“水帖”（含广告、人身攻击、恶意言论等）"><a>垃圾帖？</a><span class="darkred">{% if request.user|can_view_offensive_flags %}{% if answer.offensive_flag_count %}({{ answer.offensive_flag_count }}){% endif %}{% endif %}</span></span>
                                                     </td>
-                        	                    	<td width="200px" style="vertical-align:top">
+                        	                    	<td width="210px" style="vertical-align:top">
                                                     {% if answer.last_edited_by %}
                                                     <div class="question-edit" >
-                                                        <table width="100%" >
+                                                        <table width="200px" >
                                                             <tr>
                                                                 <td colspan="2"> 
                                                                  更新于<a href="{% url answer_revisions answer.id %}"><strong title="{{answer.last_edited_at }}">{% diff_date answer.last_edited_at  %}</strong></a>
@@ -309,7 +320,7 @@
                                                                 <td width="40px" style="vertical-align:bottom">
                                                                 {% gravatar answer.last_edited_by 32 %}
                                                                 </td>
-                                                                <td style="width:120px; vertical-align:top">
+                                                                <td style="width:160px; vertical-align:top">
                                                                     <div><a href="/users/{{ answer.last_edited_by.id }}/{{ answer.last_edited_by.username }}">{{ answer.last_edited_by.username }}</a></div>
                                                                     <div>
                                                                     {% get_score_badge answer.last_edited_by %}
@@ -329,7 +340,7 @@
                                                     <div style="margin-bottom:10px"></div>
                                                     {% else %}
                                                     <div  class="answer-mark">
-                                                        <table width="100%">
+                                                        <table width="200px">
                             	                            <tr>
                                 	                            	<td colspan="2"> 
                                                                 回答于<strong title="{{answer.added_at}}">{% diff_date answer.added_at %}</strong>
@@ -340,7 +351,7 @@
                                                                 <td width="40px" style="vertical-align:bottom">
                                                                 {% gravatar answer.author 32 %}
                                                                 </td>
-                                                                <td style="width:120px; vertical-align:top">
+                                                                <td style="width:160px; vertical-align:top">
                                                                     <div><a href="/users/{{ answer.author.id }}/{{ answer.author.username }}">{{ answer.author }}</a></div>
                                                                     <div>
                                                                     {% get_score_badge answer.author %}
@@ -383,7 +394,7 @@
             {% if not question.closed %}
             {% if request.user.is_authenticated %}
             <div style="padding:10px 0 0 0;">
-                <h3>您的回答：</h3>
+                <div class="headNormal">您的回答：</div>
             </div>
 
             <div id="description" class="" >
@@ -406,51 +417,47 @@
                 {{ answer.text.errors }}
                 
             </div>
+            <br>
             <input type="submit" value="回答该问题" class="submit"><span class="form-error"></span>
             {% else %}
             <h3><input id="btLogin" type="button" value="登录并回答该问题"></h3>
             {% endif %}
             {% endif %}
-            
             <br><br>
-            <div><h3>没有找到您需要的答案？查看更多标识为
-                {% for tag in question.tagname_list %}
-                     <a href="{% url forum.views.tag tag|urlencode %}" class="post-tag" title="查看有关'{{ tag }}'的问题" rel="tag">{{ tag }}</a>
-                {% endfor %}的问题，或者<a href="{% url ask %}">提出您自己的问题</a>。</h3></div>
         </form>
     </div>
 </div>
 {% endblock %}
 
 {% block sidebar %}
-<div class="gray-box">
-    <div class="paragraph">
+<div class="boxC">
+    <p>
         您正在浏览的问题含有以下标签：
-    </div>
-    <div class="paragraph-extra">
+    </p>
+    <p class="tags" >
         {% for tag in tags %}
-        <a href="{% url forum.views.tag tag.name|urlencode %}" class="post-tag" title="查看有关'{{ tag.name }}'的问题" rel="tag">{{ tag.name }}</a> <span class="tag-number">× {{ tag.used_count|intcomma }}</span><br>
+        <a href="{% url forum.views.tag tag.name|urlencode %}" title="查看有关'{{ tag.name }}'的问题" rel="tag">{{ tag.name }}</a> <span class="tag-number">× {{ tag.used_count|intcomma }}</span><br>
         {% endfor %}
-    </div>
-    <div class="paragraph">
-        提问时间： <div class="big" title="{{ question.added_at }}">{{ question.added_at|timesince }}前</div>
-    </div>
-    <div class="paragraph"> 
-     目前浏览数量：<div class="big">{{ question.view_count|intcomma }} 次</div>
-    </div>
-    <div class="paragraph"> 
-        最后更新时间：<div class="big" title="{{ question.last_activity_at }}">{{ question.last_activity_at|timesince }}前</div>
-    </div>
+    </p>
+    <p>
+        提问时间： <br><strong title="{{ question.added_at }}">{{ question.added_at|timesince }}前</strong>
+    </p>
+    <p> 
+     目前浏览数量：<br><strong>{{ question.view_count|intcomma }} 次</strong>
+    </p>
+    <p> 
+        最后更新时间：<br><strong title="{{ question.last_activity_at }}">{{ question.last_activity_at|timesince }}前</strong>
+    </p>
 </div>
 
-<div class="gray-box">
-    <h3>相似的问题</h3>
-    <div id="" class="">
-        <ul class="list-item">
+<div class="boxC">
+    <h3 class="subtitle">相似的问题</h3>
+    <div class="questions-related">
         {% for question in similar_questions %}
-            <li><a href="/questions/{{question.id}}/{{ question.get_question_title }}">{{ question.get_question_title }}</a><span class="small" title="{{ question.last_activity_at }}"> ({% diff_date question.last_activity_at %})</span></li>
+        <p>
+            <a href="/questions/{{question.id}}/{{ question.get_question_title }}">{{ question.get_question_title }}</a>
+        </p>
         {% endfor %}
-        </ul>
     </div>
     <br>  
 </div>

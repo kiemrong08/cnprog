@@ -11,15 +11,13 @@
     </script>
 {% endblock %}
 {% block content %}
-<div id="main-bar" class="">
-    <h3>
-        退出登录
-    </h3>
+<div  class="headNormal">
+    退出登录
 </div>
 <div id="main-body" style="width:100%">
-    <div class="paragraph"> 您是系统的<strong class="darkred">注册</strong>用户，可以随时使用OpenID帐号登录系统或者注销登录。 </div>
+    <p> 您是系统的<strong class="darkred">注册</strong>用户，可以随时使用OpenID帐号登录系统或者注销登录。 </p>
  
-    <h3><input id="btLogout" type="button" value="点击退出登录"></h3>
+    <input id="btLogout" type="button" class="submit" value="点击退出登录" style="width:150px">
     <br><br>
 </div>
 {% endblock %}

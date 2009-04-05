@@ -5,7 +5,7 @@
 {% block forejs %}
         <script type="text/javascript">
             $().ready(function(){
-                $("#nav_users").attr('className',"youarehere");
+                $("#nav_profile").attr('className',"on");
                 $("#cancel").bind('click', function(){history.go(-1);})
             });     
         </script>
@@ -13,10 +13,8 @@
         {% endblock %}
 {% endblock %}
 {% block content %}
-<div id="main-bar" class="">
-    <h3>
-        {{ request.user.username }} - 修改资料
-    </h3>
+<div id="main-bar" class="headNormal">
+    {{ request.user.username }} - 修改资料
 </div>
 <div id="main-body" style="width:100%;padding-top:10px">
     <form name="" action="{% url edit_user request.user.id %}" method="post">
@@ -33,7 +31,7 @@
         
         <div id="askform" style="float:right;width:750px;text-align:left;">
             <h2>注册用户</h2>
-            <table>
+            <table class="user-details">
                 <tr>
                     <th width="100px"></th>
                     <th></th>

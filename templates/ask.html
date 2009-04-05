@@ -10,7 +10,7 @@
         <script type="text/javascript">
         $().ready(function(){
             //set current module button style
-            $("#nav_ask").attr('className',"youarehere");
+            $("#nav_ask").attr('className',"on");
             $('#editor').TextAreaResizer();
 
             //highlight code synctax when editor has new text
@@ -53,24 +53,21 @@
 {% endblock %}
 
 {% block content %}
-<div id="main-bar" class="">
-    <h3>
-        我要提问
-    </h3>
-
+<div id="main-bar" class="headNormal">
+    我要提问
 </div>
-<div id="main-body" class="">
+<div id="main-body" class="ask-body">
     <div id="askform">
         <form id="fmask" action="{% url forum.views.ask %}" method="post" >
-            <div class="form-item">
+            <p class="form-item">
                 <label for="id_title" ><strong>{{ form.title.label_tag }}:</strong></label> <span class="form-error"></span><br>
                 {{ form.title }} {{ form.title.errors }}
                 <div class="title-desc">
                     {{ form.title.help_text }}
                 </div>
-            </div>
+            </p>
 
-            <div class="form-item">
+            <p class="form-item">
                 <div id="wmd-button-bar" class="wmd-panel"></div>
                 {{ form.text }}
 
@@ -90,14 +87,14 @@
                 <div id="previewer" class="wmd-preview"></div>
                 <span class="form-error"></span>
                 <br>
-            </div>
-            <div class="form-item">
+            </p>
+            <p class="form-item">
                 <strong>{{ form.tags.label_tag }}:</strong> <span class="form-error"></span><br>
                 {{ form.tags }}  {{ form.tags.errors }}
                 <div class="title-desc">
                     {{ form.tags.help_text }}
                 </div>
-            </div>
+            </p>
             <br>
             {% if not request.user.is_authenticated %}
             <table id="login-box">
@@ -125,14 +122,15 @@
             </table>
             {% endif %}
             <input type="submit" value="现在提问" class="submit" />
+            <br><br>
         </form>
     </div>
 </div>
 {% endblock %}
 
 {% block sidebar %}
-<div class="yellow-box">
-    <h3 class="darkred">受欢迎的提问</h3>
+<div class="boxC">
+    <p class="subtitle darkred">受欢迎的提问</p>
     <div>
         <ul class="list-item">
             <li>
@@ -153,8 +151,8 @@
     </div>
 </div>
 
-<div class="gray-box">
-    <h3>Markdown快速参考</h3>
+<div class="boxC">
+    <p class="subtitle">Markdown快速参考</p>
     <ul class="list-item">
         <li>
             *斜体* 或者 _斜体_

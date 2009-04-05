@@ -9,6 +9,7 @@
         <script type="text/javascript">
         
         $().ready(function(){
+            $("#nav_questions").attr('className',"on");
             $('div.revision div[id^=rev-header-]').bind('click', function(){
                 var revId = this.id.substr(11);
                 toggleRev(revId); 
@@ -29,11 +30,8 @@
 {% endblock %}
         
 {% block content %}
-<div id="main-bar" class="">
-    <h3>
-        版本历史 [<a href="{{ post.get_absolute_url }}">返回</a>]
-    </h3>
-    
+<div id="main-bar" class="headNormal">
+    版本历史 [<a href="{{ post.get_absolute_url }}">返回</a>]
 </div>
 <div id="main-body" class="">
     <div id="revisions">

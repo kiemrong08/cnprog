@@ -10,6 +10,7 @@
         <script type="text/javascript">
         
         $().ready(function(){
+            $("#nav_questions").attr('className',"on");
             $('#editor').TextAreaResizer();
             
             //highlight code synctax when editor has new text
@@ -40,13 +41,10 @@
 {% endblock %}
         
 {% block content %}
-<div id="main-bar" class="">
-    <h3>
-        修改回答 [<a href="{{ answer.question.get_absolute_url }}#{{ answer.id }}">返回</a>]
-    </h3>
-    
+<div id="main-bar" class="headNormal">
+    修改回答 [<a href="{{ answer.question.get_absolute_url }}#{{ answer.id }}">返回</a>]
 </div>
-<div id="main-body" class="">
+<div id="main-body" class="ask-body">
     <div id="askform">
         <form id="fmedit" action="{% url edit_answer answer.id %}" method="post" >
             <label for="id_revision" ><strong>版本:</strong></label> <br> 
@@ -70,14 +68,17 @@
             </div>
             <br>
             <input type="submit" value="现在修改" class="submit" />
+            <input type="button" value="取消" class="submit" onclick="history.back(-1);" />
+            <br>
+            <br>
         </form>
     </div>
 </div>
 {% endblock %}
 
 {% block sidebar %}
-<div class="yellow-box">
-    <h3 class="darkred">受欢迎的提问</h3>
+<div class="boxC">
+    <p class="subtitle darkred">受欢迎的提问</p>
     <div>
         <ul class="list-item">
             <li>
@@ -98,8 +99,8 @@
     </div>
 </div>
 
-<div class="gray-box">
-    <h3>Markdown快速参考</h3>
+<div class="boxC">
+    <p class="subtitle">Markdown快速参考</p>
     <ul class="list-item">
         <li>
             *斜体* 或者 _斜体_  

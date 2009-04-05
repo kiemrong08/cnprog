@@ -7,6 +7,7 @@
         <script type="text/javascript">
         
         $().ready(function(){
+            $("#nav_questions").attr('className',"on");
             //Tags autocomplete action
             var tags = {{ tags|safe }};
         	$("#id_tags").autocomplete(tags, {
@@ -46,13 +47,10 @@
 {% endblock %}
         
 {% block content %}
-<div id="main-bar" class="">
-    <h3>
-        修改标签 [<a href="{{ question.get_absolute_url }}">返回</a>]
-    </h3>
-    
+<div id="main-bar" class="headNormal">
+    修改标签 [<a href="{{ question.get_absolute_url }}">返回</a>]
 </div>
-<div id="main-body" class="">
+<div id="main-body" class="ask-body">
     <div id="askform">
         <form id="fmretag" action="{% url edit_question question.id %}" method="post" >
             <h3>
@@ -74,14 +72,17 @@
             
             <div class="error" ></div>
             <input type="submit" value="现在修改" class="submit" />
+            <input type="button" value="取消" class="submit" onclick="history.back(-1);" />
+            <br>
+            <br>
         </form>
     </div>
 </div>
 {% endblock %}
 
 {% block sidebar %}
-<div class="gray-box">
-    <h3>为什么我只能修改问题标签？</h3>
+<div class="boxC">
+    <p class="subtitle">为什么我只能修改问题标签？</p>
     <ul class="list-item">
         
         <li>

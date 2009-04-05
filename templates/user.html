@@ -11,8 +11,12 @@
 {% block forejs %}
         <script type="text/javascript">
             $().ready(function(){
-                $("#nav_users").attr('className',"youarehere");
-
+                {% ifequal view_user request.user%}
+                    $("#nav_profile").attr('className',"on");
+                {% else %}
+                    $("#nav_users").attr('className',"on");
+               
+                {% endifequal %}
             });     
         </script>
         {% block userjs %}
@@ -21,7 +25,6 @@
 
 {% block content %}
     <div id="mainbar-full">
-        <div style="margin-top: 20px;"></div>
         {% include "user_info.html" %}
         {% include "user_tabs.html" %}
         {% block usercontent %}

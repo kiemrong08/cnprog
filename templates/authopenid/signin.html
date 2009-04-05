@@ -11,29 +11,28 @@
 	</script>
 {% endblock %}
 {% block content %}
-<div id="main-bar" class="">
-    <h3>
-        用户登录
-    </h3>
+<div class="headNormal">
+    用户登录
 </div>
 <div class="login">
     <form name="openid_form" action="{% url user_signin %}" method="post">
         {{ form2.next }}
-        <div class="paragraph" style="display:none">CNProg支持<b>两种</b>登录模式。您可以使用帐号、密码登录，或者使用OpenID登录。</div>
+        <p style="display:none">CNProg支持<b>两种</b>登录模式。您可以使用帐号、密码登录，或者使用OpenID登录。</p>
         {% if msg %}
-            <div class="paragraph warning">{{ msg }}</div>
+            <p class="warning">{{ msg }}</p>
         {% endif %}
         <fieldset class="fieldset">
-    		<legend class="big">使用OpenID登录</legend>
+    		<legend ><strong>使用OpenID登录</strong></legend>
             <div id="openid_choice">
-                <div style="padding:10px 0 10px 0">请选择您的帐号类型并完成正确的OpenID地址（如：替换“{username}”为您的对应帐号）：</div>
-                <div id="openid_btns"></div>
+                <p>请选择您的帐号类型并完成正确的OpenID地址（如：替换“{username}”为您的对应帐号）：</p>
+                <div id="openid_btns">
+                </div>
             </div>
             <br>
-            
-        	<div style="margin:30px 0 10px 0">
+            <br><br>
+        	<p>
                 {{ form2.openid_url }} <input id="bsignin" name="bsignin" type="submit" value="登录" class="openid-login-submit" />
-        	</div>
+        	</p>
         </fieldset>	
     </form>
     <div style="display:none">
@@ -67,8 +66,9 @@
 {% endblock %}
 
 {% block sidebar %}
-<div class="yellow-box">
-    <h3>为什么需要OpenID登录？</h3>
+<div class="boxC">
+    <h3 class="subtitle">为什么需要OpenID登录？</h3>
+    <p>
     <ul class="list-item">
         <li>
         构建在OpenID网络认证上的本系统，不需要你注册新的帐号，即可使用我们系统的所有功能
@@ -89,6 +89,7 @@
     </ul>
     <a href="http://openid.net/what/" target="_blank" style="float:right;position:relative">查看更多 »</a><br>
     <a href="http://openid.net/get/" target="_blank" style="float:right;position:relative">获取OpenID »</a>
+    </p>
     <br>  
 </div>
 {% endblock%}

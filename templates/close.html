@@ -10,20 +10,21 @@
         </script>
 {% endblock %}
 {% block content %}
-<div id="main-bar" class="">
-    <h3>
-        关闭问题
-    </h3>
+<div id="main-bar" class="headNormal">
+    关闭问题
 </div>
 <div id="main-body" style="width:100%;margin-bottom:10px">
-    <div class="paragraph">由于以下原因，你要关闭这个问题： <a href="{{ question.get_absolute_url }}"><span class="big">{{ question.get_question_title }}</span></a></div>   
+    <p>由于以下原因，你要关闭这个问题： <a href="{{ question.get_absolute_url }}">
+    <strong>{{ question.get_question_title }}</strong></a>
+    </p>   
     
     <form id="fmclose" action="{% url close question.id %}" method="post" >
-        <span class="big">原因：</span> {{ form.reason }}
-        
+        <p>
+            <strong>原因：</strong> {{ form.reason }}
+        </p>
         <div id="" style="padding-top:20px">
             <input type="submit" value="确定关闭" class="submit" />
-            <input id="btBack" type="button" value="取消"  />
+            <input id="btBack" type="button" class="submit" value="取消"  />
             
         </div>
         

@@ -5,50 +5,34 @@
         {% if question.favourite_count %}
             {% if question.favorited_myself %}
                 <div class="favorites-count">
-                    <img width="32" height="31" title="这个问题被 {{question.favourite_count}} 位用户收藏" alt="star" src="/content/images/vote-favorite-on.png"/><br/><b>{{question.favourite_count|intcomma}}</b>
+                    <img title="这个问题被 {{question.favourite_count}} 位用户收藏" src="/content/images/vote-favorite-on.png">
+                    <div><b>{{question.favourite_count|intcomma}}</b></div>
                 </div>
             {% else %}
                 <div class="favorites-count-off">
-                    <img width="32" height="31" title="这个问题被 {{question.favourite_count}} 位用户收藏" alt="star" src="/content/images/vote-favorite-off.png"/><br/><b>{{question.favourite_count|intcomma}}</b>
+                    <img title="这个问题被 {{question.favourite_count}} 位用户收藏" src="/content/images/vote-favorite-off.png">
+                    <div><b>{{question.favourite_count|intcomma}}</b></div>
                 </div>
             {% endif %}
         {% else %}
-            <div style="width: 32px; height: 45px; float: left;"> </div>
+            <div class="favorites-empty"> </div>
         {% endif %}
     <div id="question-summary-{{question.id}}" class="question-summary narrow">
         <a style="text-decoration: none;" href="/questions/{{question.id}}/{{question.get_question_title}}">
             <div class="stats">
                 <div class="votes">
-                    <div class="votebox">
-                        <table width="100%">
-                            <tr>
-                                <td height="25" style="vertical-align: middle;">
-                                    <span class="vote-count-post"><strong style="font-size: 190%;color:#555">{{question.vote_count|intcomma}}</strong></span> 
-                                </td>
-                            </tr>
-                            <tr><td class="box-unit" style="color:#555">票</td></tr>
-                        </table>               
-                    </div>
+                    <div class="vote-count-post">{{question.vote_count|intcomma}}</div> 
+                    票
+                  
                 </div>
                 <div title="{% if question.answer_accepted %}有答案已被接受为正确答案{% endif %}" class="status {% if question.answer_accepted %}answered-accepted{% endif %} {% ifequal question.answer_count 0 %}unanswered{% endifequal %}{% ifnotequal question.answer_count 0 %}answered{% endifnotequal %}">
-                    <table width="100%">
-                        <tr>
-                            <td height="25" style="vertical-align: middle;">
-                                <strong style="font-size: 190%;">{{question.answer_count|intcomma}}</strong>
-                            </td>
-                        </tr>
-                        <tr><td class="box-unit">回答</td></tr>
-                    </table>               
+                    <div class="answer-count-post">{{question.answer_count|intcomma}}</div>
+                    回答
+             
                 </div>
                 <div class="views">
-                    <table width="100%">
-                        <tr>
-                            <td height="25" style="vertical-align: middle;">
-                                <strong style="font-size: 190%;">{{question.view_count|intcomma}}</strong>
-                            </td>
-                        </tr>
-                        <tr><td class="box-unit">浏览</td></tr>
-                    </table>
+                     <div class="views-count-post">{{question.view_count|intcomma}}</div>
+                     浏览
                 </div>
             </div>
         </a>
@@ -59,7 +43,7 @@
             <div class="tags">
                 {% convert2tagname_list question %}
                 {% for tag in question.tagnames %}
-                    <a href="{% url forum.views.tag tag|urlencode %}" class="post-tag" title="查看有关'{{ tag }}'的问题" rel="tag">{{ tag }}</a>
+                    <a href="{% url forum.views.tag tag|urlencode %}" title="查看有关'{{ tag }}'的问题" rel="tag">{{ tag }}</a>
                 {% endfor %}
             </div>
             <div class="started">

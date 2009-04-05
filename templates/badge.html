@@ -5,30 +5,28 @@
 {% block forejs %}
        <script type="text/javascript">
         $().ready(function(){
-            $("#nav_badges").attr('className',"youarehere");
+            $("#nav_badges").attr('className',"on");
         });
          
         </script>
 {% endblock %}
 {% block content %}
-<div id="main-bar" class="">
-    <h3>
-        奖牌
-    </h3>
+<div id="main-bar" class="headNormal">
+    奖牌
 </div>
 <div id="main-body" style="width:100%;margin-bottom:20px">
-    <div style="" class="paragraph">
-        <a href="{{badge.get_absolute_url}}" title="{{ badge.get_type_display }} : {{ badge.description }}" class="badge"><span class="badge{{ badge.type }}">&#9679;</span>&nbsp;{{ badge.name }}</a> {{ badge.description }}
-    </div>
+    <p>
+        <a href="{{badge.get_absolute_url}}" title="{{ badge.get_type_display }} : {{ badge.description }}" class="medal"><span class="badge{{ badge.type }}">&#9679;</span>&nbsp;{{ badge.name }}</a> {{ badge.description }}
+    </p>
     <div>
         {% if badge.awarded_count %}
-        <div style="float:left"><span class="summarycount">{{ awards|length|intcomma }}</span></div>
-        <div style="float:left;padding:12px 0px 0px 5px"><h2>用户已被授予该奖牌。最近被授予的用户有：</h2></div>
+        <p style="float:left"><span class="count">{{ awards|length|intcomma }}</span>
+        <strong>用户已被授予该奖牌：</strong></p>
         {% endif %}
     </div>
     <div id="award-list" style="clear:both;margin-left:20px;line-height:25px;">
         {% for award in awards %}
-        <div style="width:185px;float:left"><a href="/users/{{ award.id }}/{{ award.name }}">{{ award.name }}</a> {% get_score_badge_by_details award.rep award.gold award.silver award.bronze %}</div>
+        <p style="width:185px;float:left"><a href="/users/{{ award.id }}/{{ award.name }}">{{ award.name }}</a> {% get_score_badge_by_details award.rep award.gold award.silver award.bronze %}</p>
         {% endfor %}
     </div>
 
