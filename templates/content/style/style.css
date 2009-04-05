@@ -50,7 +50,7 @@ a:hover {text-decoration:underline;}
 #navBar .nav a:hover {text-decoration:underline}
 #navBar .nav a.on {height:24px;line-height:28px;border-left:1px solid #515656;border-top:1px solid #515656;border-right:1px solid #515656; border-bottom:1px solid #515656; background:#515656; color:#FFF; font-weight:600; text-decoration:none}
 #navBar .nav a.special {font-size:15px; color:#FFF; font-weight:bold; text-decoration:none;background-color:Darkred }
-#navBar .nav a.special:hover {text-decoration:none; background-color:#515656}
+#navBar .nav a.special:hover {text-decoration:none; background-color:#EEE;color:#777}
 #navBar .nav div.focus {float:right; padding-right:0px;}
 /*搜索栏*/
 #searchBar {background-color:#515656;padding:5px;}
@@ -233,6 +233,12 @@ a:hover.medal  {color:#333; text-decoration:none; background:url(/content/images
     text-align:center;
 }
 .question-status h3{font-size:125%;}
+.question-body{
+    min-height:100px;
+}
+.question-body IMG{
+    max-width:600px;
+}
 .question-mark{
     background-color:#E9E9FF;
     text-align:left;
@@ -700,7 +706,7 @@ background-color: #97ff97;
     -moz-border-radius: 5px;
     -khtml-border-radius: 5px;
     -webkit-border-radius: 5px;
-    color:#333;
+    color:#777;
 }
 
 .narrow .status {
@@ -841,6 +847,10 @@ div.started .reputation-score {
 }
 
 /*其他全局样式*/
+.hilite { background-color: #ff0; }
+.hilite1 { background-color: #ff0; }
+.hilite2 { background-color: #f0f; }
+.hilite3 { background-color: #0ff; }
 .userStatus {margin-left:12px; color:#FFF; float:right;}
 .userStatus a {color:#FFF;}
 .gold, .badge1 {color:#FFCC00;}

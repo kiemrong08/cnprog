@@ -650,17 +650,14 @@ def tags(request):
         page = 1
 
     if request.method == "GET":
-        if sortby == "name":
-            objects_list = Paginator(Tag.objects.all().order_by("name"), DEFAULT_PAGE_SIZE)
-        else:
-            objects_list = Paginator(Tag.objects.all().order_by("-used_count"), DEFAULT_PAGE_SIZE)
-
-    elif request.method == "POST":
-        stag = request.POST.get("ipSearchTag").strip()
-        #disable paginator for search results
-        is_paginated = False
+        stag = request.GET.get("name", "").strip()
         if stag is not None:
-            objects_list = Paginator(Tag.objects.extra(where=['name like %s'], params=['%' + stag + '%'])[:50] , DEFAULT_PAGE_SIZE)
+            objects_list = Paginator(Tag.objects.extra(where=['name like %s'], params=['%' + stag + '%']), DEFAULT_PAGE_SIZE)
+        else:
+            if sortby == "name":
+                objects_list = Paginator(Tag.objects.all().order_by("name"), DEFAULT_PAGE_SIZE)
+            else:
+                objects_list = Paginator(Tag.objects.all().order_by("-used_count"), DEFAULT_PAGE_SIZE)
 
     try:
         tags = objects_list.page(page)
@@ -671,6 +668,7 @@ def tags(request):
         "tags" : tags,
         "stag" : stag,
         "tab_id" : sortby,
+        "keywords" : stag,
         "context" : {
             'is_paginated' : is_paginated,
             'pages': objects_list.num_pages,
@@ -920,6 +918,7 @@ def users(request):
     return render_to_response('users.html', {
         "users" : users,
         "suser" : suser,
+        "keywords" : suser,
         "tab_id" : sortby,
         "context" : {
             'is_paginated' : is_paginated,
@@ -1768,3 +1767,99 @@ def upload(request):
 def book(request, short_name):
     """docstring for book"""
     pass
+   
+def search(request):
+    """
+    Search by question, user and tag keywords.
+    For questions now we only search keywords in question title.
+    """
+    if request.method == "GET":
+        keywords = request.GET.get("q")
+        search_type = request.GET.get("t")
+        try:
+            page = int(request.GET.get('page', '1'))
+        except ValueError:
+            page = 1
+        if keywords is None:
+            return HttpResponseRedirect('/')
+        if search_type == 'tag':
+            return HttpResponseRedirect('/tags/?name=%s&page=%s' % (keywords.strip(), page))
+        elif search_type == "user":
+            return HttpResponseRedirect('/users/?name=%s&page=%s' % (keywords.strip(), page))
+        elif search_type == "question":
+            
+            template_file = "questions.html"
+            # Set flag to False by default. If it is equal to True, then need to be saved.
+            pagesize_changed = False
+            # get pagesize from session, if failed then get default value
+            user_page_size = request.session.get("pagesize", QUESTIONS_PAGE_SIZE)
+            # set pagesize equal to logon user specified value in database
+            if request.user.is_authenticated() and request.user.questions_per_page > 0:
+                user_page_size = request.user.questions_per_page
+
+            try:
+                page = int(request.GET.get('page', '1'))
+                # get new pagesize from UI selection
+                pagesize = int(request.GET.get('pagesize', user_page_size))
+                if pagesize <> user_page_size:
+                    pagesize_changed = True
+
+            except ValueError:
+                page = 1
+                pagesize  = user_page_size
+
+            # save this pagesize to user database
+            if pagesize_changed:
+                request.session["pagesize"] = pagesize
+                if request.user.is_authenticated():
+                    user = request.user
+                    user.questions_per_page = pagesize
+                    user.save()
+
+            view_id = request.GET.get('sort', None)
+            view_dic = {"latest":"-added_at", "active":"-last_activity_at", "hottest":"-answer_count", "mostvoted":"-score" }
+            try:
+                orderby = view_dic[view_id]
+            except KeyError:
+                view_id = "latest"
+                orderby = "-added_at"
+                
+            objects = Question.objects.filter(deleted=False).extra(where=['title like %s'], params=['%' + keywords + '%']).order_by(orderby)
+
+            # RISK - inner join queries
+            objects = objects.select_related();
+            objects_list = Paginator(objects, pagesize)
+            questions = objects_list.page(page)
+
+            # Get related tags from this page objects
+            related_tags = []
+            for question in questions.object_list:
+                tags = list(question.tags.all())
+                for tag in tags:
+                    if tag not in related_tags:
+                        related_tags.append(tag)
+
+            return render_to_response(template_file, {
+                "questions" : questions,
+                "tab_id" : view_id,
+                "questions_count" : objects_list.count,
+                "tags" : related_tags,
+                "searchtag" : None,
+                "searchtitle" : keywords,
+                "keywords" : keywords,
+                "is_unanswered" : False,
+                "context" : {
+                    'is_paginated' : True,
+                    'pages': objects_list.num_pages,
+                    'page': page,
+                    'has_previous': questions.has_previous(),
+                    'has_next': questions.has_next(),
+                    'previous': questions.previous_page_number(),
+                    'next': questions.next_page_number(),
+                    'base_url' : request.path + '?t=question&q=%s&sort=%s&' % (keywords, view_id),
+                    'pagesize' : pagesize
+                }}, context_instance=RequestContext(request))
+ 
+    else:
+        raise Http404
+        

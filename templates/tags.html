@@ -12,6 +12,8 @@
             if(orderby != "used" && orderby != "name")
                 orderby = "used";
             $("#sort_" + orderby).attr('className',"on");
+            $("#type-tag").attr('checked',true);
+
         });
 
         </script>
@@ -21,18 +23,19 @@
 <div class="tabBar">
     <div class="headQuestions">标签列表</div>
     <div class="tabsA">
-        <a id="sort_name" href="?sort=name" class="off" title="按名称的字母先后顺序排序">按名称排序</a>
-        <a id="sort_used" href="?sort=used" class="off" title="按标签被使用的次数排序">按流行程度排序</a>
+        <a id="sort_name" href="/tags/?sort=name" class="off" title="按名称的字母先后顺序排序">按名称排序</a>
+        <a id="sort_used" href="/tags/?sort=used" class="off" title="按标签被使用的次数排序">按流行程度排序</a>
     </div>
 </div>
-<div>
+<div id="searchtags">
+<p>
 {% if stag %}
     匹配查询 '<span class="darkred"><strong>{{ stag }}</strong></span>' 的所有标签：
 {% endif %}
 {% if not tags.object_list %}
     <span >没有找到相关数据。</span>
 {% endif %}
-
+</p>
 <ul class="tagsList tags">
 {% for tag in tags.object_list %}
    <li>
@@ -46,7 +49,10 @@
 {% endfor %}
 </ul>
 </div>
+
+{% endblock %}
+{% block tail %}
 <div class="pager">
     {% cnprog_paginator context %}
-</div>
+</div>              
 {% endblock %}

@@ -46,15 +46,17 @@
 			<table width="100%" height="60" border="0" cellpadding="0" cellspacing="0" class="content">
             <tr>
                 <td align="center" valign="middle">
-                    <div>
-                        <input type="text" class="searchInput" value="" >
-                        <input type="submit" name="Submit" value="搜索" class="searchBtn" >
-                    </div>
-                    <div class="options">
-                        <input type="radio" class="" value="" name="type" checked >问题 
-                        <input type="radio" class="" value="" name="type" >标签 
-                        <input type="radio" class="" value="" name="type" >用户
-                    </div>
+                    <form action="/search/" method="GET">
+                        <div>
+                            <input type="text" class="searchInput" value="{{ keywords }}" name="q" id="keywords" >
+                            <input type="submit" name="Submit" value="搜索" class="searchBtn" >
+                        </div>
+                        <div class="options">
+                            <input id="type-question" type="radio" class="" value="question" name="t" checked >问题 
+                            <input id="type-tag" type="radio" class="" value="tag" name="t" >标签 
+                            <input id="type-user" type="radio" class="" value="user" name="t" >用户
+                        </div>
+                    </form>
                 </td>
             </tr>
 			</table>

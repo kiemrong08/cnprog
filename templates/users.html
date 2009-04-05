@@ -6,8 +6,7 @@
        <script type="text/javascript">
         $().ready(function(){
             $("#nav_users").attr('className',"on");
-            $("#ipSearchUser").focus();
-            
+            $("#type-user").attr('checked',true);
             var orderby = "{{ tab_id }}";
             $("#sort_" + orderby).attr('className',"on");
         });
@@ -25,7 +24,15 @@
     </div>
 </div>
 <div id="main-body" style="width:100%">
+    <p>        
+        {% if suser %}
+            匹配查询 '<span class="darkred"><strong>{{ suser }}</strong></span>' 的所有用户名： 
+        {% endif %}
     
+        {% if not users.object_list %}
+            <span >没有找到相关数据。</span>
+        {% endif %}
+    </p>
     <div class="userList">
         <table class="list-table">
             <tr>    
@@ -50,21 +57,10 @@
             </tr>   
         </table>
     </div>
-    <div class="subSearch">        
-        {% if suser %}
-            匹配查询 '<span class="darkred"><strong>{{ suser }}</strong></span>' 的所有用户名： 
-        {% endif %}
-    </div>
-    {% if not users.object_list %}
-        <span >没有找到相关数据。</span>
-    {% endif %}
-    <div class="paginator-container">
-        {% cnprog_paginator context %}
-    </div>
-    
-    
 </div>
 {% endblock %}
-
-
-
+{% block tail %}
+<div class="pager">
+    {% cnprog_paginator context %}
+</div>              
+{% endblock %}
