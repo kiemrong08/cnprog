@@ -12,7 +12,23 @@
         <script type='text/javascript' src='/content/js/com.cnprog.utils.js'></script>
         <script src="http://www.google.com/jsapi"></script>
        <script>google.load("jquery", "1.2.6");</script>
-         
+        <script type="text/javascript">
+        var uservoiceJsHost = ("https:" == document.location.protocol) ? "https://uservoice.com" : "http://cdn.uservoice.com";
+        document.write(unescape("%3Cscript src='" + uservoiceJsHost + "/javascripts/widgets/tab.js' type='text/javascript'%3E%3C/script%3E"))
+        </script>
+        <script type="text/javascript">
+        UserVoice.Tab.show({ 
+            key: 'cnprog',
+            host: 'cnprog.uservoice.com', 
+            forum: 'general', 
+            alignment: 'left', /* 'left', 'right' */
+            background_color:'#777', 
+            text_color: 'white', /* 'white', 'black' */
+            hover_color: '#06C',
+            lang: 'en' /* 'en', 'de', 'nl', 'es', 'fr' */
+        })
+        </script>
+
         {% with request.user.get_messages as messages%}
         {% if messages %}
         <style type="text/css">

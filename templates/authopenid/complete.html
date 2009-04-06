@@ -2,14 +2,14 @@
 {% block head %}{% endblock %}
 {% block title %}{% spaceless %}绑定OpenID{% endspaceless %}{% endblock %}
 {% block content %}
-    <div id="main-bar" class="">
-        <h3>绑定OpenID帐号</h3>
+    <div id="main-bar" class="headNormal">
+        绑定OpenID帐号
 
     </div>      
-	<div id="completetxt" class="paragraph">
+	<p id="completetxt" >
     	<h3>您的OpenID帐号已经验证通过! 请完成最后一步 - 绑定OpenID到您的帐号。</h3>
     	<p style="display:none">输入您的新帐号或者指定已经存在的帐号。</p>
-	</div>
+	</p>
 
 	{% if form1.errors %}
 	<p class="errors">

@@ -30,7 +30,9 @@ a:hover {text-decoration:underline;}
 .u{text-decoration:underline;}
 .spacer1{height:6px; line-height:6px; clear:both; visibility:hidden;}
 .spacer3{height:30px; line-height:30px; clear:both; visibility:hidden;}
-
+h1{font-size:160%;}
+h2{font-size:140%;}
+h3{font-size:120%;}
 /*页面布局*/
 #wrapper {width:960px;margin:auto;padding:0;}
 #roof {margin-top:0px;background:#FFF;}
@@ -65,8 +67,8 @@ a:hover {text-decoration:underline;}
 #listA {float:left; background-color:#FFF;padding:0 0px 0 0px; width:100%;}
 #listA .qstA {padding:3px 5px 0 5px; margin:0 0px 10px 0px; background:url(/content/images/quest-bg.gif) repeat-x top;}
 #listA .qstA thumb {float:left; }
-#listA .qstA H2 {font-size:15px; color:#0077CC; font-weight:800; margin:8px auto;}
-#listA .qstA H2 a {color:#663333;}
+#listA .qstA H2 {font-size:15px; font-weight:800; margin:8px auto;}
+#listA .qstA H2 a {color:#663333; }
 #listA .qstA .stat {font-size:13px;letter-spacing:1px;float:right;}
 #listA .qstA .stat span {margin-right:5px;}
 #listA .qstA .stat td {min-width:40px;text-align:center;}
@@ -693,7 +695,11 @@ background-color: #97ff97;
 }
 
 .narrow .summary {
-    width:100%;
+    width:620px;
+}
+
+.narrow .summary h3 {
+    
 }
 
 .narrow .views {
