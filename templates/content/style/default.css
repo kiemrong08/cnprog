@@ -603,11 +603,6 @@ h4 {display:block;font-size:90%; font-family:Verdana;color:#ccc;}
 
 }
 
-.summary{
-    float:left;
-    width:500px;
-}
-
 .vote{
     background-color:#eee;
 }
@@ -1436,10 +1431,6 @@ table.user-details td {
     width:38px;
 }
 
-.narrow .summary {
-    width:495px;
-}
-
 .narrow .views {
     float:left;
     height:38px;
@@ -1496,6 +1487,11 @@ div.votebox span {
 .user-stats-table .summary {
     width:600px;
     line-height:22px;
+}
+
+.user-stats-table .summary h3{
+    margin:0px;
+    padding:0px;
 }
 
 div.tags {

@@ -66,3 +66,7 @@ def can_view_user_votes(request_user, target_user):
 @register.filter
 def can_view_user_preferences(request_user, target_user):
     return auth.can_view_user_preferences(request_user, target_user)
+    
+@register.filter
+def is_user_self(request_user, target_user):
+    return auth.is_user_self(request_user, target_user)

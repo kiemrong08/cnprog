@@ -5,7 +5,7 @@
 body{background:#EEE; font-size:12px; line-height:150%; margin:0; padding:0; color:#000; font-family: "segoe ui",Helvetica,微软雅黑,宋体,Tahoma,Verdana,MingLiu,PMingLiu,Arial,sans-serif; 
 }
 div{margin:0 auto; padding:0;}
-h1,h2,h3,h4,h5,h6,ul,li,dl,dt,dd,form,img,p{margin:0; padding:0; border:none; list-style-type:none;}
+h1,h2,h3,h4,h5,h6,ul,li,dl,dt,dd,form,img,p{margin:0; padding:0; border:none; }
 input, select {font-family:Trebuchet MS,"segoe ui",Helvetica,"Microsoft YaHei",宋体,Tahoma,Verdana,MingLiu,PMingLiu,Arial,sans-serif;}
 p{margin-bottom:4px; font-size:13px; line-height:160%;}
 a {color:#663333; text-decoration:none;}
@@ -30,9 +30,50 @@ a:hover {text-decoration:underline;}
 .u{text-decoration:underline;}
 .spacer1{height:6px; line-height:6px; clear:both; visibility:hidden;}
 .spacer3{height:30px; line-height:30px; clear:both; visibility:hidden;}
-h1{font-size:160%;}
-h2{font-size:140%;}
-h3{font-size:120%;}
+h1{font-size:160%;padding:5px 0 5px 0;}
+h2{font-size:140%;padding:3px 0 3px 0;}
+h3{font-size:120%;padding:3px 0 3px 0;}
+ul
+{
+	list-style: disc;
+	margin-left: 20px;
+    padding-left:0px;
+	margin-bottom: 1em;
+}
+ol
+{
+	list-style: decimal;
+	margin-left: 30px;
+	margin-bottom: 1em;
+    padding-left:0px;
+}
+pre
+{
+	font-family: Consolas, Monaco, Liberation Mono, Lucida Console, Monospace;
+    font-size:100%;
+	margin-bottom: 10px;
+	overflow: auto;
+	width: 580px;
+	background-color: #F5F5F5;
+    padding-left:5px;
+    padding-top:5px;
+	padding-bottom: 20px !ie7;
+}
+
+code{
+    font-family: Consolas, Monaco, Liberation Mono, Lucida Console, Monospace;
+    font-size:100%;
+
+}
+
+blockquote
+{
+	margin-bottom: 10px;
+	margin-right: 15px;
+	padding: 10px 0px 1px 10px;
+	background-color: #F5F5F5;
+}
+
 /*页面布局*/
 #wrapper {width:960px;margin:auto;padding:0;}
 #roof {margin-top:0px;background:#FFF;}
@@ -40,7 +81,7 @@ h3{font-size:120%;}
 #CALeft{width:700px; float:left; position:relative;padding-left:5px}
 #CARight{width:240px; float:right; padding-right:5px}
 #CAFull{float:left;padding:0 5px 0 5px;width:950px;}
-#ground {clear:both;border-top:6px solid #000; padding-top:6px; padding-bottom:50px; text-align:center; padding-bottom:100px; background:#777;}
+#ground {clear:both;border-top:6px solid #000; padding-top:6px; padding-bottom:50px; text-align:center;background:#777;}
 #header{background:url(/content/images/header.png); height:107px;}
 /*顶部及导航栏*/
 #top {height:20px; text-align:right; padding:3px;width:960px;}
@@ -237,6 +278,8 @@ a:hover.medal  {color:#333; text-decoration:none; background:url(/content/images
 .question-status h3{font-size:125%;}
 .question-body{
     min-height:100px;
+    font-size:13px;
+    line-height:20px;
 }
 .question-body IMG{
     max-width:600px;
@@ -401,6 +444,8 @@ a.comment-user:hover {
 }
 .answer-body{
     min-height:80px;
+    font-size:13px;
+    line-height:20px;
 }
 
 .answer-body IMG{
@@ -667,6 +712,10 @@ background-color: #97ff97;
     width:670px;
 }
 
+.user-info-table{
+width:950;margin-bottom:10px;
+}
+
 .user-stats-table .question-summary {
     width:800px;
 }
@@ -699,7 +748,8 @@ background-color: #97ff97;
 }
 
 .narrow .summary h3 {
-    
+    padding:0px;
+    margin:0px;
 }
 
 .narrow .views {
