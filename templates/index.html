@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load extra_tags %}
 {% load humanize %}
+{% load extra_filters %}
 {% block title %}{% spaceless %}首页{% endspaceless %}{% endblock %}
 {% block meta %}<meta name="keywords" content="技术问答社区，中国程序员，编程技术社区，程序员社区，程序员论坛，程序员wiki，程序员博客" />
         <meta name="description" content="中国程序员的编程技术问答社区。我们做专业的、可协作编辑的技术问答社区。" />{% endblock %}
@@ -38,7 +39,7 @@
 	            <tr>
                     <td><span class="num">{{ question.answer_count|intcomma }}</span> </td>
                     <td><span class="num">{{ question.score|intcomma }}</span> </td>
-                    <td><span class="num">{{ question.view_count|intcomma }}</span> </td>
+                    <td><span class="num">{{ question.view_count|cnprog_intword|safe }}</span> </td>
 	            </tr>  
                 <tr>
                     <td><span class="unit">回答</span></td>
@@ -97,7 +98,7 @@
 <div class="boxB">
     <h3>最新奖牌</h3>
         <div class="body">
-             <ul>
+             <ul class="badge-list">
              {% for award in awards %}
                 <li>
                 <a href="/badges/{{award.badge_id}}/{{award.badge_name}}" title="{{ award.badge_description }}" class="medal">

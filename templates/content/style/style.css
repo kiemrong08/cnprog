@@ -108,7 +108,7 @@ blockquote
 #listA {float:left; background-color:#FFF;padding:0 0px 0 0px; width:100%;}
 #listA .qstA {padding:3px 5px 0 5px; margin:0 0px 10px 0px; background:url(/content/images/quest-bg.gif) repeat-x top;}
 #listA .qstA thumb {float:left; }
-#listA .qstA H2 {font-size:15px; font-weight:800; margin:8px auto;}
+#listA .qstA H2 {font-size:15px; font-weight:800; margin:8px auto;padding:0px;}
 #listA .qstA H2 a {color:#663333; }
 #listA .qstA .stat {font-size:13px;letter-spacing:1px;float:right;}
 #listA .qstA .stat span {margin-right:5px;}
@@ -509,8 +509,9 @@ a.comment-user:hover {
 .tagsbox {}
 .tagsbox a {color:#000;line-height:30px;margin-right:10px;font-size:100%;background-color:#EEE;padding:3px;}
 .tagsbox a:hover {text-decoration:none;background-color:#CCC;}
+.tagsList {margin:0; list-style-type:none;padding:0px;min-height:360px;}
 .tagsList li {width:235px; float:left;}
-
+.badge-list{margin:0; list-style-type:none;}
 /*登录*/
 .list-item{margin-left:15px;}
 .list-item LI{list-style-type:disc; font-size:13px; line-height:20px; margin-bottom:10px;}
@@ -920,7 +921,8 @@ a.comment {background:#EEE; color:#993300; padding:4px;}
 a.permLink {padding:2px;}
 a.offensive {color:#999;}
 ul.bulleta li {background:url(/content/images/bullet_green.gif) no-repeat 0px 2px; padding-left:16px; margin-bottom:4px;}
-.user {padding:5px; line-height:140%; width:160px;}
+.user {padding:5px; line-height:140%; width:170px;}
+.user ul {margin:0; list-style-type:none;}
 .user .thumb{clear:both;float:left; margin-right:4px; display:inline;}
 .yellowbg{background:yellow;}
 .subtitle{line-height:30px;font-size:15px; font-weight:700;}
@@ -930,6 +932,7 @@ ul.bulleta li {background:url(/content/images/bullet_green.gif) no-repeat 0px 2p
 .submit{cursor:pointer;letter-spacing:1px;background-color:#D4D0C8;height:40px;border:1px solid #777;width:100px;font-weight:bold;font-size:120%;}
 .submit:hover{text-decoration:underline;}
 .ask-body{padding-right:10px;}
+.thousand{color:orange;}
 .notify
 {
 	position: fixed;

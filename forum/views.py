@@ -28,11 +28,11 @@ from forum.user import *
 from forum import auth
 
 # used in index page
-INDEX_PAGE_SIZE = 30
+INDEX_PAGE_SIZE = 20
 INDEX_AWARD_SIZE = 15
 INDEX_TAGS_SIZE = 100
 # used in tags list
-DEFAULT_PAGE_SIZE = 65
+DEFAULT_PAGE_SIZE = 60
 # used in questions
 QUESTIONS_PAGE_SIZE = 10
 # used in users
