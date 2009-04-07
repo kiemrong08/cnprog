@@ -650,7 +650,7 @@ def tags(request):
         page = 1
 
     if request.method == "GET":
-        stag = request.GET.get("name", "").strip()
+        stag = request.GET.get("q", "").strip()
         if stag is not None:
             objects_list = Paginator(Tag.objects.extra(where=['name like %s'], params=['%' + stag + '%']), DEFAULT_PAGE_SIZE)
         else:
@@ -888,7 +888,7 @@ def vote(request, id):
 def users(request):
     is_paginated = True
     sortby = request.GET.get('sort', 'reputation')
-    suser = request.REQUEST.get('name',  "")
+    suser = request.REQUEST.get('q',  "")
     try:
         page = int(request.GET.get('page', '1'))
     except ValueError:
@@ -1864,9 +1864,9 @@ def search(request):
         if keywords is None:
             return HttpResponseRedirect('/')
         if search_type == 'tag':
-            return HttpResponseRedirect('/tags/?name=%s&page=%s' % (keywords.strip(), page))
+            return HttpResponseRedirect('/tags/?q=%s&page=%s' % (keywords.strip(), page))
         elif search_type == "user":
-            return HttpResponseRedirect('/users/?name=%s&page=%s' % (keywords.strip(), page))
+            return HttpResponseRedirect('/users/?q=%s&page=%s' % (keywords.strip(), page))
         elif search_type == "question":
             
             template_file = "questions.html"

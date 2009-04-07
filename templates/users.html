@@ -9,6 +9,10 @@
             $("#type-user").attr('checked',true);
             var orderby = "{{ tab_id }}";
             $("#sort_" + orderby).attr('className',"on");
+            
+            Hilite.exact = false;
+            Hilite.elementid = "main-body";
+            Hilite.debug_referrer = location.href;
         });
          
         </script>
