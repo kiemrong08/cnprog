@@ -399,7 +399,7 @@ class Book(models.Model):
     tagnames = models.CharField(max_length=125)
     added_at = models.DateTimeField()
     last_edited_at = models.DateTimeField()
-    questions = models.ManyToManyField(Question, related_name='book')
+    questions = models.ManyToManyField(Question, related_name='book', db_table='book_question')
     
     class Meta:
         db_table = u'book'
@@ -409,6 +409,7 @@ class BookAuthorInfo(models.Model):
     Model for book author info
     """
     user = models.ForeignKey(User)
+    book = models.ForeignKey(Book)
     blog_url = models.CharField(max_length=255)
     added_at = models.DateTimeField()
     last_edited_at = models.DateTimeField()
@@ -421,6 +422,7 @@ class BookAuthorRss(models.Model):
     Model for book author blog rss
     """
     user = models.ForeignKey(User)
+    book = models.ForeignKey(Book)
     title = models.CharField(max_length=255)
     url = models.CharField(max_length=255)
     rss_created_at = models.DateTimeField()

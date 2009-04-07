@@ -1764,9 +1764,90 @@ def upload(request):
 
     return HttpResponse(result, mimetype="application/xml")
 
-def book(request, short_name):
-    """docstring for book"""
-    pass
+def book(request, short_name, unanswered=False):
+    """
+    1. questions list
+    2. book info
+    3. author info and blog rss items
+    """
+    """
+    List of Questions, Tagged questions, and Unanswered questions.
+    """
+    books = Book.objects.extra(where=['short_name = %s'], params=[short_name])
+    match_count = len(books)
+    if match_count == 1:
+        # the book info
+        book = books[0]
+        # get author info
+        author_info = BookAuthorInfo.objects.get(book=book)
+        # get author rss info
+        author_rss = BookAuthorRss.objects.filter(book=book)
+        
+        # Set flag to False by default. If it is equal to True, then need to be saved.
+        pagesize_changed = False
+        # get pagesize from session, if failed then get default value
+        user_page_size = request.session.get("pagesize", QUESTIONS_PAGE_SIZE)
+        # set pagesize equal to logon user specified value in database
+        if request.user.is_authenticated() and request.user.questions_per_page > 0:
+            user_page_size = request.user.questions_per_page
+            
+        try:
+            page = int(request.GET.get('page', '1'))
+            # get new pagesize from UI selection
+            pagesize = int(request.GET.get('pagesize', user_page_size))
+            if pagesize <> user_page_size:
+                pagesize_changed = True
+
+        except ValueError:
+            page = 1
+            pagesize  = user_page_size
+
+        # save this pagesize to user database
+        if pagesize_changed:
+            request.session["pagesize"] = pagesize
+            if request.user.is_authenticated():
+                user = request.user
+                user.questions_per_page = pagesize
+                user.save()
+
+        view_id = request.GET.get('sort', None)
+        view_dic = {"latest":"-added_at", "active":"-last_activity_at", "hottest":"-answer_count", "mostvoted":"-score" }
+        try:
+            orderby = view_dic[view_id]
+        except KeyError:
+            view_id = "latest"
+            orderby = "-added_at"
+            
+        # check if request is from tagged questions
+        if unanswered:
+            # check if request is from unanswered questions
+            # Article.objects.filter(publications__id__exact=1)
+            objects = Question.objects.filter(book__id__exact=book.id, deleted=False, answer_count=0).order_by(orderby)
+        else:
+            objects = Question.objects.filter(book__id__exact=book.id, deleted=False).order_by(orderby)
+
+        # RISK - inner join queries
+        objects = objects.select_related();
+        objects_list = Paginator(objects, pagesize)
+        questions = objects_list.page(page)
+                    
+    return render_to_response('book.html', {
+        "book" : book,
+        "author_info" : author_info,
+        "author_rss" : author_rss,
+        "questions" : questions,
+        "context" : {
+            'is_paginated' : True,
+            'pages': objects_list.num_pages,
+            'page': page,
+            'has_previous': questions.has_previous(),
+            'has_next': questions.has_next(),
+            'previous': questions.previous_page_number(),
+            'next': questions.next_page_number(),
+            'base_url' : request.path + '?sort=%s&' % view_id,
+            'pagesize' : pagesize
+        }
+    }, context_instance=RequestContext(request))
    
 def search(request):
     """
