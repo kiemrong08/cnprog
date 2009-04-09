@@ -1,4 +1,4 @@
-﻿# encoding:utf-8
+# encoding:utf-8
 import os.path
 import time, datetime, calendar, random
 import logging
@@ -1848,7 +1848,61 @@ def book(request, short_name, unanswered=False):
             'pagesize' : pagesize
         }
     }, context_instance=RequestContext(request))
-   
+
+@login_required
+def ask_book(request, short_name):
+    if request.method == "POST":
+        form = AskForm(request.POST)
+        if form.is_valid():
+            added_at = datetime.datetime.now()
+            html = sanitize_html(markdowner.convert(form.cleaned_data['text']))
+            question = Question(
+                title            = strip_tags(form.cleaned_data['title']),
+                author           = request.user,
+                added_at         = added_at,
+                last_activity_at = added_at,
+                last_activity_by = request.user,
+                wiki             = form.cleaned_data['wiki'],
+                tagnames         = form.cleaned_data['tags'].strip(),
+                html             = html,
+                summary          = strip_tags(html)[:120]
+            )
+            if question.wiki:
+                question.last_edited_by = question.author
+                question.last_edited_at = added_at
+                question.wikified_at = added_at
+
+                question.save()
+
+            # create the first revision
+            QuestionRevision.objects.create(
+                question   = question,
+                revision   = 1,
+                title      = question.title,
+                author     = request.user,
+                revised_at = added_at,
+                tagnames   = question.tagnames,
+                summary    = CONST['default_version'],
+                text       = form.cleaned_data['text']
+            )
+            
+            books = Book.objects.extra(where=['short_name = %s'], params=[short_name])
+            match_count = len(books)
+            if match_count == 1:
+                # the book info
+                book = books[0]
+                book.questions.add(question)
+
+            return HttpResponseRedirect(question.get_absolute_url())
+    else:
+        form = AskForm()
+
+    tags = _get_tags_cache_json()
+    return render_to_response('ask.html', {
+        'form' : form,
+        'tags' : tags,
+        }, context_instance=RequestContext(request))
+
 def search(request):
     """
     Search by question, user and tag keywords.

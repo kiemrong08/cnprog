@@ -581,6 +581,9 @@
 <Idx clu="0" nm="fk_book_author_info_auth_user" unq="0">
 <ClNs>user_id</ClNs>
 </Idx>
+<Idx clu="0" nm="fk_book_author_info_book" unq="0">
+<ClNs>book_id</ClNs>
+</Idx>
 <SchTrHis/>
 </Tbl>
 <Tbl UsSo="1" nm="book_author_rss">
@@ -619,6 +622,9 @@
 </Fk>
 <Idx clu="0" nm="fk_book_author_rss_auth_user" unq="0">
 <ClNs>user_id</ClNs>
+</Idx>
+<Idx clu="0" nm="fk_book_author_rss_book" unq="0">
+<ClNs>book_id</ClNs>
 </Idx>
 <SchTrHis/>
 </Tbl>
