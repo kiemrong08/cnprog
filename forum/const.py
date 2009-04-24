@@ -82,6 +82,7 @@ TYPE_RESPONSE = {
 
 CONST = {
     'closed'            : u' [已关闭]',
+    'deleted'           : u' [已删除]',
     'default_version'   : u'初始版本',
     'retagged'          : u'更新了标签',
 

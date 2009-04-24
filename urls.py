@@ -56,6 +56,8 @@ urlpatterns = patterns('',
     (r'^nimda/(.*)', admin.site.root),
     (r'^feeds/(?P<url>.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': feeds}),
     (r'^upload/$', app.upload),
+    url(r'^books/$', app.books, name='books'),
+    url(r'^books/ask/(?P<short_name>[^/]+)/$', app.ask_book, name='ask_book'),
     url(r'^books/(?P<short_name>[^/]+)/$', app.book, name='book'),
     url(r'^search/$', app.search, name='search'),
 )

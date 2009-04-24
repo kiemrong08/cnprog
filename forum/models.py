@@ -18,6 +18,9 @@ from const import *
 class Tag(models.Model):
     name       = models.CharField(max_length=255, unique=True)
     created_by = models.ForeignKey(User, related_name='created_tags')
+    deleted         = models.BooleanField(default=False)
+    deleted_at      = models.DateTimeField(null=True, blank=True)
+    deleted_by      = models.ForeignKey(User, null=True, blank=True, related_name='deleted_tags')
     # Denormalised data
     used_count = models.PositiveIntegerField(default=0)
 
@@ -163,7 +166,13 @@ class Question(models.Model):
         return query_set.filter(question=self).count()
 
     def get_question_title(self):
-        return u'%s %s' % (self.title, CONST['closed']) if self.closed else self.title
+        if self.closed:
+            attr = CONST['closed'] 
+        elif self.deleted:
+            attr = CONST['deleted']
+        else:
+            attr = None
+        return u'%s %s' % (self.title, attr) if attr is not None else self.title
 
     def get_revision_url(self):
         return reverse('question_revisions', args=[self.id])
@@ -401,6 +410,11 @@ class Book(models.Model):
     last_edited_at = models.DateTimeField()
     questions = models.ManyToManyField(Question, related_name='book', db_table='book_question')
     
+    def get_absolute_url(self):
+        return '%s' % reverse('book', args=[self.short_name])
+        
+    def __unicode__(self):
+        return self.title
     class Meta:
         db_table = u'book'
 
@@ -437,8 +451,8 @@ QUESTIONS_PER_PAGE_CHOICES = (
    (30, u'30'),
    (50, u'50'),
 )
-# 2009-1-25 - 2009-2-25 default rep: +50
-User.add_to_class('reputation', models.PositiveIntegerField(default=50))
+
+User.add_to_class('reputation', models.PositiveIntegerField(default=1))
 User.add_to_class('gravatar', models.CharField(max_length=32))
 User.add_to_class('favorite_questions',
                   models.ManyToManyField(Question, through=FavoriteQuestion,

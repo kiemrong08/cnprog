@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load extra_tags %}
 {% load humanize %}
+{% load extra_filters %}
 {% block title %}{% spaceless %}问题列表{% endspaceless %}{% endblock %}
 {% block forejs %}
        <script type="text/javascript">
@@ -36,7 +37,7 @@
 	            <tr>
                     <td><span class="num">{{ question.answer_count|intcomma }}</span> </td>
                     <td><span class="num">{{ question.score|intcomma }}</span> </td>
-                    <td><span class="num">{{ question.view_count|intcomma }}</span> </td>
+                    <td><span class="num">{{ question.view_count|cnprog_intword|safe }}</span> </td>
 	            </tr>  
                 <tr>
                     <td><span class="unit">回答</span></td>
@@ -56,7 +57,7 @@
         <span class="date" title="{{ question.added_at }}">{% diff_date question.added_at %}</span>
         {% else %}
         <div class="from">
-            {% gravatar question.last_activity_by 32 %}
+            {% comment %}{% gravatar question.last_activity_by 24 %}{% endcomment %}
             <span class="author"><a href="{{ question.last_activity_by.get_profile_url }}">{{ question.last_activity_by }}</a></span>
             <span class="score">{% get_score_badge question.last_activity_by %} </span>
             <span class="date" title="{{ question.last_activity_at }}">{% diff_date question.last_activity_at %}</span>
@@ -68,7 +69,7 @@
         <span class="date" title="{{ question.added_at }}">{% diff_date question.added_at %}</span>
         {% else %}
         <div class="from">
-            {% gravatar question.author 24 %}
+            {% comment %}{% gravatar question.author 24 %}{% endcomment %}
             <span class="author"><a href="{{ question.author.get_profile_url }}">{{ question.author }}</a></span>
             <span class="score">{% get_score_badge question.author %} </span>
             <span class="date" title="{{ question.added_at }}">{% diff_date question.added_at %}</span>

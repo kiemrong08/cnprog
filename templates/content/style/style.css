@@ -2,7 +2,7 @@
 @import url(/content/style/openid.css);
 @import url(/content/style/prettify.css);
 /* 公用 */
-body{background:#EEE; font-size:12px; line-height:150%; margin:0; padding:0; color:#000; font-family: "segoe ui",Helvetica,微软雅黑,宋体,Tahoma,Verdana,MingLiu,PMingLiu,Arial,sans-serif; 
+body{background:#FFF; font-size:12px; line-height:150%; margin:0; padding:0; color:#000; font-family: "segoe ui",Helvetica,微软雅黑,宋体,Tahoma,Verdana,MingLiu,PMingLiu,Arial,sans-serif; 
 }
 div{margin:0 auto; padding:0;}
 h1,h2,h3,h4,h5,h6,ul,li,dl,dt,dd,form,img,p{margin:0; padding:0; border:none; }
@@ -82,9 +82,10 @@ blockquote
 #CARight{width:240px; float:right; padding-right:5px}
 #CAFull{float:left;padding:0 5px 0 5px;width:950px;}
 #ground {clear:both;border-top:6px solid #000; padding-top:6px; padding-bottom:50px; text-align:center;background:#777;}
-#header{background:url(/content/images/header.png); height:107px;}
+
 /*顶部及导航栏*/
-#top {height:20px; text-align:right; padding:3px;width:960px;}
+#top {height:20px; text-align:right; padding:3px;background-color:#eee;}
+#header {width:960px;}
 #top a {height:35px; text-align:right;letter-spacing:1px; margin-left:20px;text-decoration:underline; font-size:12px; color:#666;}
 #logo {padding:5px;}
 #navBar {float:clear;position:relative;display:block;width:960px;}
@@ -93,7 +94,7 @@ blockquote
 #navBar .nav a:hover {text-decoration:underline}
 #navBar .nav a.on {height:24px;line-height:28px;border-left:1px solid #515656;border-top:1px solid #515656;border-right:1px solid #515656; border-bottom:1px solid #515656; background:#515656; color:#FFF; font-weight:600; text-decoration:none}
 #navBar .nav a.special {font-size:15px; color:#FFF; font-weight:bold; text-decoration:none;background-color:Darkred }
-#navBar .nav a.special:hover {text-decoration:none; background-color:#EEE;color:#777}
+#navBar .nav a.special:hover {text-decoration:underline;}
 #navBar .nav div.focus {float:right; padding-right:0px;}
 /*搜索栏*/
 #searchBar {background-color:#515656;padding:5px;}
@@ -228,7 +229,8 @@ a:hover.medal  {color:#333; text-decoration:none; background:url(/content/images
 /*Tab栏*/
 .tabBar{background-color:#FFF;border-bottom: 1px solid #666;height: 30px; width: 100%;clear:both; margin-bottom:3px;}
 .tabsA {background-color:#FFF;float:right;position:relative;display:block;font-weight:bold;height:20px;}
-.tabsA a.on, .tabsA a.on:hover {background: #fff;
+.tabsB {background-color:#FFF;float:left;position:relative;display:block;font-weight:bold;height:20px;}
+.tabsA a.on, .tabsA a.on:hover,.tabsB a.on, .tabsB a.on:hover {background: #fff;
     color:#333;
 	border: 1px solid #777;
     border-bottom:2px solid #FFF;
@@ -246,8 +248,20 @@ a:hover.medal  {color:#333; text-decoration:none; background:url(/content/images
 	line-height: 28px;
 	margin: 5px 4px 0 0;
 	padding: 0 11px 0 11px;
-	text-decoration: none;}
-.tabsA a:hover {background: #fff;border: 1px solid #777;border-bottom:3px solid #FFF;}
+	text-decoration: none;
+}
+.tabsB a {background: #eee;
+	border: 1px solid #eee;
+	color: #777;
+	display: block;
+	float: left;
+	height: 22px;
+	line-height: 28px;
+	margin: 5px 0px 0 4px;
+	padding: 0 11px 0 11px;
+	text-decoration: none;
+}
+.tabsA a:hover, .tabsB a:hover {background: #fff;border: 1px solid #777;border-bottom:3px solid #FFF;}
 .headlineA {font-size:13px; border-bottom:1px solid #777; padding-bottom:2px; font-weight:800; margin-bottom:12px; text-align:right; height:30px;}
 .headQuestions {float:left; height:23px; line-height:23px; margin:5px 0 0 5px;padding:0px 6px 0px 15px; font-size:15px; font-weight:700; border-bottom:0px solid #777; border-left:0px solid #darkred; background-color:#FFF;background:url(/content/images/dot-list.gif) no-repeat left center;}
 .headAnswers {float:left; padding:3px; font-size:18px; font-weight:800; background:url(/content/images/ico_answers.gif) left 2px no-repeat; padding-left:24px;}
@@ -258,7 +272,7 @@ a:hover.medal  {color:#333; text-decoration:none; background:url(/content/images
 .headNormal {text-align:left;padding:3px; font-size:15px; margin-bottom:12px; font-weight:800;border-bottom:1px solid #777;}
 .headUser {text-align:left;padding:5px; font-size:20px; letter-spacing:1px;margin-bottom:12px; font-weight:800;border-bottom:1px solid #777;}
 /*RSS订阅*/
-#feeds {margin:20px 0; }
+#feeds {margin:10px 0; }
 #feeds a {background:url(/content/images/feed-icon-small.png) no-repeat 0; padding-left:18px; font-weight:700; font-size:13px; }
 
 /*问题*/
@@ -432,7 +446,9 @@ a.comment-user, a.comment-user:hover {
 a.comment-user:hover {
     text-decoration:underline;
 }
-
+.deleted{
+    background:#F4E7E7 none repeat scroll 0 0;
+}
 /*回答*/
 #answers {}
 .answer{
@@ -902,6 +918,20 @@ div.started .reputation-score {
 .post-type-8 a{
     color:#333;
 }
+
+
+/*读书频道*/
+.bookInfo {float:left; width:940px;padding:5px;}
+.bookCover {float:left; width:200px;}
+.bookCover img{border:1px solid #ccc;max-width:200px;}
+.bookSummary {float:left; font-size:13px;}
+.blogRss {float:right;margin:0 10px 0 0;width:460px;height:240px;background-color:#EEE; padding:5px;}
+.bookQuestions {margin-bottom:10px;}
+.bookFeed {float:right;}
+.bookAsk{letter-spacing:1px; float:right;margin:-30px 10px 0 0; padding:3px 5px 3px 5px;}
+.bookAsk a {font-size:15px; color:#FFF; font-weight:bold; text-decoration:none;background-color:#EC7000;padding:3px 6px 3px 6px; }
+.bookAsk a:hover {text-decoration:underline;}
+
 
 /*其他全局样式*/
 .hilite { background-color: #ff0; }

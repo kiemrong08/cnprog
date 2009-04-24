@@ -53,7 +53,7 @@ question_revision_type_id = question_revision_type.id
 answer_revision_type_id = answer_revision_type.id
 repute_type_id = repute_type.id
 def _get_tags_cache_json():
-    tags = Tag.objects.all()
+    tags = Tag.objects.filter(deleted=False).all()
     tags_list = []
     for tag in tags:
         dic = {'n': tag.name, 'c': tag.used_count }
@@ -81,7 +81,7 @@ def index(request):
         questions = Question.objects.filter(deleted=False).order_by(orderby)[:INDEX_PAGE_SIZE]
     # RISK - inner join queries
     questions = questions.select_related();
-    tags = Tag.objects.all().order_by("-id")[:INDEX_TAGS_SIZE]
+    tags = Tag.objects.all().filter(deleted=False).exclude(used_count=0).order_by("-id")[:INDEX_TAGS_SIZE]
     #print datetime.datetime.now()
     MIN = 1
     MAX = 100
@@ -652,12 +652,12 @@ def tags(request):
     if request.method == "GET":
         stag = request.GET.get("q", "").strip()
         if stag is not None:
-            objects_list = Paginator(Tag.objects.extra(where=['name like %s'], params=['%' + stag + '%']), DEFAULT_PAGE_SIZE)
+            objects_list = Paginator(Tag.objects.filter(deleted=False).exclude(used_count=0).extra(where=['name like %s'], params=['%' + stag + '%']), DEFAULT_PAGE_SIZE)
         else:
             if sortby == "name":
-                objects_list = Paginator(Tag.objects.all().order_by("name"), DEFAULT_PAGE_SIZE)
+                objects_list = Paginator(Tag.objects.all().filter(deleted=False).exclude(used_count=0).order_by("name"), DEFAULT_PAGE_SIZE)
             else:
-                objects_list = Paginator(Tag.objects.all().order_by("-used_count"), DEFAULT_PAGE_SIZE)
+                objects_list = Paginator(Tag.objects.all().filter(deleted=False).exclude(used_count=0).order_by("-used_count"), DEFAULT_PAGE_SIZE)
 
     try:
         tags = objects_list.page(page)
@@ -1764,6 +1764,9 @@ def upload(request):
 
     return HttpResponse(result, mimetype="application/xml")
 
+def books(request):
+    return HttpResponseRedirect("/books/mysql-zhaoyang")
+    
 def book(request, short_name, unanswered=False):
     """
     1. questions list
@@ -1775,16 +1778,16 @@ def book(request, short_name, unanswered=False):
     """
     books = Book.objects.extra(where=['short_name = %s'], params=[short_name])
     match_count = len(books)
-    if match_count == 1:
+    if match_count == 0 :
+        raise Http404
+    else:
         # the book info
         book = books[0]
         # get author info
         author_info = BookAuthorInfo.objects.get(book=book)
         # get author rss info
         author_rss = BookAuthorRss.objects.filter(book=book)
-        
-        # Set flag to False by default. If it is equal to True, then need to be saved.
-        pagesize_changed = False
+
         # get pagesize from session, if failed then get default value
         user_page_size = request.session.get("pagesize", QUESTIONS_PAGE_SIZE)
         # set pagesize equal to logon user specified value in database
@@ -1793,22 +1796,8 @@ def book(request, short_name, unanswered=False):
             
         try:
             page = int(request.GET.get('page', '1'))
-            # get new pagesize from UI selection
-            pagesize = int(request.GET.get('pagesize', user_page_size))
-            if pagesize <> user_page_size:
-                pagesize_changed = True
-
         except ValueError:
             page = 1
-            pagesize  = user_page_size
-
-        # save this pagesize to user database
-        if pagesize_changed:
-            request.session["pagesize"] = pagesize
-            if request.user.is_authenticated():
-                user = request.user
-                user.questions_per_page = pagesize
-                user.save()
 
         view_id = request.GET.get('sort', None)
         view_dic = {"latest":"-added_at", "active":"-last_activity_at", "hottest":"-answer_count", "mostvoted":"-score" }
@@ -1828,26 +1817,26 @@ def book(request, short_name, unanswered=False):
 
         # RISK - inner join queries
         objects = objects.select_related();
-        objects_list = Paginator(objects, pagesize)
+        objects_list = Paginator(objects, user_page_size)
         questions = objects_list.page(page)
-                    
-    return render_to_response('book.html', {
-        "book" : book,
-        "author_info" : author_info,
-        "author_rss" : author_rss,
-        "questions" : questions,
-        "context" : {
-            'is_paginated' : True,
-            'pages': objects_list.num_pages,
-            'page': page,
-            'has_previous': questions.has_previous(),
-            'has_next': questions.has_next(),
-            'previous': questions.previous_page_number(),
-            'next': questions.next_page_number(),
-            'base_url' : request.path + '?sort=%s&' % view_id,
-            'pagesize' : pagesize
-        }
-    }, context_instance=RequestContext(request))
+        print 'hellll'
+        return render_to_response('book.html', {
+            "book" : book,
+            "author_info" : author_info,
+            "author_rss" : author_rss,
+            "questions" : questions,
+            "context" : {
+                'is_paginated' : True,
+                'pages': objects_list.num_pages,
+                'page': page,
+                'has_previous': questions.has_previous(),
+                'has_next': questions.has_next(),
+                'previous': questions.previous_page_number(),
+                'next': questions.next_page_number(),
+                'base_url' : request.path + '?sort=%s&' % view_id,
+                'pagesize' : user_page_size
+            }
+        }, context_instance=RequestContext(request))
 
 @login_required
 def ask_book(request, short_name):

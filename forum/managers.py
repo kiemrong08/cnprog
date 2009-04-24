@@ -99,11 +99,20 @@ class TagManager(models.Manager):
         which don't exist when necesssary.
         """
         tags = list(self.filter(name__in=names))
+        #Set all these tag visible
+        for tag in tags:
+            if tag.deleted:
+                tag.deleted = False
+                tag.deleted_by = None
+                tag.deleted_at = None
+                tag.save()
+                
         if len(tags) < len(names):
             existing_names = set(tag.name for tag in tags)
             new_names = [name for name in names if name not in existing_names]
             tags.extend([self.create(name=name, created_by=user)
                          for name in new_names if self.filter(name=name).count() == 0 and len(name.strip()) > 0])
+             
         return tags
 
     def update_use_counts(self, tags):
