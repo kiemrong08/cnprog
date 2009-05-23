@@ -82,17 +82,6 @@ def index(request):
     # RISK - inner join queries
     questions = questions.select_related();
     tags = Tag.objects.all().filter(deleted=False).exclude(used_count=0).order_by("-id")[:INDEX_TAGS_SIZE]
-    #print datetime.datetime.now()
-    MIN = 1
-    MAX = 100
-    begin = end = 0
-    if len(tags) > 0:
-        sorted_tags = list(tag.used_count for tag in tags)
-        begin = min(sorted_tags)
-        end = max(sorted_tags)
-    mi = MIN if begin < MIN else begin
-    ma = MAX if end > MAX else end
-    #print datetime.datetime.now()
 
     awards = Award.objects.extra(
         select={'badge_id': 'badge.id', 'badge_name':'badge.name',
@@ -108,8 +97,6 @@ def index(request):
         "questions" : questions,
         "tab_id" : view_id,
         "tags" : tags,
-        "max" : ma,
-        "min" : mi,
         "awards" : awards[:INDEX_AWARD_SIZE],
         }, context_instance=RequestContext(request))
 
@@ -1819,7 +1806,7 @@ def book(request, short_name, unanswered=False):
         objects = objects.select_related();
         objects_list = Paginator(objects, user_page_size)
         questions = objects_list.page(page)
-        print 'hellll'
+
         return render_to_response('book.html', {
             "book" : book,
             "author_info" : author_info,
@@ -1861,7 +1848,7 @@ def ask_book(request, short_name):
                 question.last_edited_at = added_at
                 question.wikified_at = added_at
 
-                question.save()
+            question.save()
 
             # create the first revision
             QuestionRevision.objects.create(

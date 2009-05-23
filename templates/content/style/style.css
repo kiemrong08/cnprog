@@ -90,14 +90,14 @@ blockquote
 #logo {padding:5px;}
 #navBar {float:clear;position:relative;display:block;width:960px;}
 #navBar .nav {margin:20px 0px 0px 16px;letter-spacing:1px; }
-#navBar .nav a {color:#333; background-color:#EEE; padding:0px 12px 3px 12px; height:25px; line-height:30px;margin-left:10px; font-size:15px; font-weight:400; text-decoration:none;display: block;float: left;}
+#navBar .nav a {color:#333; background-color:#F9F7ED; padding:0px 12px 3px 12px; height:25px; line-height:30px;margin-left:10px; font-size:15px; font-weight:400; text-decoration:none;display: block;float: left;}
 #navBar .nav a:hover {text-decoration:underline}
-#navBar .nav a.on {height:24px;line-height:28px;border-left:1px solid #515656;border-top:1px solid #515656;border-right:1px solid #515656; border-bottom:1px solid #515656; background:#515656; color:#FFF; font-weight:600; text-decoration:none}
-#navBar .nav a.special {font-size:15px; color:#FFF; font-weight:bold; text-decoration:none;background-color:Darkred }
+#navBar .nav a.on {height:24px;line-height:28px;border:1px solid #B02B2C; background:#B02B2C; color:#FFF; font-weight:600; text-decoration:none}
+#navBar .nav a.special {font-size:15px; color:#B02B2C; font-weight:bold; text-decoration:none; }
 #navBar .nav a.special:hover {text-decoration:underline;}
 #navBar .nav div.focus {float:right; padding-right:0px;}
 /*搜索栏*/
-#searchBar {background-color:#515656;padding:5px;}
+#searchBar {background-color:#B02B2C;padding:5px;}
 #searchBar .content { }
 #searchBar .searchInput {font-size:13px; height:18px; width:400px;}
 #searchBar .searchBtn {font-size:14px; height:26px; width:80px;}
@@ -133,9 +133,9 @@ blockquote
 .boxA H3 {font-size:13px; font-weight:800; color:#FFF; margin:0; padding:0; margin-bottom:4px;}
 .boxA .body {border:1px solid #999; padding:8px; background:#FFF; font-size:13px;}
 .boxA .more {padding:2px; text-align:right; font-weight:800;}
-.boxB {background:#CCC; padding:6px; margin-bottom:8px;}
+.boxB {background:#F9F7CD; padding:6px; margin-bottom:8px;}
 .boxB H3 {font-size:13px; font-weight:800; color:#000; margin:0; padding:0 0 0 15px; margin-bottom:4px; background:url(/content/images/dot-g.gif) no-repeat left center;}
-.boxB .body {border:1px solid #999; padding:8px; background:#FFF; font-size:13px; line-height:160%;}
+.boxB .body {border:1px solid #FFFF88; padding:8px; background:#FFF; font-size:13px; line-height:160%;}
 .boxB .more {padding:1px; text-align:right; font-weight:800;}
 .boxC {background:#F5F5F5; padding:6px; margin-bottom:8px;}
 /*分页*/
@@ -523,8 +523,8 @@ a.comment-user:hover {
 
 /*标签列表*/
 .tagsbox {}
-.tagsbox a {color:#000;line-height:30px;margin-right:10px;font-size:100%;background-color:#EEE;padding:3px;}
-.tagsbox a:hover {text-decoration:none;background-color:#CCC;}
+.tagsbox a {color:#000;line-height:30px;margin-right:10px;font-size:100%;background-color:#F9F7ED;padding:3px;}
+.tagsbox a:hover {text-decoration:none;background-color:#F9F7CD;color:#B02B2C;}
 .tagsList {margin:0; list-style-type:none;padding:0px;min-height:360px;}
 .tagsList li {width:235px; float:left;}
 .badge-list{margin:0; list-style-type:none;}
