@@ -6,6 +6,16 @@ from django.db.models import Q
 from forum.models import *
 
 class QuestionManager(models.Manager):
+    def get_translation_questions(self, orderby, page_size):
+      from forum.models import Question
+      questions = Question.objects.filter(deleted=False, author__id__in=[28,29]).order_by(orderby)[:page_size]
+      return questions
+    
+    def get_questions(self, orderby, page_size):
+      from forum.models import Question
+      questions = Question.objects.filter(deleted=False).order_by(orderby)[:page_size]
+      return questions
+    
     def update_tags(self, question, tagnames, user):
         """
         Updates Tag associations for a question to match the given
@@ -92,7 +102,12 @@ class TagManager(models.Manager):
             'WHERE tag_id = tag.id'
         ') '
         'WHERE id IN (%s)')
-
+    
+    def get_valid_tags(self, page_size):
+      from forum.models import Tag
+      tags = Tag.objects.all().filter(deleted=False).exclude(used_count=0).order_by("-id")[:page_size]
+      return tags
+    
     def get_or_create_multiple(self, names, user):
         """
         Fetches a list of Tags with the given names, creating any Tags
@@ -206,3 +221,15 @@ class ReputeManager(models.Manager):
 
         else:
             return 0    
+class AwardManager(models.Manager):
+    def get_recent_awards(self):
+        awards = super(AwardManager, self).extra(
+            select={'badge_id': 'badge.id', 'badge_name':'badge.name',
+                          'badge_description': 'badge.description', 'badge_type': 'badge.type',
+                          'user_id': 'auth_user.id', 'user_name': 'auth_user.username'
+                          },
+            tables=['award', 'badge', 'auth_user'],
+            order_by=['-awarded_at'],
+            where=['auth_user.id=award.user_id AND badge_id=badge.id'],
+        ).values('badge_id', 'badge_name', 'badge_description', 'badge_type', 'user_id', 'user_name')
+        return awards

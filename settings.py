@@ -4,7 +4,7 @@ import os.path
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-SITE_SRC_ROOT = 'c:/Projects/Lanai/src'
+SITE_SRC_ROOT = '/Users/sailing/Development/cnprog_beta2'
 #David Cramer debug toolbar
 INTERNAL_IPS = ('127.0.0.1',)
 DEBUG_TOOLBAR_PANELS = (
@@ -25,7 +25,7 @@ DEBUG_TOOLBAR_CONFIG = {
 #for logging
 import logging
 #LOG_FILENAME = '/Users/sailing/Development/cnprog/svn/trunk/log/django.lanai.log'
-LOG_FILENAME = 'c:/logs/django.lanai.log'
+LOG_FILENAME = '/Users/sailing/Development/cnprog_beta2/django.lanai.log'
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,)
 
 #for OpenID auth
@@ -46,9 +46,9 @@ DATABASE_ENGINE = 'mysql'           # 'postgresql_psycopg2', 'postgresql', 'mysq
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
 DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
 
-DATABASE_NAME = 'twogeekt_lanai'             # Or path to database file if using sqlite3.
-DATABASE_USER = 'twogeekt_lanai'             # Not used with sqlite3.
-DATABASE_PASSWORD = 'sysadm'         # Not used with sqlite3.
+DATABASE_NAME = 'cnprog'             # Or path to database file if using sqlite3.
+DATABASE_USER = 'root'             # Not used with sqlite3.
+DATABASE_PASSWORD = ''         # Not used with sqlite3.
 
 SERVER_EMAIL = 'webmaster@cnprog.com'
 DEFAULT_FROM_EMAIL = 'webmaster@cnprog.com'
@@ -82,7 +82,7 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = 'C:/Projects/Lanai/src/templates/upfiles/'
+MEDIA_ROOT = '/Users/sailing/Development/cnprog_beta2/templates/upfiles/'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
@@ -111,7 +111,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'django.middleware.sqlprint.SqlPrintingMiddleware',
+    'middleware.pagesize.QuestionsPageSizeMiddleware',
+    #'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (

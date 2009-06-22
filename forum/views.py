@@ -76,22 +76,14 @@ def index(request):
         orderby = "-last_activity_at"
     # group questions by author_id of 28,29
     if view_id == 'trans':
-        questions = Question.objects.filter(deleted=False, author__id__in=[28,29]).order_by(orderby)[:INDEX_PAGE_SIZE]
+        questions = Question.objects.get_translation_questions(orderby, INDEX_PAGE_SIZE)
     else:
-        questions = Question.objects.filter(deleted=False).order_by(orderby)[:INDEX_PAGE_SIZE]
+        questions = Question.objects.get_questions(orderby, INDEX_PAGE_SIZE)
     # RISK - inner join queries
-    questions = questions.select_related();
-    tags = Tag.objects.all().filter(deleted=False).exclude(used_count=0).order_by("-id")[:INDEX_TAGS_SIZE]
+    questions = questions.select_related()
+    tags = Tag.objects.get_valid_tags(INDEX_TAGS_SIZE)
 
-    awards = Award.objects.extra(
-        select={'badge_id': 'badge.id', 'badge_name':'badge.name',
-                      'badge_description': 'badge.description', 'badge_type': 'badge.type',
-                      'user_id': 'auth_user.id', 'user_name': 'auth_user.username'
-                      },
-        tables=['award', 'badge', 'auth_user'],
-        order_by=['-awarded_at'],
-        where=['auth_user.id=award.user_id AND badge_id=badge.id'],
-    ).values('badge_id', 'badge_name', 'badge_description', 'badge_type', 'user_id', 'user_name')
+    awards = Award.objects.get_recent_awards()
 
     return render_to_response('index.html', {
         "questions" : questions,
@@ -122,29 +114,11 @@ def questions(request, tagname=None, unanswered=False):
     # Set flag to False by default. If it is equal to True, then need to be saved.
     pagesize_changed = False
     # get pagesize from session, if failed then get default value
-    user_page_size = request.session.get("pagesize", QUESTIONS_PAGE_SIZE)
-    # set pagesize equal to logon user specified value in database
-    if request.user.is_authenticated() and request.user.questions_per_page > 0:
-        user_page_size = request.user.questions_per_page
-
+    pagesize = request.session.get("pagesize")
     try:
         page = int(request.GET.get('page', '1'))
-        # get new pagesize from UI selection
-        pagesize = int(request.GET.get('pagesize', user_page_size))
-        if pagesize <> user_page_size:
-            pagesize_changed = True
-
     except ValueError:
         page = 1
-        pagesize  = user_page_size
-
-    # save this pagesize to user database
-    if pagesize_changed:
-        request.session["pagesize"] = pagesize
-        if request.user.is_authenticated():
-            user = request.user
-            user.questions_per_page = pagesize
-            user.save()
 
     view_id = request.GET.get('sort', None)
     view_dic = {"latest":"-added_at", "active":"-last_activity_at", "hottest":"-answer_count", "mostvoted":"-score" }
@@ -156,9 +130,7 @@ def questions(request, tagname=None, unanswered=False):
 
     # check if request is from tagged questions
     if tagname is not None:
-        #print datetime.datetime.now()
         objects = Question.objects.filter(deleted=False, tags__name = unquote(tagname)).order_by(orderby)
-        #print datetime.datetime.now()
     elif unanswered:
         #check if request is from unanswered questions
         template_file = "unanswered.html"
