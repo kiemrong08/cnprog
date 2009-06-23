@@ -4,17 +4,28 @@ from django.contrib.auth.models import User, UserManager
 from django.db import connection, models, transaction
 from django.db.models import Q
 from forum.models import *
+from urllib import quote, unquote
 
 class QuestionManager(models.Manager):
     def get_translation_questions(self, orderby, page_size):
-      from forum.models import Question
-      questions = Question.objects.filter(deleted=False, author__id__in=[28,29]).order_by(orderby)[:page_size]
-      return questions
+        questions = self.filter(deleted=False, author__id__in=[28,29]).order_by(orderby)[:page_size]
+        return questions
     
     def get_questions(self, orderby, page_size):
-      from forum.models import Question
-      questions = Question.objects.filter(deleted=False).order_by(orderby)[:page_size]
-      return questions
+        questions = self.filter(deleted=False).order_by(orderby)[:page_size]
+        return questions
+    
+    def get_questions_by_tag(self, tagname, orderby):
+        questions = self.filter(deleted=False, tags__name = unquote(tagname)).order_by(orderby)
+        return questions
+    
+    def get_unanswered_questions(self, orderby):
+        questions = self.filter(deleted=False, answer_count=0).order_by(orderby)
+        return questions
+    
+    def get_questions(self, orderby):
+        questions = self.filter(deleted=False).order_by(orderby)
+        return questions
     
     def update_tags(self, question, tagnames, user):
         """
@@ -138,6 +149,19 @@ class TagManager(models.Manager):
         query = self.UPDATE_USED_COUNTS_QUERY % ','.join(['%s'] * len(tags))
         cursor.execute(query, [tag.id for tag in tags])
         transaction.commit_unless_managed()
+    
+    def get_tags_by_questions(self, questions):
+        question_ids = []
+        for question in questions:
+            question_ids.append(question.id)
+
+        question_ids_str = ','.join([str(id) for id in question_ids])
+        related_tags = self.extra(
+                tables=['tag', 'question_tags'],
+                where=["tag.id = question_tags.tag_id AND question_tags.question_id IN (" + question_ids_str + ")"]
+        ).distinct()
+        
+        return related_tags
 
 class AnswerManager(models.Manager):
     GET_ANSWERS_FROM_USER_QUESTIONS = u'SELECT answer.* FROM answer INNER JOIN question ON answer.question_id = question.id WHERE question.author_id =%s AND answer.author_id <> %s'

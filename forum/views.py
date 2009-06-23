@@ -130,26 +130,21 @@ def questions(request, tagname=None, unanswered=False):
 
     # check if request is from tagged questions
     if tagname is not None:
-        objects = Question.objects.filter(deleted=False, tags__name = unquote(tagname)).order_by(orderby)
+        objects = Question.objects.get_questions_by_tag(tagname, orderby)
     elif unanswered:
         #check if request is from unanswered questions
         template_file = "unanswered.html"
-        objects = Question.objects.filter(deleted=False, answer_count=0).order_by(orderby)
+        objects = Question.objects.get_unanswered_questions(orderby)
     else:
-        objects = Question.objects.filter(deleted=False).order_by(orderby)
+        objects = Question.objects.get_questions(orderby)
 
     # RISK - inner join queries
-    objects = objects.select_related();
+    objects = objects.select_related(depth=1);
     objects_list = Paginator(objects, pagesize)
     questions = objects_list.page(page)
 
     # Get related tags from this page objects
-    related_tags = []
-    for question in questions.object_list:
-        tags = list(question.tags.all())
-        for tag in tags:
-            if tag not in related_tags:
-                related_tags.append(tag)
+    related_tags = Tag.objects.get_tags_by_questions(questions.object_list)
 
     return render_to_response(template_file, {
         "questions" : questions,
