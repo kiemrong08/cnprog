@@ -78,7 +78,7 @@ def index(request):
     if view_id == 'trans':
         questions = Question.objects.get_translation_questions(orderby, INDEX_PAGE_SIZE)
     else:
-        questions = Question.objects.get_questions(orderby, INDEX_PAGE_SIZE)
+        questions = Question.objects.get_questions_by_pagesize(orderby, INDEX_PAGE_SIZE)
     # RISK - inner join queries
     questions = questions.select_related()
     tags = Tag.objects.get_valid_tags(INDEX_TAGS_SIZE)
@@ -984,6 +984,7 @@ def user_stats(request, user_id, user_view):
                         'title',
                         'author_id',
                         'accepted',
+                        'vote_count',
                         'answer_count',
                         'vote_up_count',
                         'vote_down_count')[:100]
@@ -1490,6 +1491,7 @@ def user_reputation(request, user_id, user_view):
     ).values('positive', 'negative', 'question_id', 'title', 'reputed_at', 'reputation')
 
     reputation.query.group_by = ['question_id']
+
 
     rep_list = []
     for rep in Repute.objects.filter(user=user).order_by('reputed_at'):

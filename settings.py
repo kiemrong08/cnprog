@@ -4,7 +4,6 @@ import os.path
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-SITE_SRC_ROOT = '/Users/sailing/Development/cnprog_beta2'
 #David Cramer debug toolbar
 INTERNAL_IPS = ('127.0.0.1',)
 DEBUG_TOOLBAR_PANELS = (
@@ -14,19 +13,11 @@ DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.profiler.ProfilerDebugPanel',
     'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
     'debug_toolbar.panels.templates.TemplatesDebugPanel',
-    # If you are using the profiler panel you don't need the timer
-    # 'debug_toolbar.panels.timer.TimerDebugPanel',
 )
 
 DEBUG_TOOLBAR_CONFIG = {
     "INTERCEPT_REDIRECTS":False
 }
-
-#for logging
-import logging
-#LOG_FILENAME = '/Users/sailing/Development/cnprog/svn/trunk/log/django.lanai.log'
-LOG_FILENAME = '/Users/sailing/Development/cnprog_beta2/django.lanai.log'
-logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,)
 
 #for OpenID auth
 ugettext = lambda s: s
@@ -36,19 +27,11 @@ LOGIN_URL = '/%s%s' % (ugettext('account/'), ugettext('signin/'))
 ADMINS = (
     ('Mike Chen', 'chagel@gmail.com'),
 )
-
 MANAGERS = ADMINS
 
-DATABASE_ENGINE = 'mysql'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-#DATABASE_NAME = 'cnprog'             # Or path to database file if using sqlite3.
-#DATABASE_USER = 'root'             # Not used with sqlite3.
-#DATABASE_PASSWORD = ''         # Not used with sqlite3.
+DATABASE_ENGINE = 'mysql'      # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
 DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
-
-DATABASE_NAME = 'cnprog'             # Or path to database file if using sqlite3.
-DATABASE_USER = 'root'             # Not used with sqlite3.
-DATABASE_PASSWORD = ''         # Not used with sqlite3.
 
 SERVER_EMAIL = 'webmaster@cnprog.com'
 DEFAULT_FROM_EMAIL = 'webmaster@cnprog.com'
@@ -58,9 +41,6 @@ EMAIL_SUBJECT_PREFIX = '[cnprog.com]'
 EMAIL_HOST='smtp.gmail.com'
 EMAIL_PORT='587'
 EMAIL_USE_TLS=True
-
-
-
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -80,14 +60,6 @@ SITE_ID = 1
 # to load the internationalization machinery.
 USE_I18N = True
 
-# Absolute path to the directory that holds media.
-# Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = '/Users/sailing/Development/cnprog_beta2/templates/upfiles/'
-
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
-# trailing slash if there is a path component (optional in other cases).
-# Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = 'http://127.0.0.1:8000/upfiles/'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -111,7 +83,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
-    'django.middleware.sqlprint.SqlPrintingMiddleware',
+    #'django.middleware.sqlprint.SqlPrintingMiddleware',
     'middleware.pagesize.QuestionsPageSizeMiddleware',
     #'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
@@ -147,3 +119,7 @@ INSTALLED_APPS = (
     'django_authopenid',
     'debug_toolbar' ,
 )
+
+# User settings
+from settings_local import *
+

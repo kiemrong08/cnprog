@@ -11,7 +11,7 @@ class QuestionManager(models.Manager):
         questions = self.filter(deleted=False, author__id__in=[28,29]).order_by(orderby)[:page_size]
         return questions
     
-    def get_questions(self, orderby, page_size):
+    def get_questions_by_pagesize(self, orderby, page_size):
         questions = self.filter(deleted=False).order_by(orderby)[:page_size]
         return questions
     
